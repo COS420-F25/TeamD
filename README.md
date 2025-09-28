@@ -23,7 +23,7 @@ Tuesday: 3:30 PM (Reserved 30m slot)
 
 Thursday: 3:30 PM (Reserved 30m slot)
 
-Friday: 4:30 PM (Reserved 30m slot)
+Friday: 4:30 PM (15m End of Sprint Review)
 
 # Communication Policies
 
