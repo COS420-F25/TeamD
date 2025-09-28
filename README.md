@@ -7,7 +7,7 @@ Project Manager (PM): Chauncey O’Connell
 
 Designer: Nathaniel Eldredge
 
-Developer 1: Josh vansantvoord
+Developer 1: Josh Vansantvoord
 
 Developer 2: Mason Peasley
 
