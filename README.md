@@ -1,6 +1,8 @@
 # TeamD
-This repository contains the project files, documentation, and deliverables for COS 420 Team Dingo. Contents include: Code – project source code, Tests – testing files and scripts, Misc – additional supporting material.
+Team D's repository for COS 420 - Fall of 2025
+
 # Team name: Dingo
+
 # Team Roles:
 
 Project Manager (PM): Chauncey O’Connell
