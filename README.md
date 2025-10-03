@@ -7,7 +7,7 @@ Team D's repository for COS 420 - Fall of 2025
 
 Project Manager (PM): Chauncey O’Connell
 
-Designer: Nathaniel Eldredge
+Designer: Nathaniel Hayes
 
 Developer 1: Josh Vansantvoord
 
