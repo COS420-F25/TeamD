@@ -33,13 +33,20 @@ Friday: 4:30 PM (15m End of Sprint Review)
 
 @username -> okay anytime
 
-@all -> only when relevant
+@TeamD -> only when you need the attention of all team members
+Eg.  You need team-wide input for a task
+     Something needs to be brought to attention like a suprise deadline
+     You need anybody to respond ASAP.
+     
+!Eg. You need a particular person's attention
+
+@all -> you need all team members attention AND Dr. Greg's.
 
 Response expectations:
 
-Morning and night check-ins
+Please check-in at 10 AM and 9 PM
 
-Respond when pinged
+If pinged please respond by or at the next check-in
 
 Who should reply?
 
