@@ -34,27 +34,29 @@ Friday: 4:30 PM (15m End of Sprint Review)
 @username -> okay anytime
 
 @TeamD -> only when you need the attention of all team members
-Eg.  You need team-wide input for a task
-     Something needs to be brought to attention like a suprise deadline
-     You need anybody to respond ASAP.
+
+     Eg.  You need team-wide input for a task
+          Something needs to be brought to attention like a suprise deadline
+          You need anybody to respond ASAP.
      
-!Eg. You need a particular person's attention
+     !Eg. You need a particular person's attention
 
 @all -> you need all team members attention AND Dr. Greg's.
 
 Response expectations:
 
 Please check-in at 10 AM and 9 PM
-
-If pinged please respond by or at the next check-in
+     
+     If pinged please respond by or at the next check-in
+     If not pinged make sure to still glance at the chat
 
 Who should reply?
 
-First, the person pinged
+  1. First, the person pinged
 
-If unclear -> whoever can answer
+  2. If unclear -> whoever can answer
 
-Team lead steps in if unresolved
+  3. Team lead steps in if unresolved
 
 If unable to communicate by Discord, Zoom will be used as an alternative. 
 
