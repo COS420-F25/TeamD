@@ -53,7 +53,7 @@ If unable to communicate by Discord, Zoom will be used as an alternative.
 
 # Mission Statement
 
-Team Dingo is dedicated to empowering computer science students by addressing challenges they face both in showcasing their skills and in navigating the transition from academics into professional opportunities. Our mission is to create tools that simplify how students present their accomplishments and access career resources, bridging the gap between education and employment.
+Team Dingo is dedicated to empowering computer science students by simplifying how they showcase their skills and access career resources, bridging the gap between education and employment.
 
 # Problem Statements
 
