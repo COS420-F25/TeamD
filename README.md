@@ -17,15 +17,15 @@ Developer 3: Xander Watkins
 
 # Team Schedule
 
-Monday: 3:15 – 4:00 PM (Sprint Kickoff / Task Management, 45m): Overview of tasks for the week, and planning for completion of those tasks. Setting up tasks for each team member.
+Monday: 3:15 – 4:00 PM (Sprint Kickoff / Task Management, 45m)
 
-Wednesday: 3:15 – 3:30 PM (Scrum stand-up, 15m): Review of progress and any comments or changes for planning.
+Wednesday: 3:15 – 3:30 PM (Scrum stand-up, 15m)
 
-Tuesday: 3:30 PM (Reserved 30m slot): Slot space on stand-by for any needed extra time meetings for help, planning, issues, and etc.
+Tuesday: 3:30 PM (Reserved 30m slot)
 
-Thursday: 3:30 PM (Reserved 30m slot): Slot space on stand-by for any needed extra time meetings for help, planning, issues, and etc.
+Thursday: 3:30 PM (Reserved 30m slot)
 
-Friday: 4:30 PM (15m End of Sprint Review): Quality check and review of weekend for any fixes on previous work after reviewed.
+Friday: 4:30 PM (15m End of Sprint Review)
 
 # Communication Policies
 
