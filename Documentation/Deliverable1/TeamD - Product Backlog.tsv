@@ -1,0 +1,57 @@
+Title	URL	Milestone	Deliverable / Sprint	User Story	Story Type	Priority	Estimate (Story Points)	Status
+Fix Figures in Deliverable 1	https://github.com/COS420-F25/TeamD/issues/55		D1		Non-technical	High	1	Done
+Build work environment, screenshot your website working and add it to Google Doc	https://github.com/COS420-F25/TeamD/issues/54		D1		Non-technical	High	1	Done
+Bring this into Projects.	https://github.com/COS420-F25/TeamD/issues/37		D1		Non-technical	High	1	Done
+Create Sprint Backlog 1	https://github.com/COS420-F25/TeamD/issues/36		D1		Non-technical	High	2	Done
+System Requirements Specification	https://github.com/COS420-F25/TeamD/issues/40		D1		Non-technical	High	5	10-30% done
+Add non-technical stories	https://github.com/COS420-F25/TeamD/issues/43		D1		Non-technical	High	1	Done
+Revise User story document	https://github.com/COS420-F25/TeamD/issues/34		D1	No	Non-technical	High	1	Done
+Create Product Backlog	https://github.com/COS420-F25/TeamD/issues/35		D1		Non-technical	High	1	Done
+Decide & add committed user stories	https://github.com/COS420-F25/TeamD/issues/42		D1		Non-technical	High	1	Done
+functional requirements 1-10	https://github.com/COS420-F25/TeamD/issues/44		D1		Non-technical	High	1	Done
+functional requirements 11-20	https://github.com/COS420-F25/TeamD/issues/45		D1		Non-technical	High	1	Done
+non-functional requirements (15)	https://github.com/COS420-F25/TeamD/issues/47		D1		Non-technical	High	1	Done
+functional requirements 21-30	https://github.com/COS420-F25/TeamD/issues/46		D1		Non-technical	High	1	In Progress
+Sprint Review	https://github.com/COS420-F25/TeamD/issues/39		D1		Non-technical	High	1	In Progress
+Discuss features to write requirements on	https://github.com/COS420-F25/TeamD/issues/48		D1		Non-technical	High	1	Done
+Create READ-ME File	https://github.com/COS420-F25/TeamD/issues/49		D1		Non-technical	High	1	Done
+Set up build environment	https://github.com/COS420-F25/TeamD/issues/50		D1		Technical work	High	1	Done
+Software	https://github.com/COS420-F25/TeamD/issues/41		D1		Technical work	High	1	Done
+LOOK AT FEEDBACK *IMPORTANT*	https://github.com/COS420-F25/TeamD/issues/32		D1		Knowledge acquisition	High	1	Done
+As a user, I want to link my github account to my profile for a more detailed overview of my work so employers can verify my coding activity and see the full scope of my technical contributions without me manually documenting everything.	https://github.com/COS420-F25/TeamD/issues/60			Yes	Technical work	High	3	Product Backlog
+As a user, I want to showcase my AI proficiency and methods with annotations on code and tags of projects, so that employers can see how and when I used AI to enhance my work.	https://github.com/COS420-F25/TeamD/issues/81			Yes	Technical work	High	5	Product Backlog
+As a user, I want to annotate sections of my portfolio projects that were created or improved with AI tools like GitHub Copilot or ChatGPT, so that employers can see specific examples of how I leverage AI in my workflow.	https://github.com/COS420-F25/TeamD/issues/90			Yes	Technical work	High	5	Product Backlog
+Fix YourApp description based on feedback from Deliverable 0	https://github.com/COS420-F25/TeamD/issues/56		D1	No	Non-technical	Medium	1	Done
+As a user, I want to display before and after code samples for key tasks, showing how A generated suggestions improved my solutions, so employers can evaluate my ability to apply and validate AI outputs.	https://github.com/COS420-F25/TeamD/issues/91			Yes	Technical work	Medium	5	Product Backlog
+As a user, I want to include a section in my portfolio to showcase my AI prompt engineering techniques and the outcomes of different prompts, so employers can assess my creativity and skill in directing generative AI to solve problems.	https://github.com/COS420-F25/TeamD/issues/92			Yes	Technical work	Medium	5	Product Backlog
+Add descriptions from rubric to each task	https://github.com/COS420-F25/TeamD/issues/94		D1	No	Non-technical	Low		Done
+Expand AI Proficiency Features, make sure we have 5 User stories on this	https://github.com/COS420-F25/TeamD/issues/53			No	Requirements	Low		Quality Checking
+As a user, I want to use my email to login so that I may connect with potential employers.	https://github.com/COS420-F25/TeamD/issues/61			Yes	Technical work	Low	3	Product Backlog
+As a user, I want to create an appealing portfolio of my work so that it may be seen by potential employers.	https://github.com/COS420-F25/TeamD/issues/62			Yes	Technical work	Low	8	Product Backlog
+As an employer, I want to filter candidates by programming languages, years of experience, and university, so I can quickly find candidates with relevant technical backgrounds.	https://github.com/COS420-F25/TeamD/issues/63			Yes	Technical work	Low	5	Product Backlog
+As an employer, I want to be able to create a company profile to illustrate my company’s purpose and values.	https://github.com/COS420-F25/TeamD/issues/64			Yes	Technical work	Low	5	Product Backlog
+As a user, I want to be able to tag my profile and work, so that it may be easily filtered by potential employers	https://github.com/COS420-F25/TeamD/issues/65			Yes	Technical work	Low	3	Product Backlog
+As a user, I want to be able to showcase working demos of what I have created, so that examples of my work may be easily viewed.	https://github.com/COS420-F25/TeamD/issues/66			Yes	Technical work	Low	5	Product Backlog
+As a user, I want to be able to customize my profile URL so that it may be easier to remember and appear more professional.	https://github.com/COS420-F25/TeamD/issues/67			Yes	Technical work	Low	3	Product Backlog
+As an employer, I want to be able to contact potential employees through their profiles.	https://github.com/COS420-F25/TeamD/issues/68			Yes	Technical work	Low	5	Product Backlog
+As a user, I want to be able to follow others on the platform, so that I can build  my professional network.	https://github.com/COS420-F25/TeamD/issues/69			Yes	Technical work	Low	5	Product Backlog
+As a user, I want to generate a shareable link to my profile, so I can include it in job applications, social media profiles, and email signatures without requiring recipients to create an account.	https://github.com/COS420-F25/TeamD/issues/70			Yes	Technical work	Low	2	Product Backlog
+As a user, I want to show different portfolios for different purposes, so I can emphasize backend work when applying to infrastructure roles and emphasize design when applying to frontend roles.	https://github.com/COS420-F25/TeamD/issues/71			Yes	Technical work	Low	8	Product Backlog
+As a user, I want to be able to view other users' portfolios, so I can see examples and what my peers are working on.	https://github.com/COS420-F25/TeamD/issues/72			Yes	Technical work	Low	2	Product Backlog
+As a user, I want to change how my portfolio is displayed, so I can emphasize my strongest work first and create a professional impression.	https://github.com/COS420-F25/TeamD/issues/73			Yes	Technical work	Low	5	Product Backlog
+As a user, I want to see the number of profile views, project clicks, and employer saves on my portfolio, so I can understand which projects attract the most attention.	https://github.com/COS420-F25/TeamD/issues/74			Yes	Technical work	Low	8	Product Backlog
+As an employer, I want to be able to filter my search, so I can narrow down potential employees.	https://github.com/COS420-F25/TeamD/issues/75			Yes	Technical work	Low	3	Product Backlog
+As an employer, I want portfolios to load quickly, so I can spend more time looking through candidates.	https://github.com/COS420-F25/TeamD/issues/76			Yes	Technical work	Low	5	Product Backlog
+As an employer, I want to be able to quickly view basic information about a candidate, such as contact, name, or skillset.	https://github.com/COS420-F25/TeamD/issues/77			Yes	Technical work	Low	3	Product Backlog
+As a user, I want a persistent navigation menu with clear labels like 'My Portfolio,' 'Browse Candidates,' and 'Settings,' so I can access key features without hunting for them.	https://github.com/COS420-F25/TeamD/issues/78			Yes	Technical work	Low	2	Product Backlog
+As a user, I want to be able to look through employers on the site and send them my portfolio.	https://github.com/COS420-F25/TeamD/issues/79			Yes	Technical work	Low	3	Product Backlog
+As a user, I want to be able to include my achievement highlights, so that non-technical recruiters can understand my accomplishments.	https://github.com/COS420-F25/TeamD/issues/80			Yes	Technical work	Low	3	Product Backlog
+As a user, I want to track the performance of my portfolio (i.e. views, shares) so that I can gauge interest and adjust my portfolio accordingly.	https://github.com/COS420-F25/TeamD/issues/82			Yes	Technical work	Low	5	Product Backlog
+As a user, I want to be able to organize my projects into different categories, so that employers can more easily find projects relevant to their interests.	https://github.com/COS420-F25/TeamD/issues/83			Yes	Technical work	Low	3	Product Backlog
+As a user, I want to be able to set my job-seeking status, so that employers only contact me when looking for employment.	https://github.com/COS420-F25/TeamD/issues/84			Yes	Technical work	Low	2	Product Backlog
+As an employer, I want to be able to see when users were last active or last updated their work, so I know what candidates are using up to date information or are likely to respond.	https://github.com/COS420-F25/TeamD/issues/85			Yes	Technical work	Low	3	Product Backlog
+As a user, I want to annotate sections of my portfolio projects that were created or improved with AI tools like GitHub Copilot, or ChatGPT, so that employers can see specific examples of how I leverage AI in my workflow.	https://github.com/COS420-F25/TeamD/issues/86			Yes	Technical work	Low	5	Product Backlog
+As a user, I want to display before and after code samples for key tasks, showing how A generated suggestions improved my solutions, so employers can evaluate my ability to apply and validate AI outputs.	https://github.com/COS420-F25/TeamD/issues/87			Yes	Technical work	Low	5	Product Backlog
+As a user, I want to include a section in my portfolio to showcase my AI prompt engineering techniques and the outcomes of different prompts, so employers can assess my creativity and skill in directing generative AI to solve problems.	https://github.com/COS420-F25/TeamD/issues/88			Yes	Technical work	Low	5	Product Backlog
+As an employer, I want to filter and search candidate portfolios by demonstrating use of AI skills or tools such as prompt engineering, Copilot, or API usage, so I can easily identify candidates with relevant AI capabilities for my company’s needs.	https://github.com/COS420-F25/TeamD/issues/89			Yes	Technical work	Low	3	Product Backlog
+As an employer, I want to filter and search candidate portfolios by demonstrating use of AI skills or tools such as prompt engineering, Copilot, or API usage, so I can easily identify candidates with relevant AI capabilities for my company’s needs.	https://github.com/COS420-F25/TeamD/issues/93			Yes	Technical work	Low	5	Product Backlog
