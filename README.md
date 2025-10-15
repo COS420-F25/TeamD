@@ -70,7 +70,7 @@ Students often struggle to effectively share and showcase their coding work, par
 
 # Environment Setup
 
-     Requirments for the development of RepSort may change over the course of this project.
+     Requirments for the development of SkillShow may change over the course of this project.
      
 ## Prerequisites
 
@@ -106,7 +106,7 @@ Students often struggle to effectively share and showcase their coding work, par
 2. **Install dependencies**
 
 ```bash
-     cd repsort
+     cd skillshow
      npm install
 ```
 
@@ -118,11 +118,11 @@ Students often struggle to effectively share and showcase their coding work, par
 
 ## Available npm Scripts
 
-     See `/repsort/README.md` for all available npm scripts
+     See `/skillshow/README.md` for all available npm scripts
 
 ## Testing with Jest
 
-Repsort uses Jest for testing
+skillshow uses Jest for testing
 
 - Run tests: `npm run test` 
      'a' will run all tests
@@ -131,7 +131,7 @@ Repsort uses Jest for testing
 
 - VScode has a GUI that can be used as well
 
-     New tests should add to the /repsort/tests directory.
+     New tests should add to the /skillshow/tests directory.
      New tests should take the form of `feature.test.tsx`.
 
 ## Required Workflow
