@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "util": "^0.12.5",
+    "web-streams-polyfill": "^4.2.0"
+  }
+}

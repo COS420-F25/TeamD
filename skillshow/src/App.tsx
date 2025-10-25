@@ -1,24 +1,25 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 
+import {auth} from "./firebase-config";
+import {collection} from "firebase/firestore"
+import {useSignInWithGoogle} from "react-firebase-hooks/auth";
+import {useCollection} from "react-firebase-hooks/firestore";
+
+import AddToDBButton from "./components/AddtoDBButton";
+
 function App() {
+  const [signInWithGoogle, user, loading, error] = useSignInWithGoogle(auth);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      Hello World
+      <div>
+        <button onClick={() => signInWithGoogle()}>Sign In</button>
+        {(user)?<div>{user.user.displayName}</div>:<div>Not logged in</div>}
+      </div>
+      <hr/>
+      <AddToDBButton />
     </div>
   );
 }
