@@ -12,14 +12,32 @@ function App() {
   const [signInWithGoogle, user, loading, error] = useSignInWithGoogle(auth);
 
   return (
-    <div className="App">
-      Hello World
-      <div>
-        <button onClick={() => signInWithGoogle()}>Sign In</button>
-        {(user)?<div>{user.user.displayName}</div>:<div>Not logged in</div>}
+    
+    <div className="home-container">
+
+      <div className="left-panel">
+        <h1 className="logo-text">SkillShow</h1>
+        <div className="color-bars">
+          <div className="bar bar-green"></div>
+          <div className="bar bar-yellow"></div>
+          <div className="bar bar-red"></div>
+          
+        </div>
       </div>
-      <hr/>
-      <AddToDBButton />
+
+      <div className="right-panel">
+        <div className="login-box">
+          <h2 className="login-title">Login/Sign-Up</h2>
+          <p className="login-role">As Employer<br />Or<br />Job Seeker</p>
+          <div>
+            <button onClick={() => signInWithGoogle()}>Sign In</button>
+            {(user)?<div>{user.user.displayName}</div>:<div>Not logged in</div>}
+          </div>
+          <hr/>
+          <AddToDBButton />
+        </div>
+      </div>
+      
     </div>
   );
 }
