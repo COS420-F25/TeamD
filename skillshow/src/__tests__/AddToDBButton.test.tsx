@@ -2,7 +2,7 @@ import React from 'react';
 
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import {collection, getDocs, where, query, doc, deleteDoc} from 'firebase/firestore';
-import AddToDBButton from "./AddtoDBButton";
+import AddToDBButton from "../components/AddtoDBButton";
 import { db } from '../firebase-config';
 
 async function deleteCollection(collectionName: string){
