@@ -103,7 +103,11 @@ Students often struggle to effectively share and showcase their coding work, par
      git clone https://github.com/COS420-F25/TeamD
      cd TeamD
 ```
-2. **Install dependencies**
+2.  **Update Environment Variables **
+```bash   
+     Access the README.md in the team drive for more information
+```
+3. **Install dependencies**
 
 ```bash
      cd skillshow
@@ -112,16 +116,17 @@ Students often struggle to effectively share and showcase their coding work, par
      cd functions
      npm install
      npm install firebase-admin
-     npm run build
      cd ..
      firebase login
      > yes
      > yes
-     Sign into Maine.edu account
+     > Sign into Maine.edu account
 ```
 
-3. **Start the development server**
+4. **Start the development server**
 ```bash
+     cd functions
+     npm run build
      cd skillshow
      firebase emulators:start --only functions
      * In another terminal, from the skillshow directory*
