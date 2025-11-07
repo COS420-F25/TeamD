@@ -7,6 +7,7 @@ import {useSignInWithGoogle} from "react-firebase-hooks/auth";
 import {useCollection} from "react-firebase-hooks/firestore";
 
 import AddToDBButton from "./components/AddtoDBButton";
+import { ConnectGitHub, DisconnectGitHub } from './components/ConnectGitHub';
 
 function App() {
   const [signInWithGoogle, user, loading, error] = useSignInWithGoogle(auth);
@@ -35,6 +36,9 @@ function App() {
           </div>
           <hr/>
           <AddToDBButton />
+          <ConnectGitHub />
+          
+          <DisconnectGitHub/>
         </div>
       </div>
       
