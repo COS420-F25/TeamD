@@ -108,12 +108,26 @@ Students often struggle to effectively share and showcase their coding work, par
 ```bash
      cd skillshow
      npm install
+     npm install -g firebase-tools
+     cd functions
+     npm install
+     npm install firebase-admin
+     npm run build
+     cd ..
+     firebase login
+     > yes
+     > yes
+     Sign into Maine.edu account
 ```
 
 3. **Start the development server**
 ```bash
-      npm run start
+     cd skillshow
+     firebase emulators:start --only functions
+     * In another terminal, from the skillshow directory*
+     npm run start
 ```
+     The firebase emulator can be accesed at `http://127.0.0.1:4000/firestore/default/data`
      The app should open in your browser at `http://localhost:3000`
 
 ## Available npm Scripts
