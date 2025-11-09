@@ -2,15 +2,15 @@ import React from 'react';
 import './App.css';
 
 import {auth} from "./firebase-config";
-import {collection} from "firebase/firestore"
+// import {collection} from "firebase/firestore"
 import {useSignInWithGoogle} from "react-firebase-hooks/auth";
-import {useCollection} from "react-firebase-hooks/firestore";
+// import {useCollection} from "react-firebase-hooks/firestore";
 
 import AddToDBButton from "./components/AddtoDBButton";
 import { ConnectGitHub, DisconnectGitHub } from './components/ConnectGitHub';
 
 function App() {
-  const [signInWithGoogle, user, loading, error] = useSignInWithGoogle(auth);
+  const [signInWithGoogle, user] = useSignInWithGoogle(auth);
 
   return (
     
