@@ -1,0 +1,94 @@
+Title	URL	Status	Priority	Story Type	Estimate (Story Points)	Points Completed	Assignees	Contributors and % contribution	Quality Reviewer	Start date	End date (ready for QC by)	Deliverable / Sprint	Milestone
+Fix Figures in Deliverable 1	https://github.com/COS420-F25/TeamD/issues/55	Done	High	Non-technical	1	1	ChaunceyCon		Mason P	Oct 6, 2025		D1	
+System Requirements Specification	https://github.com/COS420-F25/TeamD/issues/40	Done	High	Non-technical	5	5	ChaunceyCon		Nathan  H	Oct 6, 2025		D1	
+Build work environment, screenshot your website working and add it to Google Doc	https://github.com/COS420-F25/TeamD/issues/54	Done	High	Non-technical	1	1	ChaunceyCon, NathHayes, Peazlez, PineCubed, Xyrox47		Chauncy O	Oct 6, 2025		D1	
+Bring this into Projects.	https://github.com/COS420-F25/TeamD/issues/37	Done	High	Non-technical	1	1	ChaunceyCon		Josh V	Oct 6, 2025		D1	
+Create Sprint Backlog 1	https://github.com/COS420-F25/TeamD/issues/36	Done	High	Non-technical	2	2	ChaunceyCon		Xander W	Oct 6, 2025		D1	
+Add non-technical stories	https://github.com/COS420-F25/TeamD/issues/43	Done	High	Non-technical	1	1	NathHayes		Chauncy O	Oct 6, 2025	Oct 13, 2025	D1	
+Revise User story document	https://github.com/COS420-F25/TeamD/issues/34	Done	High	Non-technical	1	1	Peazlez		Josh V	Oct 6, 2025		D1	
+Create Product Backlog	https://github.com/COS420-F25/TeamD/issues/35	Done	High	Non-technical	1	1	Peazlez		Xander W	Oct 6, 2025		D1	
+Decide & add committed user stories	https://github.com/COS420-F25/TeamD/issues/42	Done	High	Non-technical	1	1	PineCubed		Nathan  H	Oct 6, 2025		D1	
+functional requirements 1-10	https://github.com/COS420-F25/TeamD/issues/44	Done	High	Non-technical	1	1	Peazlez		Mason P	Oct 6, 2025		D1	
+functional requirements 11-20	https://github.com/COS420-F25/TeamD/issues/45	Done	High	Non-technical	1	1	Xyrox47		Chauncy O	Oct 6, 2025		D1	
+non-functional requirements (15)	https://github.com/COS420-F25/TeamD/issues/47	Done	High	Non-technical	1	1	Xyrox47		Mason P	Oct 6, 2025		D1	
+functional requirements 21-30	https://github.com/COS420-F25/TeamD/issues/46	Done	High	Non-technical	1	1	NathHayes		Xander W	Oct 6, 2025	Oct 14, 2025	D1	
+Sprint Review	https://github.com/COS420-F25/TeamD/issues/39	Done	High	Non-technical	1	1	ChaunceyCon, NathHayes, Peazlez, PineCubed, Xyrox47		Nathan  H	Oct 6, 2025		D1	
+Discuss features to write requirements on	https://github.com/COS420-F25/TeamD/issues/48	Done	High	Non-technical	1	1	ChaunceyCon, NathHayes, Peazlez, PineCubed, Xyrox47		Josh V	Oct 6, 2025		D1	
+Create READ-ME File	https://github.com/COS420-F25/TeamD/issues/49	Done	High	Non-technical	1	1	PineCubed		Chauncy O	Oct 6, 2025		D1	
+Set up build environment	https://github.com/COS420-F25/TeamD/issues/50	Done	High	Technical work	1	1	PineCubed		Mason P	Oct 6, 2025		D1	
+Software	https://github.com/COS420-F25/TeamD/issues/41	Done	High	Technical work	1	1	Peazlez		Xander W	Oct 6, 2025		D1	
+LOOK AT FEEDBACK *IMPORTANT*	https://github.com/COS420-F25/TeamD/issues/32	Done	High	Knowledge acquisition	1	1	Peazlez		Nathan  H	Oct 6, 2025		D1	
+Fix YourApp description based on feedback from Deliverable 0	https://github.com/COS420-F25/TeamD/issues/56	Done	Medium	Non-technical	1	1	NathHayes		Josh V	Oct 6, 2025		D1	
+Add descriptions from rubric to each task	https://github.com/COS420-F25/TeamD/issues/94	Done	Low	Non-technical		1	Peazlez					D1	
+Setup Database (Coding) (First)	https://github.com/COS420-F25/TeamD/issues/107	Done	High	Technical work	2		Xyrox47		Nathan  H	Oct 17, 2025	Oct 23, 2025	D2	
+Create Use Case Diagrams (Do these before Use Case Descriptions)	https://github.com/COS420-F25/TeamD/issues/104	Done	High	Non-technical	3		NathHayes		Xander W	Oct 17, 2025	Oct 23, 2025	D2	
+Mockup 3	https://github.com/COS420-F25/TeamD/issues/115	Done	Medium	Non-technical	2		Xyrox47		Chauncy O	Oct 17, 2025	Oct 23, 2025	D2	
+Mockup 4	https://github.com/COS420-F25/TeamD/issues/116	Done	Medium	Non-technical	2		Xyrox47		Chauncy O	Oct 17, 2025	Oct 23, 2025	D2	
+Mockup 2	https://github.com/COS420-F25/TeamD/issues/114	Done	Medium	Non-technical	2		NathHayes		Mason P	Oct 17, 2025	Oct 23, 2025	D2	
+Mockup 1	https://github.com/COS420-F25/TeamD/issues/113	Done	Medium	Non-technical	2		NathHayes		Mason P	Oct 17, 2025	Oct 23, 2025	D2	
+Begin Work on UI (Coding)	https://github.com/COS420-F25/TeamD/issues/105	Done	Low	Technical work	3		NathHayes		Josh V	Oct 17, 2025	Oct 23, 2025	D2	
+Create 5 Use Cases	https://github.com/COS420-F25/TeamD/issues/111	Done	Low	Non-technical	3		ChaunceyCon		Josh V	Oct 17, 2025	Oct 23, 2025	D2	
+Architecture Design	https://github.com/COS420-F25/TeamD/issues/103	Done	Low	Non-technical	3		PineCubed		Mason P	Oct 17, 2025	Oct 23, 2025	D2	
+Revise Requirements and Unique REQ IDs	https://github.com/COS420-F25/TeamD/issues/98	Done	Low	Non-technical	1		Peazlez		Nathan  H	Oct 17, 2025	Oct 23, 2025	D2	
+Fix Non-Functional Requirements	https://github.com/COS420-F25/TeamD/issues/110	Done	Low	Non-technical	2		Xyrox47		Nathan  H	Oct 17, 2025	Oct 23, 2025	D2	
+Fix yourApp description from D0	https://github.com/COS420-F25/TeamD/issues/96	Done	Low	Non-technical	1		NathHayes		Chauncy O	Oct 17, 2025	Oct 23, 2025	D2	
+Fix User Stories	https://github.com/COS420-F25/TeamD/issues/97	Done	Low	Non-technical	1		PineCubed		Xander W	Oct 17, 2025	Oct 23, 2025	D2	
+Revise Mockups 3 and 4	https://github.com/COS420-F25/TeamD/issues/118	Done	Low	Non-technical	2		ChaunceyCon		Xander W	Oct 17, 2025	Oct 23, 2025	D2	
+Fix Sprint Review	https://github.com/COS420-F25/TeamD/issues/99	Done	Low	Non-technical	2		PineCubed		Nathan  H	Oct 17, 2025	Oct 23, 2025	D2	
+Fill out the rest of the SRS	https://github.com/COS420-F25/TeamD/issues/102	Done	Low	Non-technical	5		Peazlez		Chauncy O	Oct 17, 2025	Oct 23, 2025	D2	
+Create 5 Use Cases	https://github.com/COS420-F25/TeamD/issues/112	Done	Low	Non-technical	3		Peazlez		Josh V	Oct 17, 2025	Oct 23, 2025	D2	
+Creating Classes (Coding)	https://github.com/COS420-F25/TeamD/issues/106	Done	Low	Non-technical	3		Peazlez		Xander W	Oct 17, 2025	Oct 23, 2025	D2	
+Create description under diagram	https://github.com/COS420-F25/TeamD/issues/109	Done	Low	Non-technical	1		ChaunceyCon		Xander W	Oct 17, 2025	Oct 23, 2025	D2	
+UI Mockups	https://github.com/COS420-F25/TeamD/issues/101	Done	Low	Non-technical	3		ChaunceyCon, NathHayes, Peazlez, PineCubed, Xyrox47		Josh V	Oct 17, 2025	Oct 23, 2025	D2	
+Sprint Review	https://github.com/COS420-F25/TeamD/issues/100	Done	Low	Non-technical	1		ChaunceyCon, NathHayes, Peazlez, PineCubed, Xyrox47		Josh V	Oct 17, 2025	Oct 23, 2025	D2	
+Revise Mockups 1 and 2	https://github.com/COS420-F25/TeamD/issues/117	Done	Low	Non-technical	2		Peazlez		Nathan  H	Oct 17, 2025	Oct 23, 2025	D2	
+Description For document	https://github.com/COS420-F25/TeamD/issues/108	Done	Low	Non-technical	2		Peazlez		Chauncy O	Oct 17, 2025	Oct 23, 2025	D2	
+Create Quality checking policy within wiki	https://github.com/COS420-F25/TeamD/issues/95	Done	Low	Non-technical	1		ChaunceyCon		Mason P	Oct 17, 2025	Oct 23, 2025	D2	
+Create list of Objects for Domain Model (Like the bottom page of linked examples)	https://github.com/COS420-F25/TeamD/issues/126	Done	High	Non-technical	2		ChaunceyCon	100%	Xander W	Oct 27, 2025	Oct 31, 2025	D3	
+Develop 3 Automated Tests for Feature 1	https://github.com/COS420-F25/TeamD/issues/132	Done	High	Technical work	3		PineCubed	100%	Mason P	Oct 27, 2025	Nov 7, 2025	D3	
+Develop Feature 1: Git Integration	https://github.com/COS420-F25/TeamD/issues/130	Done	High	Technical work	5		Peazlez, PineCubed	Mason (20%), Josh (80%)	Mason P	Oct 27, 2025	Nov 7, 2025	D3	
+Record 1-10 Minute Demo Video of our App Progress <FEATURE 1>	https://github.com/COS420-F25/TeamD/issues/137	Done	High	Non-technical	2		PineCubed	100%	Mason P	Oct 27, 2025	Nov 7, 2025	D3	
+Discuss list of objects for domain model	https://github.com/COS420-F25/TeamD/issues/136	Done	High	Technical work	1		ChaunceyCon, NathHayes, Peazlez, PineCubed, Xyrox47	20% each		Oct 29, 2025	Oct 29, 2025	D3	
+Sprint Review	https://github.com/COS420-F25/TeamD/issues/121	Done	High	Non-technical	2		ChaunceyCon, NathHayes, Peazlez, PineCubed, Xyrox47	Xander (80%) 20% for everyone else.	Xander W	Nov 7, 2025	Nov 7, 2025	D3	
+Update ReadMe with new instructions for Feature 1 implementation	https://github.com/COS420-F25/TeamD/issues/142	Done	Medium	Non-technical	1		PineCubed	100%	Mason P	Nov 7, 2025	Nov 8, 2025	D3	
+Fill In description for Domain Model (After Issues 126/127)	https://github.com/COS420-F25/TeamD/issues/128	Done	Medium	Non-technical	2		Xyrox47	100%	Nathan  H	Oct 27, 2025	Nov 7, 2025	D3	
+Create Diagram for Domain Model (Once Task 126 is finished)	https://github.com/COS420-F25/TeamD/issues/127	Done	Medium	Non-technical	2		Xyrox47	100%	Mason P	Oct 27, 2025	Oct 31, 2025	D3	
+Remove Dead Branch <update-readme> from TeamD Project	https://github.com/COS420-F25/TeamD/issues/140	Done	Medium	Non-technical	1		Peazlez	100%	Josh V	Nov 7, 2025	Nov 9, 2025	D3	
+Remove Dead Branch <react-app-setup> from TeamD project	https://github.com/COS420-F25/TeamD/issues/139	Done	Medium	Non-technical	1		Peazlez	100%	Josh V	Nov 7, 2025	Nov 9, 2025	D3	
+Develop 3 Automated Tests for Feature 2	https://github.com/COS420-F25/TeamD/issues/133	Todo / Sprint Backlog	Medium	Technical work	3		NathHayes	100%	Xander W	Oct 27, 2025	Nov 7, 2025	D3	
+Setup Continuous Integration for Team D GitHub Repo	https://github.com/COS420-F25/TeamD/issues/129	Done	Medium	Technical work	2		Peazlez	100%	Josh V	Oct 27, 2025	Nov 7, 2025	D3	
+Update Product Backlog	https://github.com/COS420-F25/TeamD/issues/119	Done	Low	Non-technical	1		Xyrox47	100%	Chauncy O	Oct 27, 2025	Nov 7, 2025	D3	
+Update/Revise Architecture Design Document	https://github.com/COS420-F25/TeamD/issues/125	Done	Low	Non-technical	2		ChaunceyCon	100%	Josh V	Oct 27, 2025	Nov 7, 2025	D3	
+Update/Revise SRS Document	https://github.com/COS420-F25/TeamD/issues/122	Done	Low	Non-technical	2		Peazlez	100%	Nathan  H	Oct 27, 2025	Nov 7, 2025	D3	
+Complete Usability Testing Script	https://github.com/COS420-F25/TeamD/issues/135	Done	Low	Non-technical	2		PineCubed	100%	Mason P	Oct 27, 2025	Nov 2, 2025	D3	
+Update Sprint Backlog	https://github.com/COS420-F25/TeamD/issues/120	Done	Low	Non-technical	1		ChaunceyCon	100%	Mason P	Oct 27, 2025	Nov 7, 2025	D3	
+Update/Revise Use Case Descriptions (After Use Case Diagrams)	https://github.com/COS420-F25/TeamD/issues/124	Done	Low	Non-technical	2		Peazlez	100%	Chauncy O	Oct 27, 2025	Nov 7, 2025	D3	
+3 Usability Tests	https://github.com/COS420-F25/TeamD/issues/138	Done	Low	Technical work	2		ChaunceyCon	100%	Mason P	Oct 27, 2025	Nov 7, 2025	D3	
+Record 1-10 Minute Demo Video of our App Progress <FEATURE 2>	https://github.com/COS420-F25/TeamD/issues/134	Todo / Sprint Backlog	Low	Non-technical	2		NathHayes	100%	Chauncy O	Oct 27, 2025	Nov 7, 2025	D3	
+Develop Feature 2: Profile Customization	https://github.com/COS420-F25/TeamD/issues/131	In Progress	Low	Technical work	5		NathHayes	100%	Chauncy O	Oct 27, 2025	Nov 7, 2025	D3	
+Update/Revise Use Case Diagrams (Before Use Case Descriptions)	https://github.com/COS420-F25/TeamD/issues/123	Done	Low	Non-technical	2		NathHayes	100%	Josh V	Oct 27, 2025	Nov 7, 2025	D3	
+As a user, I want to link my github account to my profile for a more detailed overview of my work so employers can verify my coding activity and see the full scope of my technical contributions without me manually documenting everything.	https://github.com/COS420-F25/TeamD/issues/60	Product Backlog	High	Technical work	3					Oct 6, 2025			
+As a user, I want to generate a shareable link to my profile, so I can include it in job applications, social media profiles, and email signatures without requiring recipients to create an account.	https://github.com/COS420-F25/TeamD/issues/70	Product Backlog	High	Technical work	2								
+As a user, I want to showcase my AI proficiency and methods with annotations on code and tags of projects, so that employers can see how and when I used AI to enhance my work.	https://github.com/COS420-F25/TeamD/issues/81	Product Backlog	High	Technical work	5								
+As a user, I want to be able to set my job-seeking status, so that employers only contact me when looking for employment.	https://github.com/COS420-F25/TeamD/issues/84	Product Backlog	High	Technical work	2								
+As a user, I want to annotate sections of my portfolio projects that were created or improved with AI tools like GitHub Copilot or ChatGPT, so that employers can see specific examples of how I leverage AI in my workflow.	https://github.com/COS420-F25/TeamD/issues/90	Product Backlog	High	Technical work	5								
+As a user, I want to include a section in my portfolio to showcase my AI prompt engineering techniques and the outcomes of different prompts, so employers can assess my creativity and skill in directing generative AI to solve problems.	https://github.com/COS420-F25/TeamD/issues/92	Product Backlog	High	Technical work	5								
+As a user, I want to use my email to login so that I may connect with potential employers.	https://github.com/COS420-F25/TeamD/issues/61	Product Backlog	High	Technical work	3								
+As a user, I want to create an appealing portfolio of my work so that it may be seen by potential employers.	https://github.com/COS420-F25/TeamD/issues/62	Product Backlog	Medium	Technical work	8								
+As a user, I want to be able to tag my profile and work, so that it may be easily filtered by potential employers	https://github.com/COS420-F25/TeamD/issues/65	Product Backlog	Medium	Technical work	3								
+As an employer, I want to be able to contact potential employees through their profiles.	https://github.com/COS420-F25/TeamD/issues/68	Product Backlog	Medium	Technical work	5								
+As a user, I want a persistent navigation menu with clear labels like 'My Portfolio,' 'Browse Candidates,' and 'Settings,' so I can access key features without hunting for them.	https://github.com/COS420-F25/TeamD/issues/78	Product Backlog	Medium	Technical work	2								
+As a user, I want to be able to include my achievement highlights, so that non-technical recruiters can understand my accomplishments.	https://github.com/COS420-F25/TeamD/issues/80	Product Backlog	Medium	Technical work	3								
+As a user, I want to track the performance of my portfolio (i.e. views, shares) so that I can gauge interest and adjust my portfolio accordingly.	https://github.com/COS420-F25/TeamD/issues/82	Product Backlog	Medium	Technical work	5								
+As a user, I want to annotate sections of my portfolio projects that were created or improved with AI tools like GitHub Copilot, or ChatGPT, so that employers can see specific examples of how I leverage AI in my workflow.	https://github.com/COS420-F25/TeamD/issues/86	Product Backlog	Medium	Technical work	5								
+As a user, I want to display before and after code samples for key tasks, showing how A generated suggestions improved my solutions, so employers can evaluate my ability to apply and validate AI outputs.	https://github.com/COS420-F25/TeamD/issues/91	Product Backlog	Medium	Technical work	5								
+Expand AI Proficiency Features, make sure we have 5 User stories on this	https://github.com/COS420-F25/TeamD/issues/53	Done	Low	Requirements			ChaunceyCon						
+As an employer, I want to filter candidates by programming languages, years of experience, and university, so I can quickly find candidates with relevant technical backgrounds.	https://github.com/COS420-F25/TeamD/issues/63	Product Backlog	Low	Technical work	5								
+As an employer, I want to be able to create a company profile to illustrate my company’s purpose and values.	https://github.com/COS420-F25/TeamD/issues/64	Product Backlog	Low	Technical work	5								
+As a user, I want to be able to showcase working demos of what I have created, so that examples of my work may be easily viewed.	https://github.com/COS420-F25/TeamD/issues/66	Product Backlog	Low	Technical work	5								
+As a user, I want to be able to customize my profile URL so that it may be easier to remember and appear more professional.	https://github.com/COS420-F25/TeamD/issues/67	Product Backlog	Low	Technical work	3								
+As a user, I want to be able to follow others on the platform, so that I can build  my professional network.	https://github.com/COS420-F25/TeamD/issues/69	Product Backlog	Low	Technical work	5								
+As a user, I want to show different portfolios for different purposes, so I can emphasize backend work when applying to infrastructure roles and emphasize design when applying to frontend roles.	https://github.com/COS420-F25/TeamD/issues/71	Product Backlog	Low	Technical work	8								
+As a user, I want to be able to view other users' portfolios, so I can see examples and what my peers are working on.	https://github.com/COS420-F25/TeamD/issues/72	Product Backlog	Low	Technical work	2								
+As a user, I want to change how my portfolio is displayed, so I can emphasize my strongest work first and create a professional impression.	https://github.com/COS420-F25/TeamD/issues/73	Product Backlog	Low	Technical work	5								
+As a user, I want to see the number of profile views, project clicks, and employer saves on my portfolio, so I can understand which projects attract the most attention.	https://github.com/COS420-F25/TeamD/issues/74	Product Backlog	Low	Technical work	8								
