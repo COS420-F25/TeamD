@@ -13,4 +13,10 @@ describe("Just making sure the tests work", () =>{
     //     expect(buttonElement).toBeInTheDocument();
     // });
 
+    test("Expert works", () => {
+        render(<AddToDBButton/>);
+        const buttonElement = screen.getByText(/Add/i);
+        expect(buttonElement).toBeInTheDocument();
+    });
+
 })
