@@ -3,18 +3,21 @@ import './App.css';
 
 import {auth} from "./firebase-config";
 // import {collection} from "firebase/firestore"
-import {useSignInWithGoogle} from "react-firebase-hooks/auth";
+import {useSignInWithGoogle, useAuthState} from "react-firebase-hooks/auth";
 // import {useCollection} from "react-firebase-hooks/firestore";
 
 import AddToDBButton from "./components/AddtoDBButton";
 import { ConnectGitHub, DisconnectGitHub } from './components/ConnectGitHub';
+import { ProfilePage } from './components/ProfilePage';
 
 function App() {
-  const [signInWithGoogle, user] = useSignInWithGoogle(auth);
-
+  const [signInWithGoogle] = useSignInWithGoogle(auth);
+  const [user] = useAuthState(auth);
+  
   return (
     
     <div className="home-container">
+      
 
       <div className="left-panel">
         <h1 className="logo-text">SkillShow</h1>
@@ -32,10 +35,11 @@ function App() {
           <p className="login-role">As Employer<br />Or<br />Job Seeker</p>
           <div>
             <button onClick={() => signInWithGoogle()}>Sign In</button>
-            {(user)?<div>{user.user.displayName}</div>:<div>Not logged in</div>}
+            {(user)?<div>{user.displayName}</div>:<div>Not logged in</div>}
           </div>
           <hr/>
           <AddToDBButton />
+          {user &&<ProfilePage user={user} />}
           <ConnectGitHub />
           
           <DisconnectGitHub/>
@@ -43,6 +47,7 @@ function App() {
       </div>
       
     </div>
+    
   );
 }
 
