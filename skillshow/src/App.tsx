@@ -10,7 +10,7 @@ import {useSignInWithGoogle, useAuthState} from "react-firebase-hooks/auth";
 //Pages imports 
 import { Homepage } from "./pages/HomePage"
 // move this page to pages folder later
-import { ProfilePage } from './components/ProfilePage';
+import { ProfilePage } from './pages/ProfilePage';
 import { ProjectEditPage } from "./pages/ProjectEditPage"
 import { SearchPage } from "./pages/SearchPage"
 
