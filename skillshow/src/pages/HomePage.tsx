@@ -1,7 +1,4 @@
 import React from "react"
-import AddToDBButton from "../components/AddtoDBButton"
-import { ConnectGitHub, DisconnectGitHub } from "../components/ConnectGitHub"
-import { ProfilePage } from "./ProfilePage"
 import { User } from "firebase/auth"
 
 interface HomepageProps {
@@ -34,12 +31,7 @@ export function Homepage({user, signInWithGoogle}: HomepageProps){
             <button onClick={() => signInWithGoogle()}>Sign In</button>
             {(user)?<div>{user.displayName}</div>:<div>Not logged in</div>}
           </div>
-          <hr/>
-          <AddToDBButton />
-          {user &&<ProfilePage user={user} />}
-          <ConnectGitHub />
-          
-          <DisconnectGitHub/>
+          <hr/>          
         </div>
       </div>
       
