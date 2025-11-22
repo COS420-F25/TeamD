@@ -4,7 +4,7 @@ import {doc, getDoc, setDoc} from "firebase/firestore";
 import {User} from "firebase/auth";
 
 interface ProfilePageProps{
-    user: User;
+    user: User | null;
 }
 
 
