@@ -1,5 +1,4 @@
 import React from "react"
-import { ProfilePage } from "./ProfilePage"
 import { User } from "firebase/auth"
 
 interface HomepageProps {
