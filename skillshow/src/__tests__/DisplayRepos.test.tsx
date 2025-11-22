@@ -2,8 +2,7 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { DisplayRepos } from '../components/DisplayRepos';
-import { auth, db } from '../firebase-config';
-import { doc, getDoc } from 'firebase/firestore';
+import { getDoc } from 'firebase/firestore';
 import { GitHubRepoService } from '../services/GitHubRepoService';
 
 jest.mock('../firebase-config', () => ({
@@ -77,9 +76,9 @@ describe('DisplayRepos Component', () => {
     render(<DisplayRepos />);
 
     await waitFor(() => {
-      expect(screen.getByText('Your Repositories')).toBeInTheDocument();
-      
+      expect(screen.getByText(/Your Repositories/)).toBeInTheDocument();
     });
+    
     expect(screen.getByText('cool stuff')).toBeInTheDocument();
     expect(screen.getByText("There's a lot of cool stuff here")).toBeInTheDocument();
   });
