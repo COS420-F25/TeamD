@@ -1,6 +1,4 @@
 import React from "react"
-import AddToDBButton from "../components/AddtoDBButton"
-import { ConnectGitHub, DisconnectGitHub } from "../components/ConnectGitHub"
 import { ProfilePage } from "./ProfilePage"
 import { User } from "firebase/auth"
 
