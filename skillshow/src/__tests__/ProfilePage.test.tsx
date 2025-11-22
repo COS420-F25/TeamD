@@ -42,8 +42,9 @@ describe('ProfilePage Component', () => {
         render(<ProfilePage user={mockUser} />);
         await waitFor(()=>{
             expect(screen.getByDisplayValue('test user')).toBeInTheDocument();
-            expect(screen.getByDisplayValue('blah blah blah')).toBeInTheDocument(); //ignoring warning as test still works as intended
+            
         });
+        expect(screen.getByDisplayValue('blah blah blah')).toBeInTheDocument(); 
     });
 
     test('profile data gets saved to firestore', async()=>{
@@ -58,9 +59,9 @@ describe('ProfilePage Component', () => {
 
         await waitFor(()=>{
             expect(setDoc).toHaveBeenCalledWith({path:'profiles/user-123'},{name: '', bio: ''});
-            expect(window.alert).toHaveBeenCalledWith('Profile saved successfully');
+        
         })
-
+         expect(window.alert).toHaveBeenCalledWith('Profile saved successfully');
     })
 
 
