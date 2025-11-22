@@ -76,10 +76,10 @@ describe('DisplayRepos Component', () => {
     render(<DisplayRepos />);
 
     await waitFor(() => {
-      expect(screen.getByText(/Your Repositories/)).toBeInTheDocument();
+      expect(screen.getByText(/Your GitHub Repositories/)).toBeInTheDocument();
     });
     
-    expect(screen.getByText('cool stuff')).toBeInTheDocument();
+    expect(screen.getByText('pinecube/coolstuff')).toBeInTheDocument();
     expect(screen.getByText("There's a lot of cool stuff here")).toBeInTheDocument();
   });
 });
