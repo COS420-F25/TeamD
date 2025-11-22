@@ -9,12 +9,7 @@ export function DisplayRepos() {
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const GitHubService = new GitHubRepoService();
-
-  useEffect(() => {
-    loadRepos();
-  }, []);
-
+useEffect(() => {
   const loadRepos = async () => {
     setLoading(true);
     setError(null);
@@ -27,7 +22,6 @@ export function DisplayRepos() {
         return;
       }
 
-      // Get the installattion ID for the user to display repo
       const userDoc = await getDoc(doc(db, "users", userID));
       const userData = userDoc.data();
 
@@ -39,16 +33,18 @@ export function DisplayRepos() {
       }
 
       setIsConnected(true);
-
-      // Get reposistories from GitHub
+	  const GitHubService = new GitHubRepoService();
       const repositories = await GitHubService.getRepositories(installationID);
       setRepos(repositories);
     } catch (err) {
       console.error("Error loading repositories:", err);
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
   };
+
+  loadRepos();
+}, []);
 
   if (loading) {
     return <div>Loading repositories...</div>;
