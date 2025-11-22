@@ -6,7 +6,7 @@ import { auth, db } from '../firebase-config';
 import { doc, getDoc } from 'firebase/firestore';
 import { GitHubRepoService } from '../services/GitHubRepoService';
 
-jest.mock('../../firebase-config', () => ({
+jest.mock('../firebase-config', () => ({
   auth: {
     currentUser: { uid: 'pinecube888' },
     onAuthStateChanged: jest.fn((callback) => {
@@ -22,7 +22,7 @@ jest.mock('firebase/firestore', () => ({
   getDoc: jest.fn(),
 }));
 
-jest.mock('../../services/GitHubRepoService');
+jest.mock('../services/GitHubRepoService');
 
 describe('DisplayRepos Component', () => {
 
