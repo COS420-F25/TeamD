@@ -16,6 +16,10 @@ export function DisplayRepos(){
 
     const GitHubService = new GitHubRepoService();
 
+    useEffect(() => {
+        loadRepos();
+      }, []);
+
     const loadRepos = async () => {
 
         setLoading(true);
