@@ -34,12 +34,7 @@ export function Homepage({user, signInWithGoogle}: HomepageProps){
             <button onClick={() => signInWithGoogle()}>Sign In</button>
             {(user)?<div>{user.displayName}</div>:<div>Not logged in</div>}
           </div>
-          <hr/>
-          <AddToDBButton />
-          {user &&<ProfilePage user={user} />}
-          <ConnectGitHub />
-          
-          <DisconnectGitHub/>
+          <hr/>          
         </div>
       </div>
       
