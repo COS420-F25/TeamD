@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import {db} from "../firebase-config";
 import {doc, getDoc, setDoc} from "firebase/firestore";
 import {User} from "firebase/auth";
+import { UploadResume } from "../components/ResumeHandling"
 
 interface ProfilePageProps{
     user: User | null;
@@ -78,6 +79,9 @@ export function ProfilePage({user}:ProfilePageProps): React.JSX.Element {
             </label>
         </div>
         <button onClick={save}>Save Profile</button>
+        <div>
+            <UploadResume />
+        </div>
         </div>
     );
 }
