@@ -58,7 +58,7 @@ describe('ProfilePage Component', () => {
         fireEvent.click(button);
 
         await waitFor(()=>{
-            expect(setDoc).toHaveBeenCalledWith({path:'profiles/user-123'},{name: '', bio: ''});
+            expect(setDoc).toHaveBeenCalledWith({path:'profiles/user-123'},{name: '', bio: '', pfpUrl: '',title:'',location:'',contact:''});
         
         })
          expect(window.alert).toHaveBeenCalledWith('Profile saved successfully');
