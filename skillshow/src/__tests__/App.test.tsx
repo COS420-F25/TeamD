@@ -29,7 +29,7 @@ jest.mock("react-firebase-hooks/auth", () => ({
     render(<App />);
     fireEvent.click(screen.getByText("Search"));
 
-    expect(screen.getByText("This is a placeholder for Search page")).toBeInTheDocument();
+    expect(screen.getByText("Search Portfolios")).toBeInTheDocument();
   });
 
   test("default fallback is Homepage", () => {
