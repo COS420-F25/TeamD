@@ -76,7 +76,6 @@ Students often struggle to effectively share and showcase their coding work, par
 
   **Node.js** 
      - Download from [nodejs.org](https://nodejs.org/en/download)
-     - Verify installation: `node --version`
 - **npm** 
      - Verify installation: `npm --version`
 - **Git**
@@ -128,7 +127,7 @@ Students often struggle to effectively share and showcase their coding work, par
      cd functions
      npm run build
      cd skillshow
-     firebase emulators:start --only functions
+     firebase emulators:start
      * In another terminal, from the skillshow directory*
      npm run start
 ```
