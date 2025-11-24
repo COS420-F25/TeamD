@@ -1,5 +1,5 @@
-import React, { useState     } from "react";
-
+//import React, { useState     } from "react";
+/*
 interface ProjectField {
     id: string;
     name: string;
@@ -9,10 +9,10 @@ interface ProjectField {
     width?: string;
     height?: string;
 }
-
+*/
 export function ProjectEditPage({ user }: {user: any}) {
     
-
+/*
     const [fields, setFields] = useState<ProjectField[]>([
         {
             id: "projectName",
@@ -52,7 +52,7 @@ export function ProjectEditPage({ user }: {user: any}) {
             height: "200px"
         }
     ]);
-    
+    */
 
     if (!user) {
         return <h2>You must be logged in</h2>
@@ -64,4 +64,5 @@ export function ProjectEditPage({ user }: {user: any}) {
             <p>This is a placeholder for Edit Project page</p>
         </div>
     )
+        
 }
