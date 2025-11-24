@@ -5,6 +5,7 @@ import {User} from "firebase/auth";
 import { DisplayRepos } from "../components/DisplayRepos";
 import { ConnectGitHub, DisconnectGitHub } from "../components/ConnectGitHub"
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"
+import { UploadResume } from "../components/ResumeHandling"
 
 interface ProfilePageProps{
     user: User | null;
@@ -300,6 +301,9 @@ export function ProfilePage({user}:ProfilePageProps): React.JSX.Element {
             </div>
              <DisplayRepos />
             </div>
-        </div>  
+        <div>
+            <UploadResume />
+        </div>
+        </div>
     );
 }

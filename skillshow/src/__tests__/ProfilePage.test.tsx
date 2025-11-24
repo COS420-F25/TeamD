@@ -63,6 +63,58 @@ describe('ProfilePage Component', () => {
         })
          expect(window.alert).toHaveBeenCalledWith('Profile saved successfully');
     })
+    
+    // Resume System Tests
+    test('Profile page is prompting for resume download', async()=> {
+        render(<ProfilePage user={mockUser} />);
+        await waitFor(()=>{
+            expect(screen.getByText('Upload your resume')).toBeInTheDocument();
+        });
+    });
 
+    test('if file name is displayed after upload', async()=>{
+        render(<ProfilePage user={mockUser} />);
+        await waitFor(()=>{
+            expect(screen.getByText('Upload your resume')).toBeInTheDocument();
+        });
+        const file = new File(['test stuff'], 'resume.pdf', { type: 'application/pdf' });
+        const input = screen.getByLabelText('Upload your resume') as HTMLInputElement;
 
+        fireEvent.change(input, {target: { files: [file] }})
+
+        expect(screen.getByText('Resume: resume.pdf')).toBeInTheDocument();
+        expect(screen.getByText('Download File')).toBeInTheDocument();
+
+    });
+
+    test('Can download files?', async()=>{
+        render(<ProfilePage user={mockUser} />);
+        await waitFor(()=>{
+            expect(screen.getByText('Upload your resume')).toBeInTheDocument();
+        });
+
+        const mockURL = 'blob:mock-url';
+        global.URL.createObjectURL = jest.fn(() => mockURL);
+        global.URL.revokeObjectURL = jest.fn();
+
+        const appendChild = jest.spyOn(document.body, 'appendChild');
+        const removeChild = jest.spyOn(document.body, 'removeChild');
+
+        const file = new File(['test stuff'], 'resume.pdf', { type: 'application/pdf' });
+        const input = screen.getByLabelText('Upload your resume') as HTMLInputElement;
+
+        fireEvent.change(input, {target: { files: [file] }})
+
+        const downloadButton = screen.getByText('Download File');
+        fireEvent.click(downloadButton);
+
+        expect(global.URL.createObjectURL).toHaveBeenCalledWith(file);
+        expect(appendChild).toHaveBeenCalled();
+        expect(removeChild).toHaveBeenCalled();
+        expect(global.URL.revokeObjectURL).toHaveBeenCalledWith(mockURL);
+
+        appendChild.mockRestore();
+        removeChild.mockRestore();
+
+    });
 });
