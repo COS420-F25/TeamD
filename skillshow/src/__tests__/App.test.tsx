@@ -12,9 +12,12 @@ jest.mock("react-firebase-hooks/auth", () => ({
     fireEvent.click(screen.getByText("Profile"));
 
     // ProfilePage should render with the user
-    expect(screen.getByText(/Temp Profile/)).toBeInTheDocument();
+    expect(screen.getByText(/Edit Profile/)).toBeInTheDocument();
     expect(screen.getByLabelText("Name:")).toBeInTheDocument(); 
+    expect(screen.getByLabelText("Title:")).toBeInTheDocument(); 
+    expect(screen.getByLabelText("Location:")).toBeInTheDocument(); 
     expect(screen.getByLabelText("Bio:")).toBeInTheDocument(); 
+    
   });
 
   test("clicking Projects shows ProjectEditPage", () => {
@@ -29,7 +32,7 @@ jest.mock("react-firebase-hooks/auth", () => ({
     render(<App />);
     fireEvent.click(screen.getByText("Search"));
 
-    expect(screen.getByText("This is a placeholder for Search page")).toBeInTheDocument();
+    expect(screen.getByText("Search Portfolios")).toBeInTheDocument();
   });
 
   test("default fallback is Homepage", () => {
