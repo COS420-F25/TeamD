@@ -1,5 +1,5 @@
-import React, { useState     } from "react";
-
+//import React, { useState     } from "react";
+/*
 interface ProjectField {
     id: string;
     name: string;
@@ -9,7 +9,7 @@ interface ProjectField {
     width?: string;
     height?: string;
 }
-
+*/
 export function ProjectEditPage({ user }: {user: any}) {
     
 /*
