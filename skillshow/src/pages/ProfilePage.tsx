@@ -2,10 +2,10 @@ import React, {useEffect, useState} from "react";
 import {db} from "../firebase-config";
 import {doc, getDoc, setDoc} from "firebase/firestore";
 import {User} from "firebase/auth";
-import { UploadResume } from "../components/ResumeHandling"
 import { DisplayRepos } from "../components/DisplayRepos";
 import { ConnectGitHub, DisconnectGitHub } from "../components/ConnectGitHub"
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"
+import { UploadResume } from "../components/ResumeHandling"
 
 interface ProfilePageProps{
     user: User | null;
@@ -288,33 +288,6 @@ export function ProfilePage({user}:ProfilePageProps): React.JSX.Element {
                     Save Profile
                 </button>
 
-    return ( //simple profile text field editing, should be updated with implementation of full page
-        <div>
-        <h2>Temp Profile</h2>
-        <div>
-            <label>
-            Name:
-            <input
-                type="text"
-                value={profile.name}
-                onChange={(x) => setProfile({ ...profile, name: x.target.value })}
-            />
-            </label>
-        </div>
-        <div>
-            <label>
-            Bio:
-            <textarea
-                value={profile.bio}
-                onChange={(y) => setProfile({ ...profile, bio: y.target.value })}
-            ></textarea>
-            </label>
-        </div>
-        <button onClick={save}>Save Profile</button>
-        <div>
-            <UploadResume />
-        </div>
-        </div>
             <div style={{padding: "1rem",
                     marginTop: "2rem",
                     borderTop: "3px solid #fa7d35ff",
@@ -328,6 +301,9 @@ export function ProfilePage({user}:ProfilePageProps): React.JSX.Element {
             </div>
              <DisplayRepos />
             </div>
-        </div>  
+        <div>
+            <UploadResume />
+        </div>
+        </div>
     );
 }
