@@ -27,7 +27,7 @@ const user: User | null = userRaw ?? null;
   // navigation bar
   const NavBar = () => (
     <div>
-      {/* Main purple navigation bar */}
+      {/* Main purple navigation bar Started with cursor and updated with CSS styling*/}
       <div className="nav-main-bar">
         <div className="nav-logo">SkillShow</div>
         <div className="nav-links">
