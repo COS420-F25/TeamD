@@ -1,12 +1,116 @@
 body, html, #root {
   margin: 0;
   height: 100%;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Navigation Bar Styles */
+.nav-main-bar {
+  background-color: #7b6be5;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 30px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.nav-logo {
+  font-size: 28px;
+  font-weight: bold;
+  color: white;
+  margin-right: 40px;
   font-family: Arial, Helvetica, sans-serif;
+  flex-shrink: 0;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 35px;
+  flex: 1;
+  min-width: 0;
+  margin: 0 20px;
+}
+
+.nav-link {
+  color: #e6dfff;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+  position: relative;
+  padding-bottom: 8px;
+  transition: color 0.2s ease;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: Arial, Helvetica, sans-serif;
+  white-space: nowrap;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #e6dfff;
+  opacity: 0.7;
+  transition: opacity 0.2s ease, height 0.2s ease;
+}
+
+.nav-link:hover {
+  color: white;
+}
+
+.nav-link:hover::after {
+  opacity: 1;
+  background-color: white;
+}
+
+.nav-link.active {
+  color: white;
+}
+
+.nav-link.active::after {
+  opacity: 1;
+  height: 3px;
+  background-color: white;
+}
+
+.nav-color-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.nav-color-bar {
+  width: 80px;
+  height: 18px;
+  border-radius: 6px;
+}
+
+.nav-orange-bar {
+  background-color: #fa7d35;
+  width: 100%;
+  height: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .home-container {
   display: flex;
-  height: 100vh;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .left-panel {
@@ -16,34 +120,55 @@ body, html, #root {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: orange;
-  
+  padding: 40px;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.logo-container {
+  background-color: #6a5bd4;
+  padding: 20px 30px;
+  margin-bottom: 30px;
+  border: 2px solid #9b8ef0;
 }
 
 .logo-text {
-  font-size: 48px;
-  font-weight: bold;
-  color: orange;
-  margin-bottom: 5px;
-  
+  font-size: 64px;
+  font-weight: normal;
+  color: #fa7d35;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 }
 
 .color-bars {
   display: flex;
   flex-direction: column;
   gap: 5px;
+  align-items: center;
 }
 
 .bar {
   width: 100px;
   height: 20px;
   border-radius: 4px;
-  
+  border: 1px solid #d0d0d0;
 }
 
-.bar-green { background-color: #33cc33; }
-.bar-yellow { background-color: #ffcc33; }
-.bar-red { background-color: #cc3333; }
+.bar-green { 
+  background-color: #33cc33;
+  margin-left: 30px;
+}
+
+.bar-yellow { 
+  background-color: #ffcc33;
+  margin-right: 30px;
+}
+
+.bar-red { 
+  background-color: #cc3333;
+  margin-left: 30px;
+}
 
 .right-panel {
   flex: 1;
@@ -51,25 +176,104 @@ body, html, #root {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .login-box {
   text-align: center;
-  width: 300px;
+  width: 350px;
 }
 
 .login-title {
   font-size: 24px;
-  font-weight: bold;
+  font-weight: normal;
   text-decoration: underline;
   color: black;
   margin-bottom: 10px;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .login-role {
   color: #444;
   font-size: 14px;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 25px;
+  position: relative;
+  width: 100%;
+}
+
+.login-form::after {
+  content: '';
+  position: absolute;
+  left: -20px;
+  right: -20px;
+  top: 50%;
+  height: 1px;
+  background-color: #ccc;
+  z-index: 1;
+}
+
+.login-input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #000;
+  border-radius: 0;
+  font-size: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  box-sizing: border-box;
+  text-align: center;
+  background-color: white;
+  position: relative;
+  z-index: 2;
+}
+
+.login-input:focus {
+  outline: none;
+  border-color: #7b6be5;
+}
+
+.google-signin-section {
+  margin-top: 20px;
+}
+
+.google-signin-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 20px;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+
+.google-signin-button:hover {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.google-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.google-signin-text {
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 }
 
 
