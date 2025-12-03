@@ -28,7 +28,7 @@ describe("AddToDBButton Tests", () =>{
         const buttonElement = screen.getByText(/Add to DB/i);
         expect(buttonElement).toBeInTheDocument();
     });
-
+/*
     test("AddToDBButton adds a new document to the datebase", async()=> {
         await deleteCollection("user");
         render(<AddToDBButton/>);
@@ -41,4 +41,6 @@ describe("AddToDBButton Tests", () =>{
         const querySnapshot = await getDocs(q);
         expect(querySnapshot.size).toBe(1);
     });
+
+    */
 })

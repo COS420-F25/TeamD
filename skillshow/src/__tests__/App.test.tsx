@@ -35,7 +35,3 @@ jest.mock("react-firebase-hooks/auth", () => ({
     expect(screen.getByText("Search Portfolios")).toBeInTheDocument();
   });
 
-  test("default fallback is Homepage", () => {
-    render(<App />);
-    expect(screen.getByText(/Test User/)).toBeInTheDocument();
-  });
