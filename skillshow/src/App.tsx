@@ -87,7 +87,7 @@ const user: User | null = userRaw ?? null;
   return (
     <div style={{ height: '100vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
       <NavBar />
-      <div style={{ flex: 1, overflow: 'hidden', minHeight: 0 }}>
+      <div style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
         {renderPage()}
       </div>
     </div>
