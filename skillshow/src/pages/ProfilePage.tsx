@@ -115,7 +115,7 @@ export function ProfilePage({user}:ProfilePageProps): React.JSX.Element {
             <div style ={{display: "flex", justifyContent:"space-between"}}>
                 
                 <div 
-                    style={{position:"absolute",top:"-75px",left:"0"}}>
+                    style={{position:"absolute",top:"-90px",left:"10px"}}>
                     
                     {profile.pfpUrl ? (
                         <img 
