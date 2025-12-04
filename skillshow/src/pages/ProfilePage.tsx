@@ -96,7 +96,6 @@ export function ProfilePage({user}:ProfilePageProps): React.JSX.Element {
     return ( 
         <div
             style={{
-                
                 padding: "2rem",
                 fontFamily: "sans-serif"
             }}
@@ -109,13 +108,14 @@ export function ProfilePage({user}:ProfilePageProps): React.JSX.Element {
                     padding : "1.5rem",
                     borderRadius: '5px',
                     background:"white",
-                    marginTop:"6rem"
+                    marginTop:"6rem",
+                    position: "relative"
                 }}
             >
             <div style ={{display: "flex", justifyContent:"space-between"}}>
                 
                 <div 
-                    style={{position:"absolute",top:"10rem"}}>
+                    style={{position:"absolute",top:"-90px",left:"10px"}}>
                     
                     {profile.pfpUrl ? (
                         <img 

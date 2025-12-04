@@ -26,12 +26,46 @@ const user: User | null = userRaw ?? null;
 
   // navigation bar
   const NavBar = () => (
-    <nav style={{padding: 10, background: "#f0f0f0", marginBottom: 20}}>
-      <button onClick={() => setPage("home")}>Home</button>
-      <button onClick={() => setPage("profile")}>Profile</button>
-      <button onClick={() => setPage("projects")}>Projects</button>
-      <button onClick={() => setPage("search")}>Search</button>
-    </nav>
+    <div>
+      {/* Main purple navigation bar Started with cursor and updated with CSS styling*/}
+      <div className="nav-main-bar">
+        <div className="nav-logo">SkillShow</div>
+        <div className="nav-links">
+          <button 
+            className={`nav-link ${page === "home" ? "active" : ""}`}
+            onClick={() => setPage("home")}
+          >
+            Home
+          </button>
+          <button 
+            className={`nav-link ${page === "profile" ? "active" : ""}`}
+            onClick={() => setPage("profile")}
+          >
+            Profile
+          </button>
+          <button 
+            className={`nav-link ${page === "projects" ? "active" : ""}`}
+            onClick={() => setPage("projects")}
+          >
+            Projects
+          </button>
+          <button 
+            className={`nav-link ${page === "search" ? "active" : ""}`}
+            onClick={() => setPage("search")}
+          >
+            Search
+          </button>
+        </div>
+        <div className="nav-color-bars">
+          <div className="nav-color-bar bar-green"></div>
+          <div className="nav-color-bar bar-yellow"></div>
+          <div className="nav-color-bar bar-red"></div>
+        </div>
+      </div>
+      
+      {/* Orange bar below navigation */}
+      <div className="nav-orange-bar"></div>
+    </div>
   )
 
   // page renderer for different page views
@@ -51,11 +85,12 @@ const user: User | null = userRaw ?? null;
   }
   
   return (
-    <div>
+    <div style={{ height: '100vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
       <NavBar />
-      {renderPage()}
+      <div style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
+        {renderPage()}
+      </div>
     </div>
-    
   )
 }
 
