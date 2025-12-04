@@ -1,0 +1,3228 @@
+# Implementing advanced search features
+_Exported on 12/3/2025 at 15:10:16 EST from Cursor (2.1.26)_
+
+---
+
+**User**
+
+As a senior engineer reviewing this codebase, I see a well-structured React/TypeScript application with Firebase backend implementing a portfolio search feature for the SkillShow platform. The current implementation has basic text search working with mock data. The next logical feature is Advanced Search/Filters to allow users to refine search results.
+
+---
+
+**Cursor**
+
+
+Exploring the codebase to understand the current search implementation and data structure.
+
+
+
+Reading the key files to understand the structure:
+
+
+
+Implementing Advanced Search/Filters. Creating the initial todo list and starting implementation:
+
+
+
+Adding the SearchFilters type, then implementing the advanced search functionality:
+
+
+```typescript
+// src/types/Portfolio.ts
+
+/**
+ * Portfolio interface representing a user's project/portfolio
+ * Used for search functionality. TypeScript needs type definitions which is added (and subject to be removed)
+ */
+export interface Portfolio {
+  portfolioId: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  title: string;
+  description: string;
+  tags: string[];
+  createdAt: string;
+}
+
+/**
+ * Search result type - includes portfolio and match relevance
+ */
+export interface SearchResult {
+  portfolio: Portfolio;
+  matchScore: number; // For ranking results by relevance
+}
+
+/**
+ * Search filters for advanced search functionality
+ */
+export interface SearchFilters {
+  query?: string; // Text search query
+  tags?: string[]; // Filter by tags (must match at least one)
+  userName?: string; // Filter by user name
+  dateFrom?: string; // Filter portfolios created after this date (ISO format)
+  dateTo?: string; // Filter portfolios created before this date (ISO format)
+  sortBy?: "relevance" | "date" | "alphabetical"; // Sort order
+  sortOrder?: "asc" | "desc"; // Sort direction
+}
+```
+
+
+Updating SearchService to support advanced search with filters:
+
+
+```typescript
+// src/services/SearchService.ts
+
+import { Portfolio, SearchResult, SearchFilters } from "../types/Portfolio";
+
+/**
+ * SearchService handles portfolio search functionality
+ * 
+ * NOTE: Currently using MOCK DATA for testing purposes
+ * TODO: Replace with real Firestore queries when backend is ready
+ * 
+ * @author Chauncey (using mock data for cross-platform testing)
+ */
+export class SearchService {
+  
+  /**
+   * MOCK DATA - For testing purposes only
+   * This simulates portfolios stored in Firestore
+   * 
+   * NOTE: This will be replaced with actual Firestore queries
+   * when the portfolio storage system is implemented
+   */
+  private static MOCK_PORTFOLIOS: Portfolio[] = [
+    {
+      portfolioId: "port-001",
+      userId: "user-001",
+      userName: "Alice Johnson",
+      userEmail: "alice@example.com",
+      title: "Weather Forecasting App",
+      description: "Built a real-time weather forecasting system using React and OpenWeather API. Features include 7-day forecasts, location search, and weather alerts.",
+      tags: ["React", "API", "TypeScript", "Weather"],
+      createdAt: "2024-01-15T10:30:00Z"
+    },
+    {
+      portfolioId: "port-002",
+      userId: "user-002",
+      userName: "Bob Martinez",
+      userEmail: "bob@example.com",
+      title: "E-Commerce Platform",
+      description: "Full-stack e-commerce website with shopping cart, payment integration using Stripe, and inventory management system.",
+      tags: ["Node.js", "React", "MongoDB", "Stripe"],
+      createdAt: "2024-02-20T14:45:00Z"
+    },
+    {
+      portfolioId: "port-003",
+      userId: "user-003",
+      userName: "Carol Zhang",
+      userEmail: "carol@example.com",
+      title: "Task Management Dashboard",
+      description: "Collaborative task management tool with drag-and-drop functionality, team assignments, and real-time updates using Firebase.",
+      tags: ["React", "Firebase", "Material-UI"],
+      createdAt: "2024-03-10T09:15:00Z"
+    },
+    {
+      portfolioId: "port-004",
+      userId: "user-004",
+      userName: "David Kim",
+      userEmail: "david@example.com",
+      title: "Weather Data Visualization",
+      description: "Interactive weather data visualization dashboard displaying climate trends, temperature patterns, and precipitation data across different regions.",
+      tags: ["Python", "Data Visualization", "D3.js"],
+      createdAt: "2024-01-25T16:20:00Z"
+    },
+    {
+      portfolioId: "port-005",
+      userId: "user-005",
+      userName: "Emma Wilson",
+      userEmail: "emma@example.com",
+      title: "Social Media Analytics Tool",
+      description: "Analytics platform for tracking social media engagement, follower growth, and content performance across multiple platforms.",
+      tags: ["React", "Chart.js", "REST API"],
+      createdAt: "2024-02-05T11:00:00Z"
+    },
+    {
+      portfolioId: "port-006",
+      userId: "user-006",
+      userName: "Frank Anderson",
+      userEmail: "frank@example.com",
+      title: "Recipe Sharing Platform",
+      description: "Community-driven recipe sharing application where users can post recipes, rate dishes, and follow their favorite chefs.",
+      tags: ["React", "Firebase", "CSS"],
+      createdAt: "2024-03-15T13:30:00Z"
+    },
+    {
+      portfolioId: "port-007",
+      userId: "user-007",
+      userName: "Grace Lee",
+      userEmail: "grace@example.com",
+      title: "Fitness Tracking Mobile App",
+      description: "Mobile fitness application for tracking workouts, calories, and progress over time with personalized workout recommendations.",
+      tags: ["React Native", "Mobile", "Health"],
+      createdAt: "2024-01-30T08:45:00Z"
+    },
+    {
+      portfolioId: "port-008",
+      userId: "user-008",
+      userName: "Henry Brown",
+      userEmail: "henry@example.com",
+      title: "Climate Change Awareness Website",
+      description: "Educational website about climate change featuring weather pattern analysis, carbon footprint calculator, and environmental news.",
+      tags: ["HTML", "CSS", "JavaScript", "Environment"],
+      createdAt: "2024-02-12T15:10:00Z"
+    }
+  ];
+
+  /**
+   * Search portfolios by query string
+   * Searches through portfolio titles and descriptions
+   * 
+   * @param query - The search query string
+   * @returns Promise<SearchResult[]> - Array of matching portfolios with relevance scores
+   */
+  async searchPortfolios(query: string): Promise<SearchResult[]> {
+    // Simulate network delay (like a real API call)
+    await this.delay(300);
+
+    if (!query || query.trim().length === 0) {
+      return [];
+    }
+
+    const normalizedQuery = query.toLowerCase().trim();
+    const results: SearchResult[] = [];
+
+    // Search through mock portfolios
+    for (const portfolio of SearchService.MOCK_PORTFOLIOS) {
+      const matchScore = this.calculateMatchScore(portfolio, normalizedQuery);
+      
+      if (matchScore > 0) {
+        results.push({
+          portfolio,
+          matchScore
+        });
+      }
+    }
+
+    // Sort by relevance (highest match score first)
+    results.sort((a, b) => b.matchScore - a.matchScore);
+
+    return results;
+  }
+
+  /**
+   * Calculate relevance score for a portfolio based on search query
+   * Searches in: title and description
+   * 
+   * @param portfolio - The portfolio to evaluate
+   * @param query - The normalized search query
+   * @returns number - Match score (higher = more relevant)
+   */
+  private calculateMatchScore(portfolio: Portfolio, query: string): number {
+    let score = 0;
+    const queryWords = query.split(/\s+/);
+
+    const title = portfolio.title.toLowerCase();
+    const description = portfolio.description.toLowerCase();
+
+    for (const word of queryWords) {
+      // Title matches are worth more (weight: 3)
+      if (title.includes(word)) {
+        score += 3;
+      }
+
+      // Description matches (weight: 1)
+      if (description.includes(word)) {
+        score += 1;
+      }
+    }
+
+    // Bonus for exact phrase match in title
+    if (title.includes(query)) {
+      score += 10;
+    }
+
+    // Bonus for exact phrase match in description
+    if (description.includes(query)) {
+      score += 5;
+    }
+
+    return score;
+  }
+
+  /**
+   * Simulate network delay for realistic API behavior
+   */
+  private delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  /**
+   * Get all portfolios (for testing purposes)
+   */
+  async getAllPortfolios(): Promise<Portfolio[]> {
+    await this.delay(200);
+    return [...SearchService.MOCK_PORTFOLIOS];
+  }
+
+  /**
+   * TODO: Future implementation with Firestore
+   * 
+   * When portfolio storage is ready, replace with:
+   * 
+   * async searchPortfolios(query: string): Promise<SearchResult[]> {
+   *   const portfoliosRef = collection(db, "portfolios");
+   *   const q = query(
+   *     portfoliosRef,
+   *     where("title", ">=", query),
+   *     where("title", "<=", query + '\uf8ff')
+   *   );
+   *   const snapshot = await getDocs(q);
+   *   // ... process results
+   * }
+   */
+}
+```
+
+```typescript
+// src/services/SearchService.ts
+
+import { Portfolio, SearchResult, SearchFilters } from "../types/Portfolio";
+
+/**
+ * SearchService handles portfolio search functionality
+ * 
+ * NOTE: Currently using MOCK DATA for testing purposes
+ * TODO: Replace with real Firestore queries when backend is ready
+ * 
+ * @author Chauncey (using mock data for cross-platform testing)
+ */
+export class SearchService {
+  
+  /**
+   * MOCK DATA - For testing purposes only
+   * This simulates portfolios stored in Firestore
+   * 
+   * NOTE: This will be replaced with actual Firestore queries
+   * when the portfolio storage system is implemented
+   */
+  private static MOCK_PORTFOLIOS: Portfolio[] = [
+    {
+      portfolioId: "port-001",
+      userId: "user-001",
+      userName: "Alice Johnson",
+      userEmail: "alice@example.com",
+      title: "Weather Forecasting App",
+      description: "Built a real-time weather forecasting system using React and OpenWeather API. Features include 7-day forecasts, location search, and weather alerts.",
+      tags: ["React", "API", "TypeScript", "Weather"],
+      createdAt: "2024-01-15T10:30:00Z"
+    },
+    {
+      portfolioId: "port-002",
+      userId: "user-002",
+      userName: "Bob Martinez",
+      userEmail: "bob@example.com",
+      title: "E-Commerce Platform",
+      description: "Full-stack e-commerce website with shopping cart, payment integration using Stripe, and inventory management system.",
+      tags: ["Node.js", "React", "MongoDB", "Stripe"],
+      createdAt: "2024-02-20T14:45:00Z"
+    },
+    {
+      portfolioId: "port-003",
+      userId: "user-003",
+      userName: "Carol Zhang",
+      userEmail: "carol@example.com",
+      title: "Task Management Dashboard",
+      description: "Collaborative task management tool with drag-and-drop functionality, team assignments, and real-time updates using Firebase.",
+      tags: ["React", "Firebase", "Material-UI"],
+      createdAt: "2024-03-10T09:15:00Z"
+    },
+    {
+      portfolioId: "port-004",
+      userId: "user-004",
+      userName: "David Kim",
+      userEmail: "david@example.com",
+      title: "Weather Data Visualization",
+      description: "Interactive weather data visualization dashboard displaying climate trends, temperature patterns, and precipitation data across different regions.",
+      tags: ["Python", "Data Visualization", "D3.js"],
+      createdAt: "2024-01-25T16:20:00Z"
+    },
+    {
+      portfolioId: "port-005",
+      userId: "user-005",
+      userName: "Emma Wilson",
+      userEmail: "emma@example.com",
+      title: "Social Media Analytics Tool",
+      description: "Analytics platform for tracking social media engagement, follower growth, and content performance across multiple platforms.",
+      tags: ["React", "Chart.js", "REST API"],
+      createdAt: "2024-02-05T11:00:00Z"
+    },
+    {
+      portfolioId: "port-006",
+      userId: "user-006",
+      userName: "Frank Anderson",
+      userEmail: "frank@example.com",
+      title: "Recipe Sharing Platform",
+      description: "Community-driven recipe sharing application where users can post recipes, rate dishes, and follow their favorite chefs.",
+      tags: ["React", "Firebase", "CSS"],
+      createdAt: "2024-03-15T13:30:00Z"
+    },
+    {
+      portfolioId: "port-007",
+      userId: "user-007",
+      userName: "Grace Lee",
+      userEmail: "grace@example.com",
+      title: "Fitness Tracking Mobile App",
+      description: "Mobile fitness application for tracking workouts, calories, and progress over time with personalized workout recommendations.",
+      tags: ["React Native", "Mobile", "Health"],
+      createdAt: "2024-01-30T08:45:00Z"
+    },
+    {
+      portfolioId: "port-008",
+      userId: "user-008",
+      userName: "Henry Brown",
+      userEmail: "henry@example.com",
+      title: "Climate Change Awareness Website",
+      description: "Educational website about climate change featuring weather pattern analysis, carbon footprint calculator, and environmental news.",
+      tags: ["HTML", "CSS", "JavaScript", "Environment"],
+      createdAt: "2024-02-12T15:10:00Z"
+    }
+  ];
+
+  /**
+   * Search portfolios by query string
+   * Searches through portfolio titles and descriptions
+   * 
+   * @param query - The search query string
+   * @returns Promise<SearchResult[]> - Array of matching portfolios with relevance scores
+   */
+  async searchPortfolios(query: string): Promise<SearchResult[]> {
+    // Use advanced search with just the query for backward compatibility
+    return this.searchPortfoliosWithFilters({ query });
+  }
+
+  /**
+   * Advanced search with filters
+   * Supports text search, tag filtering, date range, user name, and sorting
+   * 
+   * @param filters - Search filters object
+   * @returns Promise<SearchResult[]> - Array of matching portfolios with relevance scores
+   */
+  async searchPortfoliosWithFilters(filters: SearchFilters): Promise<SearchResult[]> {
+    // Simulate network delay (like a real API call)
+    await this.delay(300);
+
+    const results: SearchResult[] = [];
+    const normalizedQuery = filters.query?.toLowerCase().trim() || "";
+
+    // Search through mock portfolios
+    for (const portfolio of SearchService.MOCK_PORTFOLIOS) {
+      // Apply filters
+      if (!this.matchesFilters(portfolio, filters)) {
+        continue;
+      }
+
+      // Calculate match score if query is provided
+      let matchScore = 0;
+      if (normalizedQuery) {
+        matchScore = this.calculateMatchScore(portfolio, normalizedQuery);
+        if (matchScore === 0) {
+          continue; // No text match, skip this portfolio
+        }
+      } else {
+        // If no query, assign a default score for sorting purposes
+        matchScore = 1;
+      }
+
+      results.push({
+        portfolio,
+        matchScore
+      });
+    }
+
+    // Sort results
+    this.sortResults(results, filters);
+
+    return results;
+  }
+
+  /**
+   * Calculate relevance score for a portfolio based on search query
+   * Searches in: title and description
+   * 
+   * @param portfolio - The portfolio to evaluate
+   * @param query - The normalized search query
+   * @returns number - Match score (higher = more relevant)
+   */
+  private calculateMatchScore(portfolio: Portfolio, query: string): number {
+    let score = 0;
+    const queryWords = query.split(/\s+/);
+
+    const title = portfolio.title.toLowerCase();
+    const description = portfolio.description.toLowerCase();
+
+    for (const word of queryWords) {
+      // Title matches are worth more (weight: 3)
+      if (title.includes(word)) {
+        score += 3;
+      }
+
+      // Description matches (weight: 1)
+      if (description.includes(word)) {
+        score += 1;
+      }
+    }
+
+    // Bonus for exact phrase match in title
+    if (title.includes(query)) {
+      score += 10;
+    }
+
+    // Bonus for exact phrase match in description
+    if (description.includes(query)) {
+      score += 5;
+    }
+
+    return score;
+  }
+
+  /**
+   * Simulate network delay for realistic API behavior
+   */
+  private delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  /**
+   * Get all portfolios (for testing purposes)
+   */
+  async getAllPortfolios(): Promise<Portfolio[]> {
+    await this.delay(200);
+    return [...SearchService.MOCK_PORTFOLIOS];
+  }
+
+  /**
+   * TODO: Future implementation with Firestore
+   * 
+   * When portfolio storage is ready, replace with:
+   * 
+   * async searchPortfolios(query: string): Promise<SearchResult[]> {
+   *   const portfoliosRef = collection(db, "portfolios");
+   *   const q = query(
+   *     portfoliosRef,
+   *     where("title", ">=", query),
+   *     where("title", "<=", query + '\uf8ff')
+   *   );
+   *   const snapshot = await getDocs(q);
+   *   // ... process results
+   * }
+   */
+}
+```
+
+```typescript
+// src/services/SearchService.ts
+
+import { Portfolio, SearchResult, SearchFilters } from "../types/Portfolio";
+
+/**
+ * SearchService handles portfolio search functionality
+ * 
+ * NOTE: Currently using MOCK DATA for testing purposes
+ * TODO: Replace with real Firestore queries when backend is ready
+ * 
+ * @author Chauncey (using mock data for cross-platform testing)
+ */
+export class SearchService {
+  
+  /**
+   * MOCK DATA - For testing purposes only
+   * This simulates portfolios stored in Firestore
+   * 
+   * NOTE: This will be replaced with actual Firestore queries
+   * when the portfolio storage system is implemented
+   */
+  private static MOCK_PORTFOLIOS: Portfolio[] = [
+    {
+      portfolioId: "port-001",
+      userId: "user-001",
+      userName: "Alice Johnson",
+      userEmail: "alice@example.com",
+      title: "Weather Forecasting App",
+      description: "Built a real-time weather forecasting system using React and OpenWeather API. Features include 7-day forecasts, location search, and weather alerts.",
+      tags: ["React", "API", "TypeScript", "Weather"],
+      createdAt: "2024-01-15T10:30:00Z"
+    },
+    {
+      portfolioId: "port-002",
+      userId: "user-002",
+      userName: "Bob Martinez",
+      userEmail: "bob@example.com",
+      title: "E-Commerce Platform",
+      description: "Full-stack e-commerce website with shopping cart, payment integration using Stripe, and inventory management system.",
+      tags: ["Node.js", "React", "MongoDB", "Stripe"],
+      createdAt: "2024-02-20T14:45:00Z"
+    },
+    {
+      portfolioId: "port-003",
+      userId: "user-003",
+      userName: "Carol Zhang",
+      userEmail: "carol@example.com",
+      title: "Task Management Dashboard",
+      description: "Collaborative task management tool with drag-and-drop functionality, team assignments, and real-time updates using Firebase.",
+      tags: ["React", "Firebase", "Material-UI"],
+      createdAt: "2024-03-10T09:15:00Z"
+    },
+    {
+      portfolioId: "port-004",
+      userId: "user-004",
+      userName: "David Kim",
+      userEmail: "david@example.com",
+      title: "Weather Data Visualization",
+      description: "Interactive weather data visualization dashboard displaying climate trends, temperature patterns, and precipitation data across different regions.",
+      tags: ["Python", "Data Visualization", "D3.js"],
+      createdAt: "2024-01-25T16:20:00Z"
+    },
+    {
+      portfolioId: "port-005",
+      userId: "user-005",
+      userName: "Emma Wilson",
+      userEmail: "emma@example.com",
+      title: "Social Media Analytics Tool",
+      description: "Analytics platform for tracking social media engagement, follower growth, and content performance across multiple platforms.",
+      tags: ["React", "Chart.js", "REST API"],
+      createdAt: "2024-02-05T11:00:00Z"
+    },
+    {
+      portfolioId: "port-006",
+      userId: "user-006",
+      userName: "Frank Anderson",
+      userEmail: "frank@example.com",
+      title: "Recipe Sharing Platform",
+      description: "Community-driven recipe sharing application where users can post recipes, rate dishes, and follow their favorite chefs.",
+      tags: ["React", "Firebase", "CSS"],
+      createdAt: "2024-03-15T13:30:00Z"
+    },
+    {
+      portfolioId: "port-007",
+      userId: "user-007",
+      userName: "Grace Lee",
+      userEmail: "grace@example.com",
+      title: "Fitness Tracking Mobile App",
+      description: "Mobile fitness application for tracking workouts, calories, and progress over time with personalized workout recommendations.",
+      tags: ["React Native", "Mobile", "Health"],
+      createdAt: "2024-01-30T08:45:00Z"
+    },
+    {
+      portfolioId: "port-008",
+      userId: "user-008",
+      userName: "Henry Brown",
+      userEmail: "henry@example.com",
+      title: "Climate Change Awareness Website",
+      description: "Educational website about climate change featuring weather pattern analysis, carbon footprint calculator, and environmental news.",
+      tags: ["HTML", "CSS", "JavaScript", "Environment"],
+      createdAt: "2024-02-12T15:10:00Z"
+    }
+  ];
+
+  /**
+   * Search portfolios by query string
+   * Searches through portfolio titles and descriptions
+   * 
+   * @param query - The search query string
+   * @returns Promise<SearchResult[]> - Array of matching portfolios with relevance scores
+   */
+  async searchPortfolios(query: string): Promise<SearchResult[]> {
+    // Use advanced search with just the query for backward compatibility
+    return this.searchPortfoliosWithFilters({ query });
+  }
+
+  /**
+   * Advanced search with filters
+   * Supports text search, tag filtering, date range, user name, and sorting
+   * 
+   * @param filters - Search filters object
+   * @returns Promise<SearchResult[]> - Array of matching portfolios with relevance scores
+   */
+  async searchPortfoliosWithFilters(filters: SearchFilters): Promise<SearchResult[]> {
+    // Simulate network delay (like a real API call)
+    await this.delay(300);
+
+    const results: SearchResult[] = [];
+    const normalizedQuery = filters.query?.toLowerCase().trim() || "";
+
+    // Search through mock portfolios
+    for (const portfolio of SearchService.MOCK_PORTFOLIOS) {
+      // Apply filters
+      if (!this.matchesFilters(portfolio, filters)) {
+        continue;
+      }
+
+      // Calculate match score if query is provided
+      let matchScore = 0;
+      if (normalizedQuery) {
+        matchScore = this.calculateMatchScore(portfolio, normalizedQuery);
+        if (matchScore === 0) {
+          continue; // No text match, skip this portfolio
+        }
+      } else {
+        // If no query, assign a default score for sorting purposes
+        matchScore = 1;
+      }
+
+      results.push({
+        portfolio,
+        matchScore
+      });
+    }
+
+    // Sort results
+    this.sortResults(results, filters);
+
+    return results;
+  }
+
+  /**
+   * Check if a portfolio matches the given filters
+   * 
+   * @param portfolio - The portfolio to check
+   * @param filters - The filters to apply
+   * @returns boolean - True if portfolio matches all filters
+   */
+  private matchesFilters(portfolio: Portfolio, filters: SearchFilters): boolean {
+    // Tag filter: portfolio must have at least one of the specified tags
+    if (filters.tags && filters.tags.length > 0) {
+      const portfolioTags = portfolio.tags.map(t => t.toLowerCase());
+      const filterTags = filters.tags.map(t => t.toLowerCase());
+      const hasMatchingTag = filterTags.some(tag => portfolioTags.includes(tag));
+      if (!hasMatchingTag) {
+        return false;
+      }
+    }
+
+    // User name filter: case-insensitive partial match
+    if (filters.userName && filters.userName.trim()) {
+      const userName = portfolio.userName.toLowerCase();
+      const filterName = filters.userName.toLowerCase().trim();
+      if (!userName.includes(filterName)) {
+        return false;
+      }
+    }
+
+    // Date range filter
+    if (filters.dateFrom || filters.dateTo) {
+      const portfolioDate = new Date(portfolio.createdAt).getTime();
+      
+      if (filters.dateFrom) {
+        const fromDate = new Date(filters.dateFrom).getTime();
+        if (portfolioDate < fromDate) {
+          return false;
+        }
+      }
+
+      if (filters.dateTo) {
+        const toDate = new Date(filters.dateTo).getTime();
+        // Add one day to include the entire end date
+        const toDateEnd = toDate + 24 * 60 * 60 * 1000;
+        if (portfolioDate >= toDateEnd) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Sort search results based on filter options
+   * 
+   * @param results - The results to sort (modified in place)
+   * @param filters - The filters containing sort options
+   */
+  private sortResults(results: SearchResult[], filters: SearchFilters): void {
+    const sortBy = filters.sortBy || "relevance";
+    const sortOrder = filters.sortOrder || (sortBy === "relevance" ? "desc" : "asc");
+
+    results.sort((a, b) => {
+      let comparison = 0;
+
+      switch (sortBy) {
+        case "relevance":
+          comparison = a.matchScore - b.matchScore;
+          break;
+        case "date":
+          const dateA = new Date(a.portfolio.createdAt).getTime();
+          const dateB = new Date(b.portfolio.createdAt).getTime();
+          comparison = dateA - dateB;
+          break;
+        case "alphabetical":
+          comparison = a.portfolio.title.localeCompare(b.portfolio.title);
+          break;
+      }
+
+      // Apply sort order
+      return sortOrder === "desc" ? -comparison : comparison;
+    });
+  }
+
+  /**
+   * Calculate relevance score for a portfolio based on search query
+   * Searches in: title, description, and tags
+   * 
+   * @param portfolio - The portfolio to evaluate
+   * @param query - The normalized search query
+   * @returns number - Match score (higher = more relevant)
+   */
+  private calculateMatchScore(portfolio: Portfolio, query: string): number {
+    let score = 0;
+    const queryWords = query.split(/\s+/);
+
+    const title = portfolio.title.toLowerCase();
+    const description = portfolio.description.toLowerCase();
+    const tags = portfolio.tags.map(t => t.toLowerCase()).join(" ");
+
+    for (const word of queryWords) {
+      // Title matches are worth more (weight: 3)
+      if (title.includes(word)) {
+        score += 3;
+      }
+
+      // Description matches (weight: 1)
+      if (description.includes(word)) {
+        score += 1;
+      }
+
+      // Tag matches (weight: 2)
+      if (tags.includes(word)) {
+        score += 2;
+      }
+    }
+
+    // Bonus for exact phrase match in title
+    if (title.includes(query)) {
+      score += 10;
+    }
+
+    // Bonus for exact phrase match in description
+    if (description.includes(query)) {
+      score += 5;
+    }
+
+    return score;
+  }
+
+  /**
+   * Get all available tags from mock portfolios (for filter UI)
+   * 
+   * @returns Promise<string[]> - Array of unique tags
+   */
+  async getAvailableTags(): Promise<string[]> {
+    await this.delay(100);
+    const allTags = new Set<string>();
+    
+    for (const portfolio of SearchService.MOCK_PORTFOLIOS) {
+      portfolio.tags.forEach(tag => allTags.add(tag));
+    }
+    
+    return Array.from(allTags).sort();
+  }
+
+  /**
+   * Simulate network delay for realistic API behavior
+   */
+  private delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  /**
+   * Get all portfolios (for testing purposes)
+   */
+  async getAllPortfolios(): Promise<Portfolio[]> {
+    await this.delay(200);
+    return [...SearchService.MOCK_PORTFOLIOS];
+  }
+
+  /**
+   * TODO: Future implementation with Firestore
+   * 
+   * When portfolio storage is ready, replace with:
+   * 
+   * async searchPortfolios(query: string): Promise<SearchResult[]> {
+   *   const portfoliosRef = collection(db, "portfolios");
+   *   const q = query(
+   *     portfoliosRef,
+   *     where("title", ">=", query),
+   *     where("title", "<=", query + '\uf8ff')
+   *   );
+   *   const snapshot = await getDocs(q);
+   *   // ... process results
+   * }
+   */
+}
+```
+
+
+Creating the AdvancedSearchPanel component:
+
+
+```typescriptreact
+// src/components/AdvancedSearchPanel.tsx
+
+import React, { useState, useEffect } from "react";
+import { SearchFilters } from "../types/Portfolio";
+import { SearchService } from "../services/SearchService";
+
+interface AdvancedSearchPanelProps {
+  filters: SearchFilters;
+  onFiltersChange: (filters: SearchFilters) => void;
+  isOpen: boolean;
+  onToggle: () => void;
+}
+
+/**
+ * AdvancedSearchPanel - Collapsible panel for advanced search filters
+ * 
+ * Features:
+ * - Tag filtering (multi-select)
+ * - User name filtering
+ * - Date range filtering
+ * - Sort options (relevance, date, alphabetical)
+ * 
+ * @author Senior Engineer
+ */
+export function AdvancedSearchPanel({
+  filters,
+  onFiltersChange,
+  isOpen,
+  onToggle
+}: AdvancedSearchPanelProps) {
+  const [availableTags, setAvailableTags] = useState<string[]>([]);
+  const [isLoadingTags, setIsLoadingTags] = useState(false);
+  const searchService = new SearchService();
+
+  // Load available tags on mount
+  useEffect(() => {
+    const loadTags = async () => {
+      setIsLoadingTags(true);
+      try {
+        const tags = await searchService.getAvailableTags();
+        setAvailableTags(tags);
+      } catch (error) {
+        console.error("Error loading tags:", error);
+      } finally {
+        setIsLoadingTags(false);
+      }
+    };
+
+    if (isOpen) {
+      loadTags();
+    }
+  }, [isOpen]);
+
+  /**
+   * Handle tag checkbox change
+   */
+  const handleTagChange = (tag: string, checked: boolean) => {
+    const currentTags = filters.tags || [];
+    const newTags = checked
+      ? [...currentTags, tag]
+      : currentTags.filter(t => t !== tag);
+    
+    onFiltersChange({
+      ...filters,
+      tags: newTags.length > 0 ? newTags : undefined
+    });
+  };
+
+  /**
+   * Handle user name input change
+   */
+  const handleUserNameChange = (userName: string) => {
+    onFiltersChange({
+      ...filters,
+      userName: userName.trim() || undefined
+    });
+  };
+
+  /**
+   * Handle date range changes
+   */
+  const handleDateFromChange = (date: string) => {
+    onFiltersChange({
+      ...filters,
+      dateFrom: date || undefined
+    });
+  };
+
+  const handleDateToChange = (date: string) => {
+    onFiltersChange({
+      ...filters,
+      dateTo: date || undefined
+    });
+  };
+
+  /**
+   * Handle sort options change
+   */
+  const handleSortChange = (sortBy: "relevance" | "date" | "alphabetical", sortOrder: "asc" | "desc") => {
+    onFiltersChange({
+      ...filters,
+      sortBy,
+      sortOrder
+    });
+  };
+
+  /**
+   * Clear all filters
+   */
+  const handleClearFilters = () => {
+    onFiltersChange({
+      query: filters.query // Keep the text query
+    });
+  };
+
+  /**
+   * Check if any filters are active (excluding query)
+   */
+  const hasActiveFilters = Boolean(
+    filters.tags?.length ||
+    filters.userName ||
+    filters.dateFrom ||
+    filters.dateTo ||
+    (filters.sortBy && filters.sortBy !== "relevance") ||
+    (filters.sortOrder && filters.sortOrder !== "desc")
+  );
+
+  return (
+    <div style={{ marginBottom: "24px" }}>
+      {/* Toggle Button */}
+      <button
+        onClick={onToggle}
+        style={{
+          padding: "8px 16px",
+          fontSize: "14px",
+          backgroundColor: isOpen ? "#7b6be5" : "transparent",
+          color: isOpen ? "white" : "#7b6be5",
+          border: "2px solid #7b6be5",
+          borderRadius: "8px",
+          cursor: "pointer",
+          fontWeight: "bold",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px"
+        }}
+      >
+        <span>{isOpen ? "▼" : "▶"}</span>
+        <span>Advanced Search</span>
+        {hasActiveFilters && (
+          <span
+            style={{
+              backgroundColor: isOpen ? "white" : "#7b6be5",
+              color: isOpen ? "#7b6be5" : "white",
+              borderRadius: "12px",
+              padding: "2px 8px",
+              fontSize: "12px",
+              marginLeft: "4px"
+            }}
+          >
+            Active
+          </span>
+        )}
+      </button>
+
+      {/* Filter Panel */}
+      {isOpen && (
+        <div
+          style={{
+            marginTop: "16px",
+            padding: "24px",
+            backgroundColor: "#f9f9f9",
+            borderRadius: "8px",
+            border: "1px solid #e0e0e0"
+          }}
+        >
+          {/* Tags Filter */}
+          <div style={{ marginBottom: "24px" }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "14px",
+                fontWeight: "bold",
+                marginBottom: "12px",
+                color: "#333"
+              }}
+            >
+              Filter by Tags
+            </label>
+            {isLoadingTags ? (
+              <div style={{ color: "#666", fontSize: "14px" }}>Loading tags...</div>
+            ) : (
+              <div
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: "8px"
+                }}
+              >
+                {availableTags.map(tag => {
+                  const isChecked = filters.tags?.includes(tag) || false;
+                  return (
+                    <label
+                      key={tag}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        padding: "6px 12px",
+                        backgroundColor: isChecked ? "#7b6be5" : "white",
+                        color: isChecked ? "white" : "#333",
+                        border: `2px solid ${isChecked ? "#7b6be5" : "#ddd"}`,
+                        borderRadius: "20px",
+                        cursor: "pointer",
+                        fontSize: "13px",
+                        transition: "all 0.2s ease"
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={(e) => handleTagChange(tag, e.target.checked)}
+                        style={{
+                          marginRight: "6px",
+                          cursor: "pointer"
+                        }}
+                      />
+                      {tag}
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* User Name Filter */}
+          <div style={{ marginBottom: "24px" }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "14px",
+                fontWeight: "bold",
+                marginBottom: "8px",
+                color: "#333"
+              }}
+            >
+              Filter by User Name
+            </label>
+            <input
+              type="text"
+              placeholder="Enter user name..."
+              value={filters.userName || ""}
+              onChange={(e) => handleUserNameChange(e.target.value)}
+              style={{
+                width: "100%",
+                maxWidth: "300px",
+                padding: "8px 12px",
+                fontSize: "14px",
+                border: "2px solid #ddd",
+                borderRadius: "6px",
+                outline: "none"
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = "#7b6be5";
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = "#ddd";
+              }}
+            />
+          </div>
+
+          {/* Date Range Filter */}
+          <div style={{ marginBottom: "24px" }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "14px",
+                fontWeight: "bold",
+                marginBottom: "8px",
+                color: "#333"
+              }}
+            >
+              Filter by Date Created
+            </label>
+            <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+              <div>
+                <label
+                  style={{
+                    display: "block",
+                    fontSize: "12px",
+                    color: "#666",
+                    marginBottom: "4px"
+                  }}
+                >
+                  From
+                </label>
+                <input
+                  type="date"
+                  value={filters.dateFrom || ""}
+                  onChange={(e) => handleDateFromChange(e.target.value)}
+                  style={{
+                    padding: "8px 12px",
+                    fontSize: "14px",
+                    border: "2px solid #ddd",
+                    borderRadius: "6px",
+                    outline: "none"
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = "#7b6be5";
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = "#ddd";
+                  }}
+                />
+              </div>
+              <div>
+                <label
+                  style={{
+                    display: "block",
+                    fontSize: "12px",
+                    color: "#666",
+                    marginBottom: "4px"
+                  }}
+                >
+                  To
+                </label>
+                <input
+                  type="date"
+                  value={filters.dateTo || ""}
+                  onChange={(e) => handleDateToChange(e.target.value)}
+                  style={{
+                    padding: "8px 12px",
+                    fontSize: "14px",
+                    border: "2px solid #ddd",
+                    borderRadius: "6px",
+                    outline: "none"
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = "#7b6be5";
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = "#ddd";
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Sort Options */}
+          <div style={{ marginBottom: "24px" }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "14px",
+                fontWeight: "bold",
+                marginBottom: "8px",
+                color: "#333"
+              }}
+            >
+              Sort By
+            </label>
+            <div style={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}>
+              <select
+                value={filters.sortBy || "relevance"}
+                onChange={(e) =>
+                  handleSortChange(
+                    e.target.value as "relevance" | "date" | "alphabetical",
+                    filters.sortOrder || "desc"
+                  )
+                }
+                style={{
+                  padding: "8px 12px",
+                  fontSize: "14px",
+                  border: "2px solid #ddd",
+                  borderRadius: "6px",
+                  outline: "none",
+                  cursor: "pointer"
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = "#7b6be5";
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = "#ddd";
+                }}
+              >
+                <option value="relevance">Relevance</option>
+                <option value="date">Date Created</option>
+                <option value="alphabetical">Alphabetical (Title)</option>
+              </select>
+              {filters.sortBy && filters.sortBy !== "relevance" && (
+                <select
+                  value={filters.sortOrder || "asc"}
+                  onChange={(e) =>
+                    handleSortChange(
+                      filters.sortBy || "date",
+                      e.target.value as "asc" | "desc"
+                    )
+                  }
+                  style={{
+                    padding: "8px 12px",
+                    fontSize: "14px",
+                    border: "2px solid #ddd",
+                    borderRadius: "6px",
+                    outline: "none",
+                    cursor: "pointer"
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = "#7b6be5";
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = "#ddd";
+                  }}
+                >
+                  <option value="asc">Ascending</option>
+                  <option value="desc">Descending</option>
+                </select>
+              )}
+            </div>
+          </div>
+
+          {/* Clear Filters Button */}
+          {hasActiveFilters && (
+            <div>
+              <button
+                onClick={handleClearFilters}
+                style={{
+                  padding: "8px 16px",
+                  fontSize: "14px",
+                  backgroundColor: "transparent",
+                  color: "#666",
+                  border: "2px solid #ddd",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  fontWeight: "bold"
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = "#999";
+                  e.currentTarget.style.color = "#333";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "#ddd";
+                  e.currentTarget.style.color = "#666";
+                }}
+              >
+                Clear All Filters
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+```
+
+
+Updating SearchPage to integrate the advanced search panel:
+
+
+```typescriptreact
+// src/pages/SearchPage.tsx
+
+import React, { useState } from "react";
+import { SearchService } from "../services/SearchService";
+import { SearchResult, SearchFilters } from "../types/Portfolio";
+import { PortfolioCard } from "../components/PortfolioCard";
+import { AdvancedSearchPanel } from "../components/AdvancedSearchPanel";
+
+interface SearchPageProps {
+  user: any;
+  onNavigateToProfile?: (userId: string) => void;
+}
+
+/**
+ * SearchPage - Main search interface for finding portfolios
+ * 
+ * Features:
+ * - Text-based search through portfolio titles and descriptions
+ * - Real-time search results
+ * - Click to view user profiles
+ * 
+ * NOTE: Currently uses mock data for testing
+ * @author Chauncey (using mock data for cross-platform testing)
+ */
+export function SearchPage({ user, onNavigateToProfile }: SearchPageProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
+
+  const searchService = new SearchService();
+
+  /**
+   * Handle search submission
+   */
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) {
+      return;
+    }
+
+    setIsLoading(true);
+    setHasSearched(true);
+
+    try {
+      const results = await searchService.searchPortfolios(searchQuery);
+      setSearchResults(results);
+    } catch (error) {
+      console.error("Search error:", error);
+      alert("An error occurred while searching. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  /**
+   * Handle Enter key press in search input
+   */
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
+  /**
+   * Handle portfolio card click - navigate to user profile
+   */
+  const handleCardClick = (userId: string) => {
+    console.log("Navigating to profile for user:", userId);
+    
+    // TODO: Implement actual navigation to profile page
+    // For now, just alert the user
+    alert(`Navigation to profile for user ${userId} will be implemented`);
+    
+    // If navigation callback is provided, use it
+    if (onNavigateToProfile) {
+      onNavigateToProfile(userId);
+    }
+  };
+
+  return (
+    <div style={{ padding: "40px", maxWidth: "800px", margin: "0 auto" }}>
+      <h1 style={{ fontSize: "32px", marginBottom: "24px", color: "#333" }}>
+        Search Portfolios
+      </h1>
+
+      {/* Search Bar */}
+      <div style={{ marginBottom: "32px" }}>
+        <div style={{ display: "flex", gap: "12px" }}>
+          <input
+            type="text"
+            placeholder="Search for portfolios (e.g., 'weather app', 'e-commerce')"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyPress={handleKeyPress}
+            style={{
+              flex: 1,
+              padding: "12px 16px",
+              fontSize: "16px",
+              border: "2px solid #ddd",
+              borderRadius: "8px",
+              outline: "none"
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = "#7b6be5";
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = "#ddd";
+            }}
+          />
+          <button
+            onClick={handleSearch}
+            disabled={isLoading}
+            style={{
+              padding: "12px 32px",
+              fontSize: "16px",
+              backgroundColor: "#7b6be5",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: isLoading ? "not-allowed" : "pointer",
+              fontWeight: "bold",
+              opacity: isLoading ? 0.6 : 1
+            }}
+          >
+            {isLoading ? "Searching..." : "Search"}
+          </button>
+        </div>
+
+        {/* Advanced Search Button - Placeholder for future feature */}
+        <div style={{ marginTop: "12px" }}>
+          <button
+            style={{
+              padding: "8px 16px",
+              fontSize: "14px",
+              backgroundColor: "transparent",
+              color: "#7b6be5",
+              border: "2px solid #7b6be5",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontWeight: "bold"
+            }}
+            onClick={() => alert("Advanced search coming soon!")}
+          >
+            Advanced Search
+          </button>
+        </div>
+      </div>
+
+      {/* Search Results */}
+      <div>
+        {isLoading && (
+          <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
+            <div>Loading results...</div>
+          </div>
+        )}
+
+        {!isLoading && hasSearched && searchResults.length === 0 && (
+          <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
+            <div style={{ fontSize: "18px", marginBottom: "8px" }}>
+              No portfolios found
+            </div>
+            <div style={{ fontSize: "14px" }}>
+              Try different keywords or check your spelling
+            </div>
+          </div>
+        )}
+
+        {!isLoading && searchResults.length > 0 && (
+          <div>
+            <div style={{ marginBottom: "16px", color: "#666", fontSize: "14px" }}>
+              Found {searchResults.length} result{searchResults.length !== 1 ? "s" : ""}
+            </div>
+            {searchResults.map((result) => (
+              <PortfolioCard
+                key={result.portfolio.portfolioId}
+                portfolio={result.portfolio}
+                onClick={() => handleCardClick(result.portfolio.userId)}
+              />
+            ))}
+          </div>
+        )}
+
+        {!hasSearched && (
+          <div style={{ textAlign: "center", padding: "60px 20px", color: "#999" }}>
+            <div style={{ fontSize: "48px", marginBottom: "16px" }}>🔍</div>
+            <div style={{ fontSize: "18px", marginBottom: "8px" }}>
+              Search for portfolios and projects
+            </div>
+            <div style={{ fontSize: "14px" }}>
+              Enter keywords like "weather app", "e-commerce", or "dashboard"
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+```
+
+```typescriptreact
+// src/pages/SearchPage.tsx
+
+import React, { useState } from "react";
+import { SearchService } from "../services/SearchService";
+import { SearchResult, SearchFilters } from "../types/Portfolio";
+import { PortfolioCard } from "../components/PortfolioCard";
+import { AdvancedSearchPanel } from "../components/AdvancedSearchPanel";
+
+interface SearchPageProps {
+  user: any;
+  onNavigateToProfile?: (userId: string) => void;
+}
+
+/**
+ * SearchPage - Main search interface for finding portfolios
+ * 
+ * Features:
+ * - Text-based search through portfolio titles and descriptions
+ * - Advanced filters: tags, user name, date range, sorting
+ * - Real-time search results
+ * - Click to view user profiles
+ * 
+ * NOTE: Currently uses mock data for testing
+ * @author Chauncey (using mock data for cross-platform testing)
+ * @author Senior Engineer (advanced search implementation)
+ */
+export function SearchPage({ user, onNavigateToProfile }: SearchPageProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchFilters, setSearchFilters] = useState<SearchFilters>({});
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
+  const [isAdvancedPanelOpen, setIsAdvancedPanelOpen] = useState(false);
+
+  const searchService = new SearchService();
+
+  /**
+   * Handle search submission
+   */
+  const handleSearch = async () => {
+    // Check if we have a query or active filters
+    const hasQuery = searchQuery.trim().length > 0;
+    const hasFilters = Boolean(
+      searchFilters.tags?.length ||
+      searchFilters.userName ||
+      searchFilters.dateFrom ||
+      searchFilters.dateTo
+    );
+
+    if (!hasQuery && !hasFilters) {
+      return;
+    }
+
+    setIsLoading(true);
+    setHasSearched(true);
+
+    try {
+      // Combine query with filters
+      const filters: SearchFilters = {
+        ...searchFilters,
+        query: searchQuery.trim() || undefined
+      };
+      
+      const results = await searchService.searchPortfoliosWithFilters(filters);
+      setSearchResults(results);
+    } catch (error) {
+      console.error("Search error:", error);
+      alert("An error occurred while searching. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  /**
+   * Handle filters change from AdvancedSearchPanel
+   */
+  const handleFiltersChange = (newFilters: SearchFilters) => {
+    setSearchFilters(newFilters);
+    // Auto-search when filters change (if we have a query or other filters)
+    const hasQuery = searchQuery.trim().length > 0;
+    const hasOtherFilters = Boolean(
+      newFilters.tags?.length ||
+      newFilters.userName ||
+      newFilters.dateFrom ||
+      newFilters.dateTo
+    );
+    
+    if (hasQuery || hasOtherFilters) {
+      // Trigger search with new filters
+      setTimeout(() => {
+        handleSearch();
+      }, 100);
+    }
+  };
+
+  /**
+   * Handle Enter key press in search input
+   */
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
+  /**
+   * Handle portfolio card click - navigate to user profile
+   */
+  const handleCardClick = (userId: string) => {
+    console.log("Navigating to profile for user:", userId);
+    
+    // TODO: Implement actual navigation to profile page
+    // For now, just alert the user
+    alert(`Navigation to profile for user ${userId} will be implemented`);
+    
+    // If navigation callback is provided, use it
+    if (onNavigateToProfile) {
+      onNavigateToProfile(userId);
+    }
+  };
+
+  return (
+    <div style={{ padding: "40px", maxWidth: "800px", margin: "0 auto" }}>
+      <h1 style={{ fontSize: "32px", marginBottom: "24px", color: "#333" }}>
+        Search Portfolios
+      </h1>
+
+      {/* Search Bar */}
+      <div style={{ marginBottom: "32px" }}>
+        <div style={{ display: "flex", gap: "12px" }}>
+          <input
+            type="text"
+            placeholder="Search for portfolios (e.g., 'weather app', 'e-commerce')"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyPress={handleKeyPress}
+            style={{
+              flex: 1,
+              padding: "12px 16px",
+              fontSize: "16px",
+              border: "2px solid #ddd",
+              borderRadius: "8px",
+              outline: "none"
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = "#7b6be5";
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = "#ddd";
+            }}
+          />
+          <button
+            onClick={handleSearch}
+            disabled={isLoading}
+            style={{
+              padding: "12px 32px",
+              fontSize: "16px",
+              backgroundColor: "#7b6be5",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: isLoading ? "not-allowed" : "pointer",
+              fontWeight: "bold",
+              opacity: isLoading ? 0.6 : 1
+            }}
+          >
+            {isLoading ? "Searching..." : "Search"}
+          </button>
+        </div>
+
+        {/* Advanced Search Button - Placeholder for future feature */}
+        <div style={{ marginTop: "12px" }}>
+          <button
+            style={{
+              padding: "8px 16px",
+              fontSize: "14px",
+              backgroundColor: "transparent",
+              color: "#7b6be5",
+              border: "2px solid #7b6be5",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontWeight: "bold"
+            }}
+            onClick={() => alert("Advanced search coming soon!")}
+          >
+            Advanced Search
+          </button>
+        </div>
+      </div>
+
+      {/* Search Results */}
+      <div>
+        {isLoading && (
+          <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
+            <div>Loading results...</div>
+          </div>
+        )}
+
+        {!isLoading && hasSearched && searchResults.length === 0 && (
+          <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
+            <div style={{ fontSize: "18px", marginBottom: "8px" }}>
+              No portfolios found
+            </div>
+            <div style={{ fontSize: "14px" }}>
+              Try different keywords or check your spelling
+            </div>
+          </div>
+        )}
+
+        {!isLoading && searchResults.length > 0 && (
+          <div>
+            <div style={{ marginBottom: "16px", color: "#666", fontSize: "14px" }}>
+              Found {searchResults.length} result{searchResults.length !== 1 ? "s" : ""}
+            </div>
+            {searchResults.map((result) => (
+              <PortfolioCard
+                key={result.portfolio.portfolioId}
+                portfolio={result.portfolio}
+                onClick={() => handleCardClick(result.portfolio.userId)}
+              />
+            ))}
+          </div>
+        )}
+
+        {!hasSearched && (
+          <div style={{ textAlign: "center", padding: "60px 20px", color: "#999" }}>
+            <div style={{ fontSize: "48px", marginBottom: "16px" }}>🔍</div>
+            <div style={{ fontSize: "18px", marginBottom: "8px" }}>
+              Search for portfolios and projects
+            </div>
+            <div style={{ fontSize: "14px" }}>
+              Enter keywords like "weather app", "e-commerce", or "dashboard"
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+```
+
+```typescriptreact
+// src/pages/SearchPage.tsx
+
+import React, { useState } from "react";
+import { SearchService } from "../services/SearchService";
+import { SearchResult, SearchFilters } from "../types/Portfolio";
+import { PortfolioCard } from "../components/PortfolioCard";
+import { AdvancedSearchPanel } from "../components/AdvancedSearchPanel";
+
+interface SearchPageProps {
+  user: any;
+  onNavigateToProfile?: (userId: string) => void;
+}
+
+/**
+ * SearchPage - Main search interface for finding portfolios
+ * 
+ * Features:
+ * - Text-based search through portfolio titles and descriptions
+ * - Advanced filters: tags, user name, date range, sorting
+ * - Real-time search results
+ * - Click to view user profiles
+ * 
+ * NOTE: Currently uses mock data for testing
+ * @author Chauncey (using mock data for cross-platform testing)
+ * @author Senior Engineer (advanced search implementation)
+ */
+export function SearchPage({ user, onNavigateToProfile }: SearchPageProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchFilters, setSearchFilters] = useState<SearchFilters>({});
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
+  const [isAdvancedPanelOpen, setIsAdvancedPanelOpen] = useState(false);
+
+  const searchService = new SearchService();
+
+  /**
+   * Handle search submission
+   */
+  const handleSearch = async () => {
+    // Check if we have a query or active filters
+    const hasQuery = searchQuery.trim().length > 0;
+    const hasFilters = Boolean(
+      searchFilters.tags?.length ||
+      searchFilters.userName ||
+      searchFilters.dateFrom ||
+      searchFilters.dateTo
+    );
+
+    if (!hasQuery && !hasFilters) {
+      return;
+    }
+
+    setIsLoading(true);
+    setHasSearched(true);
+
+    try {
+      // Combine query with filters
+      const filters: SearchFilters = {
+        ...searchFilters,
+        query: searchQuery.trim() || undefined
+      };
+      
+      const results = await searchService.searchPortfoliosWithFilters(filters);
+      setSearchResults(results);
+    } catch (error) {
+      console.error("Search error:", error);
+      alert("An error occurred while searching. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  /**
+   * Handle filters change from AdvancedSearchPanel
+   */
+  const handleFiltersChange = (newFilters: SearchFilters) => {
+    setSearchFilters(newFilters);
+    // Auto-search when filters change (if we have a query or other filters)
+    const hasQuery = searchQuery.trim().length > 0;
+    const hasOtherFilters = Boolean(
+      newFilters.tags?.length ||
+      newFilters.userName ||
+      newFilters.dateFrom ||
+      newFilters.dateTo
+    );
+    
+    if (hasQuery || hasOtherFilters) {
+      // Trigger search with new filters
+      setTimeout(() => {
+        handleSearch();
+      }, 100);
+    }
+  };
+
+  /**
+   * Handle Enter key press in search input
+   */
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
+  /**
+   * Handle portfolio card click - navigate to user profile
+   */
+  const handleCardClick = (userId: string) => {
+    console.log("Navigating to profile for user:", userId);
+    
+    // TODO: Implement actual navigation to profile page
+    // For now, just alert the user
+    alert(`Navigation to profile for user ${userId} will be implemented`);
+    
+    // If navigation callback is provided, use it
+    if (onNavigateToProfile) {
+      onNavigateToProfile(userId);
+    }
+  };
+
+  return (
+    <div style={{ padding: "40px", maxWidth: "800px", margin: "0 auto" }}>
+      <h1 style={{ fontSize: "32px", marginBottom: "24px", color: "#333" }}>
+        Search Portfolios
+      </h1>
+
+      {/* Search Bar */}
+      <div style={{ marginBottom: "32px" }}>
+        <div style={{ display: "flex", gap: "12px" }}>
+          <input
+            type="text"
+            placeholder="Search for portfolios (e.g., 'weather app', 'e-commerce')"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyPress={handleKeyPress}
+            style={{
+              flex: 1,
+              padding: "12px 16px",
+              fontSize: "16px",
+              border: "2px solid #ddd",
+              borderRadius: "8px",
+              outline: "none"
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = "#7b6be5";
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = "#ddd";
+            }}
+          />
+          <button
+            onClick={handleSearch}
+            disabled={isLoading}
+            style={{
+              padding: "12px 32px",
+              fontSize: "16px",
+              backgroundColor: "#7b6be5",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: isLoading ? "not-allowed" : "pointer",
+              fontWeight: "bold",
+              opacity: isLoading ? 0.6 : 1
+            }}
+          >
+            {isLoading ? "Searching..." : "Search"}
+          </button>
+        </div>
+
+        {/* Advanced Search Panel */}
+        <div style={{ marginTop: "12px" }}>
+          <AdvancedSearchPanel
+            filters={searchFilters}
+            onFiltersChange={handleFiltersChange}
+            isOpen={isAdvancedPanelOpen}
+            onToggle={() => setIsAdvancedPanelOpen(!isAdvancedPanelOpen)}
+          />
+        </div>
+      </div>
+
+      {/* Search Results */}
+      <div>
+        {isLoading && (
+          <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
+            <div>Loading results...</div>
+          </div>
+        )}
+
+        {!isLoading && hasSearched && searchResults.length === 0 && (
+          <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
+            <div style={{ fontSize: "18px", marginBottom: "8px" }}>
+              No portfolios found
+            </div>
+            <div style={{ fontSize: "14px" }}>
+              Try different keywords or check your spelling
+            </div>
+          </div>
+        )}
+
+        {!isLoading && searchResults.length > 0 && (
+          <div>
+            <div style={{ marginBottom: "16px", color: "#666", fontSize: "14px" }}>
+              Found {searchResults.length} result{searchResults.length !== 1 ? "s" : ""}
+            </div>
+            {searchResults.map((result) => (
+              <PortfolioCard
+                key={result.portfolio.portfolioId}
+                portfolio={result.portfolio}
+                onClick={() => handleCardClick(result.portfolio.userId)}
+              />
+            ))}
+          </div>
+        )}
+
+        {!hasSearched && (
+          <div style={{ textAlign: "center", padding: "60px 20px", color: "#999" }}>
+            <div style={{ fontSize: "48px", marginBottom: "16px" }}>🔍</div>
+            <div style={{ fontSize: "18px", marginBottom: "8px" }}>
+              Search for portfolios and projects
+            </div>
+            <div style={{ fontSize: "14px" }}>
+              Enter keywords like "weather app", "e-commerce", or "dashboard"
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+```
+
+
+Checking for linting errors:
+
+
+
+No linting errors. Reviewing the implementation to ensure everything is connected:
+
+
+
+Fixing a potential issue in `handleFiltersChange` where it uses stale state:
+
+
+```typescriptreact
+// src/pages/SearchPage.tsx
+
+import React, { useState } from "react";
+import { SearchService } from "../services/SearchService";
+import { SearchResult, SearchFilters } from "../types/Portfolio";
+import { PortfolioCard } from "../components/PortfolioCard";
+import { AdvancedSearchPanel } from "../components/AdvancedSearchPanel";
+
+interface SearchPageProps {
+  user: any;
+  onNavigateToProfile?: (userId: string) => void;
+}
+
+/**
+ * SearchPage - Main search interface for finding portfolios
+ * 
+ * Features:
+ * - Text-based search through portfolio titles and descriptions
+ * - Advanced filters: tags, user name, date range, sorting
+ * - Real-time search results
+ * - Click to view user profiles
+ * 
+ * NOTE: Currently uses mock data for testing
+ * @author Chauncey (using mock data for cross-platform testing)
+ * @author Senior Engineer (advanced search implementation)
+ */
+export function SearchPage({ user, onNavigateToProfile }: SearchPageProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchFilters, setSearchFilters] = useState<SearchFilters>({});
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
+  const [isAdvancedPanelOpen, setIsAdvancedPanelOpen] = useState(false);
+
+  const searchService = new SearchService();
+
+  /**
+   * Handle search submission
+   */
+  const handleSearch = async () => {
+    // Check if we have a query or active filters
+    const hasQuery = searchQuery.trim().length > 0;
+    const hasFilters = Boolean(
+      searchFilters.tags?.length ||
+      searchFilters.userName ||
+      searchFilters.dateFrom ||
+      searchFilters.dateTo
+    );
+
+    if (!hasQuery && !hasFilters) {
+      return;
+    }
+
+    setIsLoading(true);
+    setHasSearched(true);
+
+    try {
+      // Combine query with filters
+      const filters: SearchFilters = {
+        ...searchFilters,
+        query: searchQuery.trim() || undefined
+      };
+      
+      const results = await searchService.searchPortfoliosWithFilters(filters);
+      setSearchResults(results);
+    } catch (error) {
+      console.error("Search error:", error);
+      alert("An error occurred while searching. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  /**
+   * Handle filters change from AdvancedSearchPanel
+   */
+  const handleFiltersChange = async (newFilters: SearchFilters) => {
+    setSearchFilters(newFilters);
+    // Auto-search when filters change (if we have a query or other filters)
+    const hasQuery = searchQuery.trim().length > 0;
+    const hasOtherFilters = Boolean(
+      newFilters.tags?.length ||
+      newFilters.userName ||
+      newFilters.dateFrom ||
+      newFilters.dateTo
+    );
+    
+    if (hasQuery || hasOtherFilters) {
+      setIsLoading(true);
+      setHasSearched(true);
+      
+      try {
+        // Use newFilters directly to avoid stale state
+        const filters: SearchFilters = {
+          ...newFilters,
+          query: searchQuery.trim() || undefined
+        };
+        
+        const results = await searchService.searchPortfoliosWithFilters(filters);
+        setSearchResults(results);
+      } catch (error) {
+        console.error("Search error:", error);
+        alert("An error occurred while searching. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  /**
+   * Handle Enter key press in search input
+   */
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
+  /**
+   * Handle portfolio card click - navigate to user profile
+   */
+  const handleCardClick = (userId: string) => {
+    console.log("Navigating to profile for user:", userId);
+    
+    // TODO: Implement actual navigation to profile page
+    // For now, just alert the user
+    alert(`Navigation to profile for user ${userId} will be implemented`);
+    
+    // If navigation callback is provided, use it
+    if (onNavigateToProfile) {
+      onNavigateToProfile(userId);
+    }
+  };
+
+  return (
+    <div style={{ padding: "40px", maxWidth: "800px", margin: "0 auto" }}>
+      <h1 style={{ fontSize: "32px", marginBottom: "24px", color: "#333" }}>
+        Search Portfolios
+      </h1>
+
+      {/* Search Bar */}
+      <div style={{ marginBottom: "32px" }}>
+        <div style={{ display: "flex", gap: "12px" }}>
+          <input
+            type="text"
+            placeholder="Search for portfolios (e.g., 'weather app', 'e-commerce')"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyPress={handleKeyPress}
+            style={{
+              flex: 1,
+              padding: "12px 16px",
+              fontSize: "16px",
+              border: "2px solid #ddd",
+              borderRadius: "8px",
+              outline: "none"
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = "#7b6be5";
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = "#ddd";
+            }}
+          />
+          <button
+            onClick={handleSearch}
+            disabled={isLoading}
+            style={{
+              padding: "12px 32px",
+              fontSize: "16px",
+              backgroundColor: "#7b6be5",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: isLoading ? "not-allowed" : "pointer",
+              fontWeight: "bold",
+              opacity: isLoading ? 0.6 : 1
+            }}
+          >
+            {isLoading ? "Searching..." : "Search"}
+          </button>
+        </div>
+
+        {/* Advanced Search Panel */}
+        <div style={{ marginTop: "12px" }}>
+          <AdvancedSearchPanel
+            filters={searchFilters}
+            onFiltersChange={handleFiltersChange}
+            isOpen={isAdvancedPanelOpen}
+            onToggle={() => setIsAdvancedPanelOpen(!isAdvancedPanelOpen)}
+          />
+        </div>
+      </div>
+
+      {/* Search Results */}
+      <div>
+        {isLoading && (
+          <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
+            <div>Loading results...</div>
+          </div>
+        )}
+
+        {!isLoading && hasSearched && searchResults.length === 0 && (
+          <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
+            <div style={{ fontSize: "18px", marginBottom: "8px" }}>
+              No portfolios found
+            </div>
+            <div style={{ fontSize: "14px" }}>
+              Try different keywords or check your spelling
+            </div>
+          </div>
+        )}
+
+        {!isLoading && searchResults.length > 0 && (
+          <div>
+            <div style={{ marginBottom: "16px", color: "#666", fontSize: "14px" }}>
+              Found {searchResults.length} result{searchResults.length !== 1 ? "s" : ""}
+            </div>
+            {searchResults.map((result) => (
+              <PortfolioCard
+                key={result.portfolio.portfolioId}
+                portfolio={result.portfolio}
+                onClick={() => handleCardClick(result.portfolio.userId)}
+              />
+            ))}
+          </div>
+        )}
+
+        {!hasSearched && (
+          <div style={{ textAlign: "center", padding: "60px 20px", color: "#999" }}>
+            <div style={{ fontSize: "48px", marginBottom: "16px" }}>🔍</div>
+            <div style={{ fontSize: "18px", marginBottom: "8px" }}>
+              Search for portfolios and projects
+            </div>
+            <div style={{ fontSize: "14px" }}>
+              Enter keywords like "weather app", "e-commerce", or "dashboard"
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+```
+
+
+Optimizing AdvancedSearchPanel to avoid recreating the service instance:
+
+
+```typescriptreact
+// src/components/AdvancedSearchPanel.tsx
+
+import React, { useState, useEffect, useMemo } from "react";
+import { SearchFilters } from "../types/Portfolio";
+import { SearchService } from "../services/SearchService";
+
+interface AdvancedSearchPanelProps {
+  filters: SearchFilters;
+  onFiltersChange: (filters: SearchFilters) => void;
+  isOpen: boolean;
+  onToggle: () => void;
+}
+
+/**
+ * AdvancedSearchPanel - Collapsible panel for advanced search filters
+ * 
+ * Features:
+ * - Tag filtering (multi-select)
+ * - User name filtering
+ * - Date range filtering
+ * - Sort options (relevance, date, alphabetical)
+ * 
+ * @author Senior Engineer
+ */
+export function AdvancedSearchPanel({
+  filters,
+  onFiltersChange,
+  isOpen,
+  onToggle
+}: AdvancedSearchPanelProps) {
+  const [availableTags, setAvailableTags] = useState<string[]>([]);
+  const [isLoadingTags, setIsLoadingTags] = useState(false);
+  const searchService = new SearchService();
+
+  // Load available tags on mount
+  useEffect(() => {
+    const loadTags = async () => {
+      setIsLoadingTags(true);
+      try {
+        const tags = await searchService.getAvailableTags();
+        setAvailableTags(tags);
+      } catch (error) {
+        console.error("Error loading tags:", error);
+      } finally {
+        setIsLoadingTags(false);
+      }
+    };
+
+    if (isOpen) {
+      loadTags();
+    }
+  }, [isOpen]);
+
+  /**
+   * Handle tag checkbox change
+   */
+  const handleTagChange = (tag: string, checked: boolean) => {
+    const currentTags = filters.tags || [];
+    const newTags = checked
+      ? [...currentTags, tag]
+      : currentTags.filter(t => t !== tag);
+    
+    onFiltersChange({
+      ...filters,
+      tags: newTags.length > 0 ? newTags : undefined
+    });
+  };
+
+  /**
+   * Handle user name input change
+   */
+  const handleUserNameChange = (userName: string) => {
+    onFiltersChange({
+      ...filters,
+      userName: userName.trim() || undefined
+    });
+  };
+
+  /**
+   * Handle date range changes
+   */
+  const handleDateFromChange = (date: string) => {
+    onFiltersChange({
+      ...filters,
+      dateFrom: date || undefined
+    });
+  };
+
+  const handleDateToChange = (date: string) => {
+    onFiltersChange({
+      ...filters,
+      dateTo: date || undefined
+    });
+  };
+
+  /**
+   * Handle sort options change
+   */
+  const handleSortChange = (sortBy: "relevance" | "date" | "alphabetical", sortOrder: "asc" | "desc") => {
+    onFiltersChange({
+      ...filters,
+      sortBy,
+      sortOrder
+    });
+  };
+
+  /**
+   * Clear all filters
+   */
+  const handleClearFilters = () => {
+    onFiltersChange({
+      query: filters.query // Keep the text query
+    });
+  };
+
+  /**
+   * Check if any filters are active (excluding query)
+   */
+  const hasActiveFilters = Boolean(
+    filters.tags?.length ||
+    filters.userName ||
+    filters.dateFrom ||
+    filters.dateTo ||
+    (filters.sortBy && filters.sortBy !== "relevance") ||
+    (filters.sortOrder && filters.sortOrder !== "desc")
+  );
+
+  return (
+    <div style={{ marginBottom: "24px" }}>
+      {/* Toggle Button */}
+      <button
+        onClick={onToggle}
+        style={{
+          padding: "8px 16px",
+          fontSize: "14px",
+          backgroundColor: isOpen ? "#7b6be5" : "transparent",
+          color: isOpen ? "white" : "#7b6be5",
+          border: "2px solid #7b6be5",
+          borderRadius: "8px",
+          cursor: "pointer",
+          fontWeight: "bold",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px"
+        }}
+      >
+        <span>{isOpen ? "▼" : "▶"}</span>
+        <span>Advanced Search</span>
+        {hasActiveFilters && (
+          <span
+            style={{
+              backgroundColor: isOpen ? "white" : "#7b6be5",
+              color: isOpen ? "#7b6be5" : "white",
+              borderRadius: "12px",
+              padding: "2px 8px",
+              fontSize: "12px",
+              marginLeft: "4px"
+            }}
+          >
+            Active
+          </span>
+        )}
+      </button>
+
+      {/* Filter Panel */}
+      {isOpen && (
+        <div
+          style={{
+            marginTop: "16px",
+            padding: "24px",
+            backgroundColor: "#f9f9f9",
+            borderRadius: "8px",
+            border: "1px solid #e0e0e0"
+          }}
+        >
+          {/* Tags Filter */}
+          <div style={{ marginBottom: "24px" }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "14px",
+                fontWeight: "bold",
+                marginBottom: "12px",
+                color: "#333"
+              }}
+            >
+              Filter by Tags
+            </label>
+            {isLoadingTags ? (
+              <div style={{ color: "#666", fontSize: "14px" }}>Loading tags...</div>
+            ) : (
+              <div
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: "8px"
+                }}
+              >
+                {availableTags.map(tag => {
+                  const isChecked = filters.tags?.includes(tag) || false;
+                  return (
+                    <label
+                      key={tag}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        padding: "6px 12px",
+                        backgroundColor: isChecked ? "#7b6be5" : "white",
+                        color: isChecked ? "white" : "#333",
+                        border: `2px solid ${isChecked ? "#7b6be5" : "#ddd"}`,
+                        borderRadius: "20px",
+                        cursor: "pointer",
+                        fontSize: "13px",
+                        transition: "all 0.2s ease"
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={(e) => handleTagChange(tag, e.target.checked)}
+                        style={{
+                          marginRight: "6px",
+                          cursor: "pointer"
+                        }}
+                      />
+                      {tag}
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* User Name Filter */}
+          <div style={{ marginBottom: "24px" }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "14px",
+                fontWeight: "bold",
+                marginBottom: "8px",
+                color: "#333"
+              }}
+            >
+              Filter by User Name
+            </label>
+            <input
+              type="text"
+              placeholder="Enter user name..."
+              value={filters.userName || ""}
+              onChange={(e) => handleUserNameChange(e.target.value)}
+              style={{
+                width: "100%",
+                maxWidth: "300px",
+                padding: "8px 12px",
+                fontSize: "14px",
+                border: "2px solid #ddd",
+                borderRadius: "6px",
+                outline: "none"
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = "#7b6be5";
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = "#ddd";
+              }}
+            />
+          </div>
+
+          {/* Date Range Filter */}
+          <div style={{ marginBottom: "24px" }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "14px",
+                fontWeight: "bold",
+                marginBottom: "8px",
+                color: "#333"
+              }}
+            >
+              Filter by Date Created
+            </label>
+            <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+              <div>
+                <label
+                  style={{
+                    display: "block",
+                    fontSize: "12px",
+                    color: "#666",
+                    marginBottom: "4px"
+                  }}
+                >
+                  From
+                </label>
+                <input
+                  type="date"
+                  value={filters.dateFrom || ""}
+                  onChange={(e) => handleDateFromChange(e.target.value)}
+                  style={{
+                    padding: "8px 12px",
+                    fontSize: "14px",
+                    border: "2px solid #ddd",
+                    borderRadius: "6px",
+                    outline: "none"
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = "#7b6be5";
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = "#ddd";
+                  }}
+                />
+              </div>
+              <div>
+                <label
+                  style={{
+                    display: "block",
+                    fontSize: "12px",
+                    color: "#666",
+                    marginBottom: "4px"
+                  }}
+                >
+                  To
+                </label>
+                <input
+                  type="date"
+                  value={filters.dateTo || ""}
+                  onChange={(e) => handleDateToChange(e.target.value)}
+                  style={{
+                    padding: "8px 12px",
+                    fontSize: "14px",
+                    border: "2px solid #ddd",
+                    borderRadius: "6px",
+                    outline: "none"
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = "#7b6be5";
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = "#ddd";
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Sort Options */}
+          <div style={{ marginBottom: "24px" }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "14px",
+                fontWeight: "bold",
+                marginBottom: "8px",
+                color: "#333"
+              }}
+            >
+              Sort By
+            </label>
+            <div style={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}>
+              <select
+                value={filters.sortBy || "relevance"}
+                onChange={(e) =>
+                  handleSortChange(
+                    e.target.value as "relevance" | "date" | "alphabetical",
+                    filters.sortOrder || "desc"
+                  )
+                }
+                style={{
+                  padding: "8px 12px",
+                  fontSize: "14px",
+                  border: "2px solid #ddd",
+                  borderRadius: "6px",
+                  outline: "none",
+                  cursor: "pointer"
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = "#7b6be5";
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = "#ddd";
+                }}
+              >
+                <option value="relevance">Relevance</option>
+                <option value="date">Date Created</option>
+                <option value="alphabetical">Alphabetical (Title)</option>
+              </select>
+              {filters.sortBy && filters.sortBy !== "relevance" && (
+                <select
+                  value={filters.sortOrder || "asc"}
+                  onChange={(e) =>
+                    handleSortChange(
+                      filters.sortBy || "date",
+                      e.target.value as "asc" | "desc"
+                    )
+                  }
+                  style={{
+                    padding: "8px 12px",
+                    fontSize: "14px",
+                    border: "2px solid #ddd",
+                    borderRadius: "6px",
+                    outline: "none",
+                    cursor: "pointer"
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = "#7b6be5";
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = "#ddd";
+                  }}
+                >
+                  <option value="asc">Ascending</option>
+                  <option value="desc">Descending</option>
+                </select>
+              )}
+            </div>
+          </div>
+
+          {/* Clear Filters Button */}
+          {hasActiveFilters && (
+            <div>
+              <button
+                onClick={handleClearFilters}
+                style={{
+                  padding: "8px 16px",
+                  fontSize: "14px",
+                  backgroundColor: "transparent",
+                  color: "#666",
+                  border: "2px solid #ddd",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  fontWeight: "bold"
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = "#999";
+                  e.currentTarget.style.color = "#333";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "#ddd";
+                  e.currentTarget.style.color = "#666";
+                }}
+              >
+                Clear All Filters
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+```
+
+```typescriptreact
+// src/components/AdvancedSearchPanel.tsx
+
+import React, { useState, useEffect, useMemo } from "react";
+import { SearchFilters } from "../types/Portfolio";
+import { SearchService } from "../services/SearchService";
+
+interface AdvancedSearchPanelProps {
+  filters: SearchFilters;
+  onFiltersChange: (filters: SearchFilters) => void;
+  isOpen: boolean;
+  onToggle: () => void;
+}
+
+/**
+ * AdvancedSearchPanel - Collapsible panel for advanced search filters
+ * 
+ * Features:
+ * - Tag filtering (multi-select)
+ * - User name filtering
+ * - Date range filtering
+ * - Sort options (relevance, date, alphabetical)
+ * 
+ * @author Senior Engineer
+ */
+export function AdvancedSearchPanel({
+  filters,
+  onFiltersChange,
+  isOpen,
+  onToggle
+}: AdvancedSearchPanelProps) {
+  const [availableTags, setAvailableTags] = useState<string[]>([]);
+  const [isLoadingTags, setIsLoadingTags] = useState(false);
+  const searchService = useMemo(() => new SearchService(), []);
+
+  // Load available tags on mount
+  useEffect(() => {
+    const loadTags = async () => {
+      setIsLoadingTags(true);
+      try {
+        const tags = await searchService.getAvailableTags();
+        setAvailableTags(tags);
+      } catch (error) {
+        console.error("Error loading tags:", error);
+      } finally {
+        setIsLoadingTags(false);
+      }
+    };
+
+    if (isOpen) {
+      loadTags();
+    }
+  }, [isOpen, searchService]);
+
+  /**
+   * Handle tag checkbox change
+   */
+  const handleTagChange = (tag: string, checked: boolean) => {
+    const currentTags = filters.tags || [];
+    const newTags = checked
+      ? [...currentTags, tag]
+      : currentTags.filter(t => t !== tag);
+    
+    onFiltersChange({
+      ...filters,
+      tags: newTags.length > 0 ? newTags : undefined
+    });
+  };
+
+  /**
+   * Handle user name input change
+   */
+  const handleUserNameChange = (userName: string) => {
+    onFiltersChange({
+      ...filters,
+      userName: userName.trim() || undefined
+    });
+  };
+
+  /**
+   * Handle date range changes
+   */
+  const handleDateFromChange = (date: string) => {
+    onFiltersChange({
+      ...filters,
+      dateFrom: date || undefined
+    });
+  };
+
+  const handleDateToChange = (date: string) => {
+    onFiltersChange({
+      ...filters,
+      dateTo: date || undefined
+    });
+  };
+
+  /**
+   * Handle sort options change
+   */
+  const handleSortChange = (sortBy: "relevance" | "date" | "alphabetical", sortOrder: "asc" | "desc") => {
+    onFiltersChange({
+      ...filters,
+      sortBy,
+      sortOrder
+    });
+  };
+
+  /**
+   * Clear all filters
+   */
+  const handleClearFilters = () => {
+    onFiltersChange({
+      query: filters.query // Keep the text query
+    });
+  };
+
+  /**
+   * Check if any filters are active (excluding query)
+   */
+  const hasActiveFilters = Boolean(
+    filters.tags?.length ||
+    filters.userName ||
+    filters.dateFrom ||
+    filters.dateTo ||
+    (filters.sortBy && filters.sortBy !== "relevance") ||
+    (filters.sortOrder && filters.sortOrder !== "desc")
+  );
+
+  return (
+    <div style={{ marginBottom: "24px" }}>
+      {/* Toggle Button */}
+      <button
+        onClick={onToggle}
+        style={{
+          padding: "8px 16px",
+          fontSize: "14px",
+          backgroundColor: isOpen ? "#7b6be5" : "transparent",
+          color: isOpen ? "white" : "#7b6be5",
+          border: "2px solid #7b6be5",
+          borderRadius: "8px",
+          cursor: "pointer",
+          fontWeight: "bold",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px"
+        }}
+      >
+        <span>{isOpen ? "▼" : "▶"}</span>
+        <span>Advanced Search</span>
+        {hasActiveFilters && (
+          <span
+            style={{
+              backgroundColor: isOpen ? "white" : "#7b6be5",
+              color: isOpen ? "#7b6be5" : "white",
+              borderRadius: "12px",
+              padding: "2px 8px",
+              fontSize: "12px",
+              marginLeft: "4px"
+            }}
+          >
+            Active
+          </span>
+        )}
+      </button>
+
+      {/* Filter Panel */}
+      {isOpen && (
+        <div
+          style={{
+            marginTop: "16px",
+            padding: "24px",
+            backgroundColor: "#f9f9f9",
+            borderRadius: "8px",
+            border: "1px solid #e0e0e0"
+          }}
+        >
+          {/* Tags Filter */}
+          <div style={{ marginBottom: "24px" }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "14px",
+                fontWeight: "bold",
+                marginBottom: "12px",
+                color: "#333"
+              }}
+            >
+              Filter by Tags
+            </label>
+            {isLoadingTags ? (
+              <div style={{ color: "#666", fontSize: "14px" }}>Loading tags...</div>
+            ) : (
+              <div
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: "8px"
+                }}
+              >
+                {availableTags.map(tag => {
+                  const isChecked = filters.tags?.includes(tag) || false;
+                  return (
+                    <label
+                      key={tag}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        padding: "6px 12px",
+                        backgroundColor: isChecked ? "#7b6be5" : "white",
+                        color: isChecked ? "white" : "#333",
+                        border: `2px solid ${isChecked ? "#7b6be5" : "#ddd"}`,
+                        borderRadius: "20px",
+                        cursor: "pointer",
+                        fontSize: "13px",
+                        transition: "all 0.2s ease"
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={(e) => handleTagChange(tag, e.target.checked)}
+                        style={{
+                          marginRight: "6px",
+                          cursor: "pointer"
+                        }}
+                      />
+                      {tag}
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* User Name Filter */}
+          <div style={{ marginBottom: "24px" }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "14px",
+                fontWeight: "bold",
+                marginBottom: "8px",
+                color: "#333"
+              }}
+            >
+              Filter by User Name
+            </label>
+            <input
+              type="text"
+              placeholder="Enter user name..."
+              value={filters.userName || ""}
+              onChange={(e) => handleUserNameChange(e.target.value)}
+              style={{
+                width: "100%",
+                maxWidth: "300px",
+                padding: "8px 12px",
+                fontSize: "14px",
+                border: "2px solid #ddd",
+                borderRadius: "6px",
+                outline: "none"
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = "#7b6be5";
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = "#ddd";
+              }}
+            />
+          </div>
+
+          {/* Date Range Filter */}
+          <div style={{ marginBottom: "24px" }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "14px",
+                fontWeight: "bold",
+                marginBottom: "8px",
+                color: "#333"
+              }}
+            >
+              Filter by Date Created
+            </label>
+            <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+              <div>
+                <label
+                  style={{
+                    display: "block",
+                    fontSize: "12px",
+                    color: "#666",
+                    marginBottom: "4px"
+                  }}
+                >
+                  From
+                </label>
+                <input
+                  type="date"
+                  value={filters.dateFrom || ""}
+                  onChange={(e) => handleDateFromChange(e.target.value)}
+                  style={{
+                    padding: "8px 12px",
+                    fontSize: "14px",
+                    border: "2px solid #ddd",
+                    borderRadius: "6px",
+                    outline: "none"
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = "#7b6be5";
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = "#ddd";
+                  }}
+                />
+              </div>
+              <div>
+                <label
+                  style={{
+                    display: "block",
+                    fontSize: "12px",
+                    color: "#666",
+                    marginBottom: "4px"
+                  }}
+                >
+                  To
+                </label>
+                <input
+                  type="date"
+                  value={filters.dateTo || ""}
+                  onChange={(e) => handleDateToChange(e.target.value)}
+                  style={{
+                    padding: "8px 12px",
+                    fontSize: "14px",
+                    border: "2px solid #ddd",
+                    borderRadius: "6px",
+                    outline: "none"
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = "#7b6be5";
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = "#ddd";
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Sort Options */}
+          <div style={{ marginBottom: "24px" }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "14px",
+                fontWeight: "bold",
+                marginBottom: "8px",
+                color: "#333"
+              }}
+            >
+              Sort By
+            </label>
+            <div style={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}>
+              <select
+                value={filters.sortBy || "relevance"}
+                onChange={(e) =>
+                  handleSortChange(
+                    e.target.value as "relevance" | "date" | "alphabetical",
+                    filters.sortOrder || "desc"
+                  )
+                }
+                style={{
+                  padding: "8px 12px",
+                  fontSize: "14px",
+                  border: "2px solid #ddd",
+                  borderRadius: "6px",
+                  outline: "none",
+                  cursor: "pointer"
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = "#7b6be5";
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = "#ddd";
+                }}
+              >
+                <option value="relevance">Relevance</option>
+                <option value="date">Date Created</option>
+                <option value="alphabetical">Alphabetical (Title)</option>
+              </select>
+              {filters.sortBy && filters.sortBy !== "relevance" && (
+                <select
+                  value={filters.sortOrder || "asc"}
+                  onChange={(e) =>
+                    handleSortChange(
+                      filters.sortBy || "date",
+                      e.target.value as "asc" | "desc"
+                    )
+                  }
+                  style={{
+                    padding: "8px 12px",
+                    fontSize: "14px",
+                    border: "2px solid #ddd",
+                    borderRadius: "6px",
+                    outline: "none",
+                    cursor: "pointer"
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = "#7b6be5";
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = "#ddd";
+                  }}
+                >
+                  <option value="asc">Ascending</option>
+                  <option value="desc">Descending</option>
+                </select>
+              )}
+            </div>
+          </div>
+
+          {/* Clear Filters Button */}
+          {hasActiveFilters && (
+            <div>
+              <button
+                onClick={handleClearFilters}
+                style={{
+                  padding: "8px 16px",
+                  fontSize: "14px",
+                  backgroundColor: "transparent",
+                  color: "#666",
+                  border: "2px solid #ddd",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  fontWeight: "bold"
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = "#999";
+                  e.currentTarget.style.color = "#333";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "#ddd";
+                  e.currentTarget.style.color = "#666";
+                }}
+              >
+                Clear All Filters
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+```
+
+
+## Summary
+
+Advanced Search/Filters implemented for the SkillShow portfolio search.
+
+### 1. **Type definitions** (`types/Portfolio.ts`)
+   - Added `SearchFilters` interface with:
+     - Text query
+     - Tags (multi-select)
+     - User name
+     - Date range (from/to)
+     - Sort options (relevance, date, alphabetical)
+     - Sort order (asc/desc)
+
+### 2. **SearchService updates** (`services/SearchService.ts`)
+   - Added `searchPortfoliosWithFilters()` for advanced search
+   - Filter matching logic:
+     - Tags: at least one match
+     - User name: case-insensitive partial match
+     - Date range: filter by creation date
+   - Sorting: relevance, date, alphabetical (asc/desc)
+   - Enhanced relevance scoring to include tags
+   - Added `getAvailableTags()` for filter UI
+   - Backward compatible: `searchPortfolios()` uses the new method
+
+### 3. **AdvancedSearchPanel component** (`components/AdvancedSearchPanel.tsx`)
+   - Collapsible panel with toggle
+   - Tag filter: multi-select checkboxes with available tags
+   - User name filter: text input
+   - Date range: from/to date inputs
+   - Sort options: dropdown with order selection
+   - Clear filters button (shown when filters are active)
+   - Visual indicator when filters are active
+   - Auto-loads available tags when opened
+
+### 4. **SearchPage integration** (`pages/SearchPage.tsx`)
+   - Integrated AdvancedSearchPanel
+   - Filter state management
+   - Auto-search when filters change
+   - Combines text query with advanced filters
+   - Supports search with filters only (no text query required)
+
+### Features
+- Tag filtering: select multiple tags
+- User name filtering: partial match
+- Date range: filter by creation date
+- Sorting: relevance, date, or alphabetical
+- Auto-search: triggers when filters change
+- Clear filters: reset all filters at once
+- Backward compatible: existing text search still works
+
+The implementation follows React/TypeScript best practices, is typed, and maintains consistency with the existing codebase. Ready for testing and can be extended when migrating from mock data to Firestore.
+
