@@ -15,6 +15,17 @@ jest.mock('firebase/firestore', () => ({
     setDoc: jest.fn(),
 }));
 
+jest.mock('../components/Tags', () => ({
+    TagSelector: () => <div data-testid="tag-selector">TagSelector</div>,
+}));
+
+jest.mock('firebase/storage', () => ({
+    getStorage: jest.fn(() => ({})),
+    ref: jest.fn(),
+    uploadBytes: jest.fn(),
+    getDownloadURL: jest.fn(),
+}));
+
 describe('ProfilePage Component', () => {
     const mockUser = { uid: 'user-123' } as any;
 
@@ -58,7 +69,10 @@ describe('ProfilePage Component', () => {
         fireEvent.click(button);
 
         await waitFor(()=>{
-            expect(setDoc).toHaveBeenCalledWith({path:'profiles/user-123'},{name: '', bio: '', pfpUrl: '',title:'',location:'',contact:''});
+            expect(setDoc).toHaveBeenCalledWith(
+                {path:'profiles/user-123'},
+                {name: '', bio: '', pfpUrl: '',title:'',location:'',contact:'', tags: []}
+            );
         
         })
          expect(window.alert).toHaveBeenCalledWith('Profile saved successfully');

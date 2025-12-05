@@ -25,7 +25,7 @@ jest.mock("react-firebase-hooks/auth", () => ({
     fireEvent.click(screen.getByText("Projects"));
 
     expect(screen.getByText("Edit Project")).toBeInTheDocument();
-    expect(screen.getByText("This is a placeholder for Edit Project page")).toBeInTheDocument();
+    expect(screen.getByText("Insert Tags")).toBeInTheDocument();
   });
 
   test("clicking Search shows SearchPage", () => {
