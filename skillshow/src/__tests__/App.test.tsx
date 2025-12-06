@@ -12,7 +12,7 @@ jest.mock("react-firebase-hooks/auth", () => ({
     fireEvent.click(screen.getByText("Profile"));
 
     // ProfilePage should render with the user
-    expect(screen.getByText(/Edit Profile/)).toBeInTheDocument();
+    expect(screen.getByText("Edit Profile")).toBeInTheDocument();
     expect(screen.getByLabelText("Name:")).toBeInTheDocument(); 
     expect(screen.getByLabelText("Title:")).toBeInTheDocument(); 
     expect(screen.getByLabelText("Location:")).toBeInTheDocument(); 
@@ -20,12 +20,12 @@ jest.mock("react-firebase-hooks/auth", () => ({
     
   });
 
-  test("clicking Projects shows ProjectEditPage", () => {
+  test("clicking Projects shows ProjectEditPage", async () => {
     render(<App />);
     fireEvent.click(screen.getByText("Projects"));
 
-    expect(screen.getByText("Edit Project")).toBeInTheDocument();
-    expect(screen.getByText("This is a placeholder for Edit Project page")).toBeInTheDocument();
+    expect(await screen.findByText("Your Projects")).toBeInTheDocument();
+    
   });
 
   test("clicking Search shows SearchPage", () => {

@@ -1,19 +1,44 @@
 // src/components/PortfolioCard.tsx
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 // TODO: Import Portfolio type from types/Portfolio
-import { Portfolio } from "../types/Portfolio";
+import { Project } from "../types/Project";
+import { db } from "../firebase-config";
+import { doc, getDoc } from "firebase/firestore";
 // TODO: Define PortfolioCardProps interface
 // Should include: portfolio (type Portfolio) and onClick (function)
 interface PortfolioCardProps {
-  portfolio: Portfolio;
+  project: Project;
+  portfolioId: string;
   onClick: () => void;
 }
 /**
  * TODO: Add component documentation
  * This component displays a single search result card
  */
-export function PortfolioCard({ portfolio, onClick }: PortfolioCardProps) {
+export function PortfolioCard({ project, portfolioId, onClick }: PortfolioCardProps) {
+  const [userName, setUserName] = useState("Loading...");
+
+  useEffect(() => {
+    async function loadUser() {
+      try {
+        const userRef = doc(db, "users", project.userId);
+        const snap = await getDoc(userRef);
+
+        if (snap.exists()) {
+          const data = snap.data();
+          setUserName(data.name ?? "Unknown User");
+        } else {
+          setUserName("Unknown User");
+        }
+      } catch (err) {
+        console.error("Failed to load user:", err);
+        setUserName("Unknown User");
+      }
+    }
+    loadUser();
+  }, [project.userId]);
+
   return (
     <div
       onClick={onClick}
@@ -54,21 +79,21 @@ export function PortfolioCard({ portfolio, onClick }: PortfolioCardProps) {
           fontSize: "20px"
         }}
       >
-        {portfolio.userName.charAt(0).toUpperCase()}
+        {userName.charAt(0).toUpperCase()}
       </div>
 
       {/* User Info */}
       <div style={{ flex: 1 }}>
         <div style={{ fontWeight: "bold", fontSize: "18px", marginBottom: "4px" }}>
-          {portfolio.userName}
+          {userName}
         </div>
         <div style={{ fontSize: "14px", color: "#444" }}>
-          {portfolio.title}
+          {project.title}
         </div>
         <div style={{ fontSize: "12px", color: "#666", marginTop: "4px" }}>
-          {portfolio.description.length > 100
-            ? portfolio.description.substring(0, 100) + "..."
-            : portfolio.description}
+          {project.desc.length > 100
+            ? project.desc.substring(0, 100) + "..."
+            : project.desc}
         </div>
       </div>
     </div>

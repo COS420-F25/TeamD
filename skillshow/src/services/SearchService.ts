@@ -1,6 +1,7 @@
 // src/services/SearchService.ts
 
 import { Portfolio, SearchResult } from "../types/Portfolio";
+import { Project } from "../types/Project";
 
 /**
  * SearchService handles portfolio search functionality
@@ -23,84 +24,141 @@ export class SearchService {
     {
       portfolioId: "port-001",
       userId: "user-001",
-      userName: "Alice Johnson",
-      userEmail: "alice@example.com",
-      title: "Weather Forecasting App",
-      description: "Built a real-time weather forecasting system using React and OpenWeather API. Features include 7-day forecasts, location search, and weather alerts.",
-      tags: ["React", "API", "TypeScript", "Weather"],
-      createdAt: "2024-01-15T10:30:00Z"
+      projects: [
+        {
+          id: "proj-001",
+          title: "Weather Forecasting App",
+          desc: "A real-time weather forecasting system using React and OpenWeather API.",
+          tags: ["React", "API", "TypeScript", "Weather"],
+          fields: [],
+          userId: "user-001",
+          createdAt: "2024-01-15T10:30:00Z"
+        },
+        {
+          id: "proj-002",
+          title: "Climate Data Visualizer",
+          desc: "Visualizes temperature and precipitation trends using D3.js.",
+          tags: ["D3.js", "Visualization", "Climate"],
+          fields: [],
+          userId: "user-001",
+          createdAt: "2024-01-20T09:00:00Z"
+        }
+      ]
     },
+
     {
       portfolioId: "port-002",
       userId: "user-002",
-      userName: "Bob Martinez",
-      userEmail: "bob@example.com",
-      title: "E-Commerce Platform",
-      description: "Full-stack e-commerce website with shopping cart, payment integration using Stripe, and inventory management system.",
-      tags: ["Node.js", "React", "MongoDB", "Stripe"],
-      createdAt: "2024-02-20T14:45:00Z"
+      projects: [
+        {
+          id: "proj-003",
+          title: "E-Commerce Platform",
+          desc: "Full-stack e-commerce website with Stripe payments and inventory management.",
+          tags: ["Node.js", "React", "MongoDB", "Stripe"],
+          fields: [],
+          userId: "user-002",
+          createdAt: "2024-02-20T14:45:00Z"
+        }
+      ]
     },
+
     {
       portfolioId: "port-003",
       userId: "user-003",
-      userName: "Carol Zhang",
-      userEmail: "carol@example.com",
-      title: "Task Management Dashboard",
-      description: "Collaborative task management tool with drag-and-drop functionality, team assignments, and real-time updates using Firebase.",
-      tags: ["React", "Firebase", "Material-UI"],
-      createdAt: "2024-03-10T09:15:00Z"
+      projects: [
+        {
+          id: "proj-004",
+          title: "Task Management Dashboard",
+          desc: "Collaborative task management tool with drag-and-drop and Firebase sync.",
+          tags: ["React", "Firebase", "Material-UI"],
+          fields: [],
+          userId: "user-003",
+          createdAt: "2024-03-10T09:15:00Z"
+        }
+      ]
     },
+
     {
       portfolioId: "port-004",
       userId: "user-004",
-      userName: "David Kim",
-      userEmail: "david@example.com",
-      title: "Weather Data Visualization",
-      description: "Interactive weather data visualization dashboard displaying climate trends, temperature patterns, and precipitation data across different regions.",
-      tags: ["Python", "Data Visualization", "D3.js"],
-      createdAt: "2024-01-25T16:20:00Z"
+      projects: [
+        {
+          id: "proj-005",
+          title: "Weather Data Visualization",
+          desc: "Interactive dashboard showing climate trends across regions.",
+          tags: ["Python", "Data Visualization", "D3.js"],
+          fields: [],
+          userId: "user-004",
+          createdAt: "2024-01-25T16:20:00Z"
+        }
+      ]
     },
+
     {
       portfolioId: "port-005",
       userId: "user-005",
-      userName: "Emma Wilson",
-      userEmail: "emma@example.com",
-      title: "Social Media Analytics Tool",
-      description: "Analytics platform for tracking social media engagement, follower growth, and content performance across multiple platforms.",
-      tags: ["React", "Chart.js", "REST API"],
-      createdAt: "2024-02-05T11:00:00Z"
+      projects: [
+        {
+          id: "proj-006",
+          title: "Social Media Analytics Tool",
+          desc: "Tracks engagement, follower growth, and content performance.",
+          tags: ["React", "Chart.js", "REST API"],
+          fields: [],
+          userId: "user-005",
+          createdAt: "2024-02-05T11:00:00Z"
+        }
+      ]
     },
+
     {
       portfolioId: "port-006",
       userId: "user-006",
-      userName: "Frank Anderson",
-      userEmail: "frank@example.com",
-      title: "Recipe Sharing Platform",
-      description: "Community-driven recipe sharing application where users can post recipes, rate dishes, and follow their favorite chefs.",
-      tags: ["React", "Firebase", "CSS"],
-      createdAt: "2024-03-15T13:30:00Z"
+      projects: [
+        {
+          id: "proj-007",
+          title: "Recipe Sharing Platform",
+          desc: "Community-driven recipe sharing app with ratings and profiles.",
+          tags: ["React", "Firebase", "CSS"],
+          fields: [],
+          userId: "user-006",
+          createdAt: "2024-03-15T13:30:00Z"
+        }
+      ]
     },
+
     {
       portfolioId: "port-007",
       userId: "user-007",
-      userName: "Grace Lee",
-      userEmail: "grace@example.com",
-      title: "Fitness Tracking Mobile App",
-      description: "Mobile fitness application for tracking workouts, calories, and progress over time with personalized workout recommendations.",
-      tags: ["React Native", "Mobile", "Health"],
-      createdAt: "2024-01-30T08:45:00Z"
+      projects: [
+        {
+          id: "proj-008",
+          title: "Fitness Tracking Mobile App",
+          desc: "Tracks workouts, calories, and progress with personalized plans.",
+          tags: ["React Native", "Mobile", "Health"],
+          fields: [],
+          userId: "user-007",
+          createdAt: "2024-01-30T08:45:00Z"
+        }
+      ]
     },
+
     {
       portfolioId: "port-008",
       userId: "user-008",
-      userName: "Henry Brown",
-      userEmail: "henry@example.com",
-      title: "Climate Change Awareness Website",
-      description: "Educational website about climate change featuring weather pattern analysis, carbon footprint calculator, and environmental news.",
-      tags: ["HTML", "CSS", "JavaScript", "Environment"],
-      createdAt: "2024-02-12T15:10:00Z"
+      projects: [
+        {
+          id: "proj-009",
+          title: "Climate Change Awareness Website",
+          desc: "Educational site with carbon calculator and environmental news.",
+          tags: ["HTML", "CSS", "JavaScript", "Environment"],
+          fields: [],
+          userId: "user-008",
+          createdAt: "2024-02-12T15:10:00Z"
+        }
+      ]
     }
   ];
+
 
   /**
    * Search portfolios by query string
@@ -122,14 +180,16 @@ export class SearchService {
 
     // Search through mock portfolios
     for (const portfolio of SearchService.MOCK_PORTFOLIOS) {
-      const matchScore = this.calculateMatchScore(portfolio, normalizedQuery);
-      
-      if (matchScore > 0) {
-        results.push({
-          portfolio,
-          matchScore
-        });
-      }
+      for (const project of portfolio.projects ?? []){
+        const matchScore = this.calculateProjectMatchScore(project, normalizedQuery);
+        if (matchScore > 0) {
+          results.push({
+            project,
+            portfolioId: portfolio.portfolioId,
+            matchScore
+          });
+        }
+      } 
     }
 
     // Sort by relevance (highest match score first)
@@ -146,34 +206,52 @@ export class SearchService {
    * @param query - The normalized search query
    * @returns number - Match score (higher = more relevant)
    */
-  private calculateMatchScore(portfolio: Portfolio, query: string): number {
+  // private calculateMatchScore(portfolio: Portfolio, query: string): number {
+  //   let score = 0;
+  //   const queryWords = query.split(/\s+/);
+
+  //   const title = portfolio.title.toLowerCase();
+  //   const description = portfolio.description.toLowerCase();
+
+  //   for (const word of queryWords) {
+  //     // Title matches are worth more (weight: 3)
+  //     if (title.includes(word)) {
+  //       score += 3;
+  //     }
+
+  //     // Description matches (weight: 1)
+  //     if (description.includes(word)) {
+  //       score += 1;
+  //     }
+  //   }
+
+  //   // Bonus for exact phrase match in title
+  //   if (title.includes(query)) {
+  //     score += 10;
+  //   }
+
+  //   // Bonus for exact phrase match in description
+  //   if (description.includes(query)) {
+  //     score += 5;
+  //   }
+
+  //   return score;
+  // }
+
+  private calculateProjectMatchScore(project: Project, query: string): number {
     let score = 0;
     const queryWords = query.split(/\s+/);
 
-    const title = portfolio.title.toLowerCase();
-    const description = portfolio.description.toLowerCase();
+    const title = project.title.toLowerCase();
+    const desc = project.desc.toLowerCase();
 
     for (const word of queryWords) {
-      // Title matches are worth more (weight: 3)
-      if (title.includes(word)) {
-        score += 3;
-      }
-
-      // Description matches (weight: 1)
-      if (description.includes(word)) {
-        score += 1;
-      }
+      if (title.includes(word)) score += 3;
+      if (desc.includes(word)) score += 1;
     }
 
-    // Bonus for exact phrase match in title
-    if (title.includes(query)) {
-      score += 10;
-    }
-
-    // Bonus for exact phrase match in description
-    if (description.includes(query)) {
-      score += 5;
-    }
+    if (title.includes(query)) score += 10;
+    if (desc.includes(query)) score += 5;
 
     return score;
   }

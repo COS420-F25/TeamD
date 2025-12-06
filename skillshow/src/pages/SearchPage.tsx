@@ -170,11 +170,14 @@ export function SearchPage({ user, onNavigateToProfile }: SearchPageProps) {
               Found {searchResults.length} result{searchResults.length !== 1 ? "s" : ""}
             </div>
             {searchResults.map((result) => (
+              
               <PortfolioCard
-                key={result.portfolio.portfolioId}
-                portfolio={result.portfolio}
-                onClick={() => handleCardClick(result.portfolio.userId)}
+                key={result.project.id}
+                project={result.project}
+                portfolioId={result.portfolioId}
+                onClick={() => handleCardClick(result.project.userId)}
               />
+
             ))}
           </div>
         )}

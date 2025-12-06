@@ -1,67 +1,103 @@
-//import React, { useState     } from "react";
-/*
-interface ProjectField {
-    id: string;
-    name: string;
-    value: string;
-    maxLength?: number;
-    multiline?: boolean;
-    width?: string;
-    height?: string;
+import React, {useEffect, useState, useCallback} from "react";
+import {db} from "../firebase-config";
+import {User} from "firebase/auth";
+import {collection, getDocs, addDoc, serverTimestamp } from "firebase/firestore";
+import { ProjectEditor } from "../components/ProjectEditor";
+//import { TagSelector } from "../components/Tags";
+import { Project } from "../types/Project";
+
+interface ProjectEditPageProps{
+    user: User | null;
 }
-*/
-export function ProjectEditPage({ user }: {user: any}) {
+
+
+export function ProjectEditPage({ user }:ProjectEditPageProps) {
+    const [projects, setProjects] = useState<Project[]>([]);
+    const [project, setProject] = useState<Project | null>(null);
+    const [loading, setLoading] = useState(true);
     
-/*
-    const [fields, setFields] = useState<ProjectField[]>([
-        {
-            id: "projectName",
-            name: "Project Name",
-            value: "",
-            maxLength: 100,
-            width: "100%"
-        },
-        {
-            id: "position",
-            name: "Role / Position",
-            value: "",
-            maxLength: 150,
-            width: "70%"
-        },
-        {
-            id: "summary",
-            name: "Short Summary",
-            value: "",
-            maxLength: 250,
-            multiline: true,
-            width: "100%"
-        },
-        {
-            id: "tech",
-            name: "Technologies Used",
-            value: "",
-            maxLength: 200,
-            width: "100%"
-        },
-        {
-            id: "details",
-            name: "Detailed Description",
-            value: "",
-            multiline: true,
-            width: "100%",
-            height: "200px"
-        }
-    ]);
-    */
+    const loadProjects = useCallback(async() => {
+        if (!user) {
+            setLoading(false);
+            return;
+        }   
+            try {
+                const colRef = collection(db,"users",user.uid, "projects");
+                const colSnap = await getDocs(colRef);
+                const colList = colSnap.docs.map((x) => {
+                    const data = x.data();
+                    return {
+                        id: x.id,
+                        title: data.title ?? "",
+                        desc: data.desc ?? "",
+                        tags: data.tags ?? [],
+                        fields: (data.fields ?? []).map((f: any) => ({
+                        id: f.id,
+                        label: f.label ?? "",
+                        value: f.value ?? ""
+                        })),
+                        userId: data.userId ?? user.uid,
+                        createdAt: data.createdAt?.toDate?.() ?? new Date()
+                    } as Project;
+                });
+
+                setProjects(colList);
+                return colList;
+                
+            } catch (err){
+                console.error("Error fetching projects:", err);
+                return [];
+            }
+
+        },[user]);
+    useEffect(() => {
+        if  (!user) return;
+
+        setLoading(true);
+        loadProjects().finally(() => setLoading(false));
+    },[user,loadProjects]);
+
+    
+
+    const createProject = async() => {
+        
+        if (!user) return;
+        const colRef = collection(db,"users",user.uid, "projects");
+        const newProj = await addDoc(colRef,{
+            title:"New Project",
+            desc:"",
+            tags:[],
+            fields:[],
+            userId: user.uid,
+            createdAt: serverTimestamp()
+        });
+
+        await loadProjects();
+        setProject({
+            id: newProj.id,
+            title: "New Project",
+            desc: "",
+            tags: [],
+            fields: [],
+            userId: user.uid,
+            createdAt: new Date()
+        });
+
+    };
 
     if (!user) {
-        return <h2>You must be logged in</h2>
+        return <p>Please log in to view projects</p>;
     }
+    if (loading) return <p>Loading projects</p>;
 
     return (
-        <div style={{ padding: 20}}>
-            <h1> Edit Project </h1>
-            <p>This is a placeholder for Edit Project page</p>
+        <div>
+            <h2>Your Projects</h2>
+            <button onClick={createProject}>New Project</button>
+            {projects.map((x)=>(
+                <div key={x.id} onClick={()=>setProject(x)}>{x.title}</div>
+            ))}
+            {project && (<ProjectEditor user={user} project={project} onClose={()=> setProject(null)} refresh={loadProjects}/>)}
         </div>
     )
         

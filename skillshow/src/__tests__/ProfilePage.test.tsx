@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { ProfilePage } from '../pages/ProfilePage';
-import { db } from '../firebase-config';
+//import { db } from '../firebase-config';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 jest.mock('../firebase-config', () => ({
@@ -13,6 +13,17 @@ jest.mock('firebase/firestore', () => ({
     doc: jest.fn(),
     getDoc: jest.fn(),
     setDoc: jest.fn(),
+}));
+
+jest.mock('../components/Tags', () => ({
+    TagSelector: () => <div data-testid="tag-selector">TagSelector</div>,
+}));
+
+jest.mock('firebase/storage', () => ({
+    getStorage: jest.fn(() => ({})),
+    ref: jest.fn(),
+    uploadBytes: jest.fn(),
+    getDownloadURL: jest.fn(),
 }));
 
 describe('ProfilePage Component', () => {
@@ -58,7 +69,10 @@ describe('ProfilePage Component', () => {
         fireEvent.click(button);
 
         await waitFor(()=>{
-            expect(setDoc).toHaveBeenCalledWith({path:'profiles/user-123'},{name: '', bio: '', pfpUrl: '',title:'',location:'',contact:''});
+            expect(setDoc).toHaveBeenCalledWith(
+                {path:'profiles/user-123'},
+                {name: '', bio: '', pfpUrl: '',title:'',location:'',contact:'', tags: []}
+            );
         
         })
          expect(window.alert).toHaveBeenCalledWith('Profile saved successfully');
