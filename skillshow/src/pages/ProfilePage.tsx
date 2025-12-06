@@ -6,6 +6,7 @@ import { DisplayRepos } from "../components/DisplayRepos";
 import { ConnectGitHub, DisconnectGitHub } from "../components/ConnectGitHub"
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"
 import { UploadResume } from "../components/ResumeHandling"
+import { TagSelector } from "../components/Tags"
 
 interface ProfilePageProps{
     user: User | null;
@@ -13,6 +14,7 @@ interface ProfilePageProps{
 
 export function ProfilePage({user}:ProfilePageProps): React.JSX.Element {
     const [profile, setProfile] = useState({ name: "", bio: "" , pfpUrl: "", title: "", contact:"", location:""});
+    const [tags, setTags] = useState<string[]>([]);
     const [pfpFile, setPfpFile] = useState<File | null> (null); 
     const [loading, setLoading] = useState(true);
     const [isGitHubConnected, setIsGitHubConnected] = useState(false);
@@ -39,6 +41,8 @@ export function ProfilePage({user}:ProfilePageProps): React.JSX.Element {
                         contact: data.contact || "",
                         location: data.location || "",
                     });
+                    // Load tags from Firestore
+                    setTags(data.tags || []);
                     // Check for a conneted git account
                     setIsGitHubConnected(!!data.githubInstallationId);
                 
@@ -60,13 +64,17 @@ export function ProfilePage({user}:ProfilePageProps): React.JSX.Element {
         }
 
         try {
-            await setDoc(doc(db, "users", user.uid), profile);
+            // Save profile with tags immediately
+            await setDoc(doc(db, "users", user.uid), {
+                ...profile,
+                tags
+            });
             alert("Profile saved successfully");
         } catch (err) {
             alert("Failed to save profile");
         }
-    
 
+        // Handle profile picture upload separately
         let pfpUrl = profile.pfpUrl;
         try {
             if (pfpFile) {
@@ -75,16 +83,20 @@ export function ProfilePage({user}:ProfilePageProps): React.JSX.Element {
                 await uploadBytes(pfpRef, pfpFile);
                 pfpUrl = await getDownloadURL(pfpRef);
 
+                // Update profile with new profile picture URL
+                await setDoc(doc(db, "users", user.uid), {
+                    ...profile,
+                    pfpUrl,
+                    tags
+                });
+
+                setProfile((prev) =>({...prev, pfpUrl}));
+                alert("Profile saved successfully");
             }
-
-            await setDoc(doc(db, "users", user.uid), {...profile, pfpUrl});
-
-            setProfile((prev) =>({...prev, pfpUrl}));
-            alert("Profile saved successfully");
         }
         catch (err){
-        console.error(err);
-         alert("Failed to save profile");
+            console.error(err);
+            alert("Failed to save profile");
         }
     } 
 
@@ -269,6 +281,14 @@ export function ProfilePage({user}:ProfilePageProps): React.JSX.Element {
                     />
                     
                 </label>
+            </div>
+
+            {/* Tags section */}
+            <div style={{ marginTop: "1rem"}}>
+                <label style={{display:"block",marginBottom:"0.5rem"}}>
+                    <strong>Tags:</strong>
+                </label>
+                <TagSelector tags={tags} setTags={setTags} />
             </div>
             
             <button

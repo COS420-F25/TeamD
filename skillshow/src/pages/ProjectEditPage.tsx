@@ -1,68 +1,41 @@
-//import React, { useState     } from "react";
-/*
-interface ProjectField {
-    id: string;
-    name: string;
-    value: string;
-    maxLength?: number;
-    multiline?: boolean;
-    width?: string;
-    height?: string;
-}
-*/
+import React, { useState } from "react";
+import { TagSelector } from "../components/Tags";
+
 export function ProjectEditPage({ user }: {user: any}) {
-    
-/*
-    const [fields, setFields] = useState<ProjectField[]>([
-        {
-            id: "projectName",
-            name: "Project Name",
-            value: "",
-            maxLength: 100,
-            width: "100%"
-        },
-        {
-            id: "position",
-            name: "Role / Position",
-            value: "",
-            maxLength: 150,
-            width: "70%"
-        },
-        {
-            id: "summary",
-            name: "Short Summary",
-            value: "",
-            maxLength: 250,
-            multiline: true,
-            width: "100%"
-        },
-        {
-            id: "tech",
-            name: "Technologies Used",
-            value: "",
-            maxLength: 200,
-            width: "100%"
-        },
-        {
-            id: "details",
-            name: "Detailed Description",
-            value: "",
-            multiline: true,
-            width: "100%",
-            height: "200px"
-        }
-    ]);
-    */
+    const [tags, setTags] = useState<string[]>([]);
 
     if (!user) {
         return <h2>You must be logged in</h2>
     }
 
     return (
-        <div style={{ padding: 20}}>
+        <div style={{ 
+            padding: 20
+        }}>
             <h1> Edit Project </h1>
-            <p>This is a placeholder for Edit Project page</p>
+
+            
+            {/* Tags section */}
+            <div style={{
+                marginTop: "2rem",
+                width: "100%",
+                display: "flex",
+                justifyContent: "flex-start"
+            }}>
+                <div style={{ 
+                    width: "100%",
+                    maxWidth: "400px"
+                }}>
+                    <label style={{
+                        display: "block",
+                        marginBottom: "0.5rem",
+                        fontWeight: "bold"
+                    }}>
+                        Insert Tags
+                    </label>
+                    <TagSelector tags={tags} setTags={setTags} />
+                </div>
+            </div>
         </div>
     )
-        
 }
