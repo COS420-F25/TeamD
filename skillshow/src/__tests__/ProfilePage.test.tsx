@@ -79,54 +79,32 @@ describe('ProfilePage Component', () => {
     })
     
     // Resume System Tests
-    test('Profile page shows insert resume button initially', async()=> {
+    test('Profile page is prompting for resume download', async()=> {
         render(<ProfilePage user={mockUser} />);
         await waitFor(()=>{
-            expect(screen.getByText('Insert New Resume')).toBeInTheDocument();
+            expect(screen.getByText('Upload your resume')).toBeInTheDocument();
         });
     });
 
-    test('Clicking insert button shows resume menu', async()=> {
+    test('if file name is displayed after upload', async()=>{
         render(<ProfilePage user={mockUser} />);
         await waitFor(()=>{
-            expect(screen.getByText('Insert New Resume')).toBeInTheDocument();
+            expect(screen.getByText('Upload your resume')).toBeInTheDocument();
         });
-        
-        const insertButton = screen.getByText('Insert New Resume');
-        fireEvent.click(insertButton);
-        
-        expect(screen.getByText('Resume Management')).toBeInTheDocument();
-        expect(screen.getByText('Choose a Preset Resume')).toBeInTheDocument();
-        expect(screen.getByText('Upload Your Own Resume')).toBeInTheDocument();
-    });
-
-    test('if file name is displayed after upload and shows preview card', async()=>{
-        render(<ProfilePage user={mockUser} />);
-        await waitFor(()=>{
-            expect(screen.getByText('Insert New Resume')).toBeInTheDocument();
-        });
-        
-        // Click to open menu
-        fireEvent.click(screen.getByText('Insert New Resume'));
-        
         const file = new File(['test stuff'], 'resume.pdf', { type: 'application/pdf' });
-        const input = screen.getByLabelText('Upload Your Own Resume') as HTMLInputElement;
+        const input = screen.getByLabelText('Upload your resume') as HTMLInputElement;
 
-        fireEvent.change(input, {target: { files: [file] }});
+        fireEvent.change(input, {target: { files: [file] }})
 
-        expect(screen.getByText('Uploaded: resume.pdf')).toBeInTheDocument();
-        expect(screen.getByText('Download Resume')).toBeInTheDocument();
-        
-        // Click back to see preview card
-        fireEvent.click(screen.getByText('Back'));
-        expect(screen.getByText('resume.pdf')).toBeInTheDocument();
-        expect(screen.getByText('Click to edit or change resume')).toBeInTheDocument();
+        expect(screen.getByText('Resume: resume.pdf')).toBeInTheDocument();
+        expect(screen.getByText('Download File')).toBeInTheDocument();
+
     });
 
-    test('Can download uploaded files', async()=>{
+    test('Can download files?', async()=>{
         render(<ProfilePage user={mockUser} />);
         await waitFor(()=>{
-            expect(screen.getByText('Insert New Resume')).toBeInTheDocument();
+            expect(screen.getByText('Upload your resume')).toBeInTheDocument();
         });
 
         const mockURL = 'blob:mock-url';
@@ -136,15 +114,12 @@ describe('ProfilePage Component', () => {
         const appendChild = jest.spyOn(document.body, 'appendChild');
         const removeChild = jest.spyOn(document.body, 'removeChild');
 
-        // Open menu
-        fireEvent.click(screen.getByText('Insert New Resume'));
-
         const file = new File(['test stuff'], 'resume.pdf', { type: 'application/pdf' });
-        const input = screen.getByLabelText('Upload Your Own Resume') as HTMLInputElement;
+        const input = screen.getByLabelText('Upload your resume') as HTMLInputElement;
 
-        fireEvent.change(input, {target: { files: [file] }});
+        fireEvent.change(input, {target: { files: [file] }})
 
-        const downloadButton = screen.getByText('Download Resume');
+        const downloadButton = screen.getByText('Download File');
         fireEvent.click(downloadButton);
 
         expect(global.URL.createObjectURL).toHaveBeenCalledWith(file);
@@ -154,32 +129,6 @@ describe('ProfilePage Component', () => {
 
         appendChild.mockRestore();
         removeChild.mockRestore();
-    });
 
-    test('Can select and download preset resume', async()=>{
-        render(<ProfilePage user={mockUser} />);
-        await waitFor(()=>{
-            expect(screen.getByText('Insert New Resume')).toBeInTheDocument();
-        });
-
-        const appendChild = jest.spyOn(document.body, 'appendChild');
-        const removeChild = jest.spyOn(document.body, 'removeChild');
-
-        // Open menu
-        fireEvent.click(screen.getByText('Insert New Resume'));
-
-        const select = screen.getByLabelText('Choose a Preset Resume') as HTMLSelectElement;
-        fireEvent.change(select, { target: { value: '/resumes/database-engineer.pdf' } });
-
-        expect(screen.getByText('Preset: Database Engineer Resume')).toBeInTheDocument();
-
-        const downloadButton = screen.getByText('Download Resume');
-        fireEvent.click(downloadButton);
-
-        expect(appendChild).toHaveBeenCalled();
-        expect(removeChild).toHaveBeenCalled();
-
-        appendChild.mockRestore();
-        removeChild.mockRestore();
     });
 });
