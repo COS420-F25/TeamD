@@ -1,6 +1,6 @@
 // src/services/SearchService.ts
 
-import { Portfolio, SearchResult } from "../types/Portfolio";
+import { Portfolio, SearchResult, SearchFilters } from "../types/Portfolio";
 
 /**
  * SearchService handles portfolio search functionality
@@ -110,37 +110,163 @@ export class SearchService {
    * @returns Promise<SearchResult[]> - Array of matching portfolios with relevance scores
    */
   async searchPortfolios(query: string): Promise<SearchResult[]> {
+    // Use advanced search with just the query for backward compatibility
+    return this.searchPortfoliosWithFilters({ query });
+  }
+
+  /**
+   * Advanced search with filters
+   * Supports text search, tag filtering, date range, user name, and sorting
+   * 
+   * @param filters - Search filters object
+   * @returns Promise<SearchResult[]> - Array of matching portfolios with relevance scores
+   */
+  async searchPortfoliosWithFilters(filters: SearchFilters): Promise<SearchResult[]> {
     // Simulate network delay (like a real API call)
     await this.delay(300);
 
-    if (!query || query.trim().length === 0) {
-      return [];
-    }
-
-    const normalizedQuery = query.toLowerCase().trim();
     const results: SearchResult[] = [];
+    const normalizedQuery = filters.query?.toLowerCase().trim() || "";
 
     // Search through mock portfolios
     for (const portfolio of SearchService.MOCK_PORTFOLIOS) {
-      const matchScore = this.calculateMatchScore(portfolio, normalizedQuery);
-      
-      if (matchScore > 0) {
-        results.push({
-          portfolio,
-          matchScore
-        });
+      // Apply filters
+      if (!this.matchesFilters(portfolio, filters)) {
+        continue;
       }
+
+      // Calculate match score if query is provided
+      let matchScore = 0;
+      if (normalizedQuery) {
+        matchScore = this.calculateMatchScore(portfolio, normalizedQuery);
+        if (matchScore === 0) {
+          continue; // No text match, skip this portfolio
+        }
+      } else {
+        // If no query, assign a default score for sorting purposes
+        matchScore = 1;
+      }
+
+      results.push({
+        portfolio,
+        matchScore
+      });
     }
 
-    // Sort by relevance (highest match score first)
-    results.sort((a, b) => b.matchScore - a.matchScore);
+    // Sort results
+    this.sortResults(results, filters);
 
     return results;
   }
 
   /**
+   * Check if a portfolio matches the given filters
+   * 
+   * @param portfolio - The portfolio to check
+   * @param filters - The filters to apply
+   * @returns boolean - True if portfolio matches all filters
+   */
+  private matchesFilters(portfolio: Portfolio, filters: SearchFilters): boolean {
+    // Tag include filter: portfolio must have at least one of the specified tags
+    if (filters.tagsInclude && filters.tagsInclude.length > 0) {
+      const portfolioTags = portfolio.tags.map(t => t.toLowerCase());
+      const filterTags = filters.tagsInclude.map(t => t.toLowerCase());
+      const hasMatchingTag = filterTags.some(tag => portfolioTags.includes(tag));
+      if (!hasMatchingTag) {
+        return false;
+      }
+    }
+
+    // Tag exclude filter: portfolio must not have any of the specified tags
+    if (filters.tagsExclude && filters.tagsExclude.length > 0) {
+      const portfolioTags = portfolio.tags.map(t => t.toLowerCase());
+      const filterTags = filters.tagsExclude.map(t => t.toLowerCase());
+      const hasExcludedTag = filterTags.some(tag => portfolioTags.includes(tag));
+      if (hasExcludedTag) {
+        return false;
+      }
+    }
+
+    // User name filter: case-insensitive partial match
+    if (filters.userName && filters.userName.trim()) {
+      const userName = portfolio.userName.toLowerCase();
+      const filterName = filters.userName.toLowerCase().trim();
+      if (!userName.includes(filterName)) {
+        return false;
+      }
+    }
+
+    // Date range filter
+    if (filters.dateFrom || filters.dateTo) {
+      const portfolioDate = new Date(portfolio.createdAt).getTime();
+      
+      if (filters.dateFrom) {
+        const fromDate = new Date(filters.dateFrom).getTime();
+        if (portfolioDate < fromDate) {
+          return false;
+        }
+      }
+
+      if (filters.dateTo) {
+        const toDate = new Date(filters.dateTo).getTime();
+        // Add one day to include the entire end date
+        const toDateEnd = toDate + 24 * 60 * 60 * 1000;
+        if (portfolioDate >= toDateEnd) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Sort search results based on filter options
+   * 
+   * @param results - The results to sort (modified in place)
+   * @param filters - The filters containing sort options
+   */
+  private sortResults(results: SearchResult[], filters: SearchFilters): void {
+    const sortBy = filters.sortBy || "relevance";
+    // Default sort order: desc for relevance and updated, asc for others
+    const defaultSortOrder = (sortBy === "relevance" || sortBy === "updated") ? "desc" : "asc";
+    const sortOrder = filters.sortOrder || defaultSortOrder;
+
+    results.sort((a, b) => {
+      let comparison = 0;
+
+      switch (sortBy) {
+        case "relevance":
+          comparison = a.matchScore - b.matchScore;
+          break;
+        case "date":
+          const dateA = new Date(a.portfolio.createdAt).getTime();
+          const dateB = new Date(b.portfolio.createdAt).getTime();
+          comparison = dateA - dateB;
+          break;
+        case "updated":
+          // Use updatedAt if available, otherwise fall back to createdAt
+          const updatedA = a.portfolio.updatedAt 
+            ? new Date(a.portfolio.updatedAt).getTime()
+            : new Date(a.portfolio.createdAt).getTime();
+          const updatedB = b.portfolio.updatedAt
+            ? new Date(b.portfolio.updatedAt).getTime()
+            : new Date(b.portfolio.createdAt).getTime();
+          comparison = updatedA - updatedB;
+          break;
+        case "alphabetical":
+          comparison = a.portfolio.title.localeCompare(b.portfolio.title);
+          break;
+      }
+
+      // Apply sort order
+      return sortOrder === "desc" ? -comparison : comparison;
+    });
+  }
+
+  /**
    * Calculate relevance score for a portfolio based on search query
-   * Searches in: title and description
+   * Searches in: title, description, and tags
    * 
    * @param portfolio - The portfolio to evaluate
    * @param query - The normalized search query
@@ -152,6 +278,7 @@ export class SearchService {
 
     const title = portfolio.title.toLowerCase();
     const description = portfolio.description.toLowerCase();
+    const tags = portfolio.tags.map(t => t.toLowerCase()).join(" ");
 
     for (const word of queryWords) {
       // Title matches are worth more (weight: 3)
@@ -162,6 +289,11 @@ export class SearchService {
       // Description matches (weight: 1)
       if (description.includes(word)) {
         score += 1;
+      }
+
+      // Tag matches (weight: 2)
+      if (tags.includes(word)) {
+        score += 2;
       }
     }
 
@@ -176,6 +308,22 @@ export class SearchService {
     }
 
     return score;
+  }
+
+  /**
+   * Get all available tags from mock portfolios (for filter UI)
+   * 
+   * @returns Promise<string[]> - Array of unique tags
+   */
+  async getAvailableTags(): Promise<string[]> {
+    await this.delay(100);
+    const allTags = new Set<string>();
+    
+    for (const portfolio of SearchService.MOCK_PORTFOLIOS) {
+      portfolio.tags.forEach(tag => allTags.add(tag));
+    }
+    
+    return Array.from(allTags).sort();
   }
 
   /**
