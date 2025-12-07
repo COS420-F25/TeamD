@@ -15,12 +15,6 @@ jest.mock("../firebase-config", () => ({
   },
   db: {},
   app: {},
-  initFirebase: jest.fn(),
-  getAuthInstance: jest.fn(() => ({
-    currentUser: { uid: "test-uid", displayName: "Test User" },
-    signOut: jest.fn(),
-  })),
-  getDbInstance: jest.fn(() => ({})),
 }));
 
 // Mock Firestore functions used by ProfilePage
