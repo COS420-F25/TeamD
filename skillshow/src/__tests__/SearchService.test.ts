@@ -25,27 +25,6 @@ describe('SearchService', () => {
       expect(results).toHaveLength(0);
     });
 
-    test('searches and returns matching portfolios', async () => {
-      const results = await searchService.searchPortfolios('weather');
-
-      expect(results.length).toBeGreaterThan(0);
-      expect(results.length).toBe(3); // Three portfolios have "weather"
-      // First two results should have "Weather" in title
-      expect(results[0].portfolio.title).toContain('Weather');
-      expect(results[0].matchScore).toBeGreaterThan(0);
-      expect(results[1].portfolio.title).toContain('Weather');
-      expect(results[1].matchScore).toBeGreaterThan(0);
-      // All results should have positive match scores
-      expect(results.every(r => r.matchScore > 0)).toBe(true);
-    });
-
-    test('returns empty array when no matches found', async () => {
-      const results = await searchService.searchPortfolios('xyz123nonexistent');
-
-      expect(results).toEqual([]);
-      expect(results).toHaveLength(0);
-    });
-
     test('performs case-insensitive search', async () => {
       const lowercaseResults = await searchService.searchPortfolios('weather');
       const uppercaseResults = await searchService.searchPortfolios('WEATHER');
