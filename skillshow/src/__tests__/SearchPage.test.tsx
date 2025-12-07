@@ -81,7 +81,9 @@ describe("SearchPage Component", () => {
       { target: { value: "test" } });
     fireEvent.click(screen.getByText("Search"));
     
-    expect(screen.getByText("Searching...")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("Searching...")).toBeInTheDocument();
+    });
   });
 
   test("shows no results message when search returns empty", async () => {
@@ -102,7 +104,7 @@ describe("SearchPage Component", () => {
   });
 
   // Advanced Search Feature Tests
-  test("toggles advanced search panel when button is clicked", () => {
+  test("toggles advanced search panel when button is clicked", async () => {
     (SearchService as unknown as jest.Mock).mockImplementation(() => ({
       searchPortfolios: jest.fn().mockResolvedValue([]),
       searchPortfoliosWithFilters: jest.fn().mockResolvedValue([]),
@@ -117,13 +119,20 @@ describe("SearchPage Component", () => {
     // Panel should not be visible initially
     expect(screen.queryByText("Include Tags")).not.toBeInTheDocument();
     
-    // Click to open
+    // Click to open - this triggers async tag loading
     fireEvent.click(advancedButton);
-    expect(screen.getByText("Include Tags")).toBeInTheDocument();
+    
+    // Wait for tags to load and panel to render
+    await waitFor(() => {
+      expect(screen.getByText("Include Tags")).toBeInTheDocument();
+    });
     
     // Click to close
     fireEvent.click(advancedButton);
-    expect(screen.queryByText("Include Tags")).not.toBeInTheDocument();
+    
+    await waitFor(() => {
+      expect(screen.queryByText("Include Tags")).not.toBeInTheDocument();
+    });
   });
 
   test("filters portfolios by included tags", async () => {
@@ -151,7 +160,7 @@ describe("SearchPage Component", () => {
 
     render(<SearchPage user={null} />);
     
-    // Open advanced search
+    // Open advanced search - this triggers async tag loading
     fireEvent.click(screen.getByText("Advanced Search"));
     
     // Wait for tags to load
@@ -215,7 +224,7 @@ describe("SearchPage Component", () => {
 
     render(<SearchPage user={null} />);
     
-    // Open advanced search
+    // Open advanced search - this triggers async tag loading
     fireEvent.click(screen.getByText("Advanced Search"));
     
     // Wait for panel to render
