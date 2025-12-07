@@ -1,9 +1,9 @@
-import { GitHubRepoService, Repository } from '../services/GitHubRepoService';
-
 // Set environment variables before importing the service
 process.env.REACT_APP_FIREBASE_PROJECT_ID = 'test-project-id';
 process.env.REACT_APP_FUNCTIONS_REGION = 'us-central1';
 process.env.REACT_APP_FUNCTIONS_PORT = '5001';
+
+import { GitHubRepoService, Repository } from '../services/GitHubRepoService';
 
 // Mock fetch globally
 global.fetch = jest.fn();
