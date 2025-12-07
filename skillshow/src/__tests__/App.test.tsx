@@ -7,6 +7,22 @@ jest.mock("react-firebase-hooks/auth", () => ({
   useAuthState: () => [{ uid: "test-uid", displayName: "Test User" }, false, null],
 }));
 
+// Mock firebase-config to prevent initialization issues in tests
+jest.mock("../firebase-config", () => ({
+  auth: {
+    currentUser: { uid: "test-uid", displayName: "Test User" },
+    signOut: jest.fn(),
+  },
+  db: {},
+  app: {},
+  initFirebase: jest.fn(),
+  getAuthInstance: jest.fn(() => ({
+    currentUser: { uid: "test-uid", displayName: "Test User" },
+    signOut: jest.fn(),
+  })),
+  getDbInstance: jest.fn(() => ({})),
+}));
+
 // Mock Firestore functions used by ProfilePage
 jest.mock("firebase/firestore", () => ({
   doc: jest.fn(),

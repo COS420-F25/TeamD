@@ -50,6 +50,11 @@ beforeEach(() => {
   window.alert = jest.fn();
   window.open = jest.fn();
   (window.location as any).href = '';
+  // Reset fetch mock to default successful response
+  (global.fetch as jest.Mock).mockResolvedValue({
+    ok: true,
+    json: () => Promise.resolve({ success: true, redirectUrl: 'https://github.com/uninstall' }),
+  });
 });
 
 describe('ConnectGitHub Component', () => {

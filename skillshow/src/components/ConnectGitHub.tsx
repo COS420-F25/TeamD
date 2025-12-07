@@ -76,9 +76,31 @@ export function DisconnectGitHub() {
         body: JSON.stringify({ userId: auth.currentUser.uid }),
       });
 
-      const data = await response.json();
+      // Guard against undefined/invalid response
+      if (!response) {
+        throw new Error("No response from disconnect endpoint");
+      }
 
-      if (data.success) {
+      // Check if response is ok before parsing
+      if (!response.ok) {
+        const statusText = response.statusText || `status ${response.status}`;
+        throw new Error(`Disconnect failed: ${statusText}`);
+      }
+
+      // Safely parse JSON response
+      let data: any = null;
+      if (typeof response.json === "function") {
+        try {
+          data = await response.json();
+        } catch (parseError) {
+          console.error("Error parsing response:", parseError);
+          throw new Error("Invalid response format from server");
+        }
+      } else {
+        throw new Error("Response does not support JSON parsing");
+      }
+
+      if (data && data.success) {
         alert("GitHub disconnected successfully");
 
         // Open GitHub uninstall page in a new tab
@@ -86,11 +108,13 @@ export function DisconnectGitHub() {
           window.open(data.redirectUrl, "_blank");
         }
       } else {
-        alert("Failed to disconnect GitHub.");
+        const errorMsg = data?.message || "Unknown error";
+        alert(`Failed to disconnect GitHub: ${errorMsg}`);
       }
     } catch (error) {
       console.error("Error disconnecting:", error);
-      alert("Failed to disconnect GitHub");
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      alert(`Failed to disconnect GitHub: ${errorMessage}`);
     }
   };
 

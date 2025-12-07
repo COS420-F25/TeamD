@@ -12,8 +12,16 @@ jest.mock("../services/SearchService");
 jest.mock("../firebase-config", () => ({
   db: {},
   auth: {
-    currentUser: null
-  }
+    currentUser: null,
+    signOut: jest.fn(),
+  },
+  app: {},
+  initFirebase: jest.fn(),
+  getAuthInstance: jest.fn(() => ({
+    currentUser: null,
+    signOut: jest.fn(),
+  })),
+  getDbInstance: jest.fn(() => ({})),
 }));
 
 describe("SearchPage Component", () => {
@@ -232,7 +240,20 @@ describe("SearchPage Component", () => {
 
     render(<SearchPage user={null} />);
     
-    // Open advanced search - this triggers async tag loading
+    // Add a search query first so that sort changes trigger a search
+    const searchInput = screen.getByPlaceholderText(/search for portfolios/i);
+    fireEvent.change(searchInput, { target: { value: "test" } });
+    fireEvent.click(screen.getByText("Search"));
+    
+    // Wait for initial search to complete
+    await waitFor(() => {
+      expect(mockSearchWithFilters).toHaveBeenCalled();
+    });
+    
+    // Clear previous calls
+    mockSearchWithFilters.mockClear();
+    
+    // Open advanced search
     fireEvent.click(screen.getByText("Advanced Search"));
     
     // Wait for panel to render
