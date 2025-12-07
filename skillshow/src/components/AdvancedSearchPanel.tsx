@@ -219,6 +219,7 @@ export function AdvancedSearchPanel({
                   return (
                     <label
                       key={`include-${tag}`}
+                      htmlFor={`include-${tag}`}
                       style={{
                         display: "flex",
                         alignItems: "center",
@@ -233,13 +234,11 @@ export function AdvancedSearchPanel({
                       }}
                     >
                       <input
+                        id={`include-${tag}`}
                         type="checkbox"
                         checked={isChecked}
                         onChange={(e) => handleTagIncludeChange(tag, e.target.checked)}
-                        style={{
-                          marginRight: "6px",
-                          cursor: "pointer"
-                        }}
+                        style={{ marginRight: "6px", cursor: "pointer" }}
                       />
                       {tag}
                     </label>
