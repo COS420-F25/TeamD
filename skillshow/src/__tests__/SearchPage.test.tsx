@@ -49,8 +49,9 @@ describe("SearchPage Component", () => {
       matchScore: 10
     }];
 
-    (SearchService as jest.Mock).mockImplementation(() => ({
-      searchPortfolios: jest.fn().mockResolvedValue(mockResults)
+    (SearchService as unknown as jest.Mock).mockImplementation(() => ({
+      searchPortfolios: jest.fn().mockResolvedValue(mockResults),
+      searchPortfoliosWithFilters: jest.fn().mockResolvedValue(mockResults)
     }));
 
     render(<SearchPage user={null} />);
@@ -65,8 +66,11 @@ describe("SearchPage Component", () => {
   });
 
   test("shows loading state during search", async () => {
-    (SearchService as jest.Mock).mockImplementation(() => ({
+    (SearchService as unknown as jest.Mock).mockImplementation(() => ({
       searchPortfolios: jest.fn().mockImplementation(
+        () => new Promise(resolve => setTimeout(() => resolve([]), 100))
+      ),
+      searchPortfoliosWithFilters: jest.fn().mockImplementation(
         () => new Promise(resolve => setTimeout(() => resolve([]), 100))
       )
     }));
@@ -81,8 +85,9 @@ describe("SearchPage Component", () => {
   });
 
   test("shows no results message when search returns empty", async () => {
-    (SearchService as jest.Mock).mockImplementation(() => ({
-      searchPortfolios: jest.fn().mockResolvedValue([])
+    (SearchService as unknown as jest.Mock).mockImplementation(() => ({
+      searchPortfolios: jest.fn().mockResolvedValue([]),
+      searchPortfoliosWithFilters: jest.fn().mockResolvedValue([])
     }));
 
     render(<SearchPage user={null} />);
@@ -93,6 +98,143 @@ describe("SearchPage Component", () => {
     
     await waitFor(() => {
       expect(screen.getByText("No portfolios found")).toBeInTheDocument();
+    });
+  });
+
+  // Advanced Search Feature Tests
+  test("toggles advanced search panel when button is clicked", () => {
+    (SearchService as unknown as jest.Mock).mockImplementation(() => ({
+      searchPortfolios: jest.fn().mockResolvedValue([]),
+      searchPortfoliosWithFilters: jest.fn().mockResolvedValue([]),
+      getAvailableTags: jest.fn().mockResolvedValue(["React", "TypeScript"])
+    }));
+
+    render(<SearchPage user={null} />);
+    
+    const advancedButton = screen.getByText("Advanced Search");
+    expect(advancedButton).toBeInTheDocument();
+    
+    // Panel should not be visible initially
+    expect(screen.queryByText("Include Tags")).not.toBeInTheDocument();
+    
+    // Click to open
+    fireEvent.click(advancedButton);
+    expect(screen.getByText("Include Tags")).toBeInTheDocument();
+    
+    // Click to close
+    fireEvent.click(advancedButton);
+    expect(screen.queryByText("Include Tags")).not.toBeInTheDocument();
+  });
+
+  test("filters portfolios by included tags", async () => {
+    const mockResults = [{
+      portfolio: {
+        portfolioId: "1",
+        userId: "user-1",
+        userName: "Test User",
+        userEmail: "test@test.com",
+        title: "React App",
+        description: "A React app",
+        tags: ["React", "TypeScript"],
+        createdAt: "2024-01-01"
+      },
+      matchScore: 10
+    }];
+
+    const mockSearchWithFilters = jest.fn().mockResolvedValue(mockResults);
+
+    (SearchService as unknown as jest.Mock).mockImplementation(() => ({
+      searchPortfolios: jest.fn().mockResolvedValue([]),
+      searchPortfoliosWithFilters: mockSearchWithFilters,
+      getAvailableTags: jest.fn().mockResolvedValue(["React", "TypeScript", "Node.js"])
+    }));
+
+    render(<SearchPage user={null} />);
+    
+    // Open advanced search
+    fireEvent.click(screen.getByText("Advanced Search"));
+    
+    // Wait for tags to load
+    await waitFor(() => {
+      expect(screen.getByText("React")).toBeInTheDocument();
+    });
+    
+    // Click on React tag to include it - use getByLabelText for proper Testing Library access
+    const reactCheckbox = screen.getByLabelText(/React/i);
+    fireEvent.click(reactCheckbox);
+    
+    // Verify search was called with include filter
+    await waitFor(() => {
+      expect(mockSearchWithFilters).toHaveBeenCalledWith(
+        expect.objectContaining({
+          tagsInclude: ["React"]
+        })
+      );
+    });
+  });
+
+  test("sorts portfolios by updated date in descending order", async () => {
+    const mockResults = [
+      {
+        portfolio: {
+          portfolioId: "2",
+          userId: "user-2",
+          userName: "User 2",
+          userEmail: "user2@test.com",
+          title: "Newer App",
+          description: "A newer app",
+          tags: [],
+          createdAt: "2024-01-01",
+          updatedAt: "2024-01-15"
+        },
+        matchScore: 5
+      },
+      {
+        portfolio: {
+          portfolioId: "1",
+          userId: "user-1",
+          userName: "User 1",
+          userEmail: "user1@test.com",
+          title: "Older App",
+          description: "An older app",
+          tags: [],
+          createdAt: "2024-01-01",
+          updatedAt: "2024-01-10"
+        },
+        matchScore: 5
+      }
+    ];
+
+    const mockSearchWithFilters = jest.fn().mockResolvedValue(mockResults);
+
+    (SearchService as unknown as jest.Mock).mockImplementation(() => ({
+      searchPortfolios: jest.fn().mockResolvedValue([]),
+      searchPortfoliosWithFilters: mockSearchWithFilters,
+      getAvailableTags: jest.fn().mockResolvedValue([])
+    }));
+
+    render(<SearchPage user={null} />);
+    
+    // Open advanced search
+    fireEvent.click(screen.getByText("Advanced Search"));
+    
+    // Wait for panel to render
+    await waitFor(() => {
+      expect(screen.getByText("Sort By")).toBeInTheDocument();
+    });
+    
+    // Select "Last Updated" from sort dropdown
+    const sortSelect = screen.getByDisplayValue("Relevance");
+    fireEvent.change(sortSelect, { target: { value: "updated" } });
+    
+    // Verify search was called with updated sort
+    await waitFor(() => {
+      expect(mockSearchWithFilters).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sortBy: "updated",
+          sortOrder: "desc"
+        })
+      );
     });
   });
 });
