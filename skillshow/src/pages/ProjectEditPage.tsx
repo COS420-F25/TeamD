@@ -195,5 +195,4 @@ export function ProjectEditPage({ user }:ProjectEditPageProps) {
             {project && (<ProjectEditor user={user} project={project} onClose={()=> setProject(null)} refresh={loadProjects}/>)}
         </div>
     )
-        
 }

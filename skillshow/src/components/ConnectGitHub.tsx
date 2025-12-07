@@ -6,7 +6,6 @@ import { auth } from "../firebase-config";
  *   Redirects to the GitHub OAuth installation flow
  */
 
-const debug = 0
 
 export function ConnectGitHub() {
   const handleConnect = () => {
@@ -22,9 +21,7 @@ export function ConnectGitHub() {
     const projectId = process.env.REACT_APP_FIREBASE_PROJECT_ID;
     const region = process.env.REACT_APP_FUNCTIONS_REGION;
     const port = process.env.REACT_APP_FUNCTIONS_PORT;
-    if (debug) {
-        console.log("ENV DEBUG:", { projectId, region, port });
-    }
+    
     if (!projectId || !region || !port) {
       console.warn("Missing env variables");
     }
@@ -59,9 +56,6 @@ export function DisconnectGitHub() {
     const region = process.env.REACT_APP_FUNCTIONS_REGION;
     const port = process.env.REACT_APP_FUNCTIONS_PORT;
 
-    if (debug) {
-      console.log("ENV DEBUG:", { projectId, region, port });
-    }
     if (!projectId || !region || !port) {
       console.warn("Missing env variables");
     }

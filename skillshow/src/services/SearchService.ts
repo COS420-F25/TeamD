@@ -205,6 +205,7 @@ export class SearchService {
 
     const normalizedQuery = (filters.query || "").toLowerCase().trim();
     const results: SearchResult[] = [];
+    const normalizedQuery = filters.query?.toLowerCase().trim() || "";
 
     for (const portfolio of SearchService.MOCK_PORTFOLIOS) {
       for (const project of portfolio.projects ?? []) {
@@ -220,6 +221,11 @@ export class SearchService {
 
         results.push({ project, portfolioId: portfolio.portfolioId, matchScore: score });
       }
+
+      results.push({
+        portfolio,
+        matchScore
+      });
     }
 
     // Sort results
@@ -324,6 +330,22 @@ export class SearchService {
       }
       return sortOrder === "desc" ? -cmp : cmp;
     });
+  }
+
+  /**
+   * Get all available tags from mock portfolios (for filter UI)
+   * 
+   * @returns Promise<string[]> - Array of unique tags
+   */
+  async getAvailableTags(): Promise<string[]> {
+    await this.delay(100);
+    const allTags = new Set<string>();
+    
+    for (const portfolio of SearchService.MOCK_PORTFOLIOS) {
+      portfolio.tags.forEach(tag => allTags.add(tag));
+    }
+    
+    return Array.from(allTags).sort();
   }
 
   /**

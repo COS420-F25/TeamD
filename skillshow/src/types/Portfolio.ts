@@ -21,3 +21,17 @@ export interface SearchResult {
   portfolioId: string;
   matchScore: number; // For ranking results by relevance
 }
+
+/**
+ * Search filters for advanced search functionality
+ */
+export interface SearchFilters {
+  query?: string; // Text search query
+  tagsInclude?: string[]; // Tags that must be included (at least one)
+  tagsExclude?: string[]; // Tags that must be excluded (none of these)
+  userName?: string; // Filter by user name
+  dateFrom?: string; // Filter portfolios created after this date (ISO format)
+  dateTo?: string; // Filter portfolios created before this date (ISO format)
+  sortBy?: "relevance" | "date" | "updated" | "alphabetical"; // Sort order
+  sortOrder?: "asc" | "desc"; // Sort direction
+}

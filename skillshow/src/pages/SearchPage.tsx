@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { SearchService } from "../services/SearchService";
-import { SearchResult } from "../types/Portfolio";
+import { SearchResult, SearchFilters } from "../types/Portfolio";
 import { ProjectCard } from "../components/ProjectCard";
 
 interface SearchPageProps {
@@ -14,18 +14,22 @@ interface SearchPageProps {
  * SearchPage - Main search interface for finding projects
  * 
  * Features:
- * - Text-based search through project titles and descriptions
+ * - Text-based search through portfolio titles and descriptions
+ * - Advanced filters: tags, user name, date range, sorting
  * - Real-time search results
  * - Click to view user profiles
  * 
  * NOTE: Currently uses mock data for testing
  * @author Chauncey (using mock data for cross-platform testing)
+ * @author Senior Engineer (advanced search implementation)
  */
 export function SearchPage({ user, onNavigateToProfile }: SearchPageProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchFilters, setSearchFilters] = useState<SearchFilters>({});
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [isAdvancedPanelOpen, setIsAdvancedPanelOpen] = useState(false);
 
   const searchService = new SearchService();
 
@@ -33,7 +37,17 @@ export function SearchPage({ user, onNavigateToProfile }: SearchPageProps) {
    * Handle search submission
    */
   const handleSearch = async () => {
-    if (!searchQuery.trim()) {
+    // Check if we have a query or active filters
+    const hasQuery = searchQuery.trim().length > 0;
+    const hasFilters = Boolean(
+      searchFilters.tagsInclude?.length ||
+      searchFilters.tagsExclude?.length ||
+      searchFilters.userName ||
+      searchFilters.dateFrom ||
+      searchFilters.dateTo
+    );
+
+    if (!hasQuery && !hasFilters) {
       return;
     }
 
@@ -41,13 +55,56 @@ export function SearchPage({ user, onNavigateToProfile }: SearchPageProps) {
     setHasSearched(true);
 
     try {
-      const results = await searchService.searchPortfolios(searchQuery);
+      // Combine query with filters
+      const filters: SearchFilters = {
+        ...searchFilters,
+        query: searchQuery.trim() || undefined
+      };
+      
+      const results = await searchService.searchPortfoliosWithFilters(filters);
       setSearchResults(results);
     } catch (error) {
       console.error("Search error:", error);
       alert("An error occurred while searching. Please try again.");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  /**
+   * Handle filters change from AdvancedSearchPanel
+   */
+  const handleFiltersChange = async (newFilters: SearchFilters) => {
+    setSearchFilters(newFilters);
+    // Auto-search when filters change (if we have a query or other filters)
+    const hasQuery = searchQuery.trim().length > 0;
+    const hasOtherFilters = Boolean(
+      newFilters.tagsInclude?.length ||
+      newFilters.tagsExclude?.length ||
+      newFilters.userName ||
+      newFilters.dateFrom ||
+      newFilters.dateTo
+    );
+    
+    if (hasQuery || hasOtherFilters) {
+      setIsLoading(true);
+      setHasSearched(true);
+      
+      try {
+        // Use newFilters directly to avoid stale state
+        const filters: SearchFilters = {
+          ...newFilters,
+          query: searchQuery.trim() || undefined
+        };
+        
+        const results = await searchService.searchPortfoliosWithFilters(filters);
+        setSearchResults(results);
+      } catch (error) {
+        console.error("Search error:", error);
+        alert("An error occurred while searching. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -100,7 +157,7 @@ export function SearchPage({ user, onNavigateToProfile }: SearchPageProps) {
               outline: "none"
             }}
             onFocus={(e) => {
-              e.currentTarget.style.borderColor = "#7b6be5";
+              e.currentTarget.style.borderColor = "#fa7d35ff";
             }}
             onBlur={(e) => {
               e.currentTarget.style.borderColor = "#ddd";
@@ -125,23 +182,14 @@ export function SearchPage({ user, onNavigateToProfile }: SearchPageProps) {
           </button>
         </div>
 
-        {/* Advanced Search Button - Placeholder for future feature */}
+        {/* Advanced Search Panel */}
         <div style={{ marginTop: "12px" }}>
-          <button
-            style={{
-              padding: "8px 16px",
-              fontSize: "14px",
-              backgroundColor: "transparent",
-              color: "#7b6be5",
-              border: "2px solid #7b6be5",
-              borderRadius: "8px",
-              cursor: "pointer",
-              fontWeight: "bold"
-            }}
-            onClick={() => alert("Advanced search coming soon!")}
-          >
-            Advanced Search
-          </button>
+          <AdvancedSearchPanel
+            filters={searchFilters}
+            onFiltersChange={handleFiltersChange}
+            isOpen={isAdvancedPanelOpen}
+            onToggle={() => setIsAdvancedPanelOpen(!isAdvancedPanelOpen)}
+          />
         </div>
       </div>
 
