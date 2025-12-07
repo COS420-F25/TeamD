@@ -29,13 +29,16 @@ describe('DisplayRepos Component', () => {
     jest.clearAllMocks();
   });
 
-  test('shows loading message initially', () => {
+  test('shows loading message initially', async () => {
     (getDoc as jest.Mock).mockResolvedValue({
       data: () => ({ githubInstallationId: '888' }),
     });
 
     render(<DisplayRepos />);
-    expect(screen.getByText('Loading repositories...')).toBeInTheDocument();
+    // Wait for initial render to complete
+    await waitFor(() => {
+      expect(screen.getByText('Loading repositories...')).toBeInTheDocument();
+    });
   });
 
   test('shows GitHub not connected when no installation_id exists', async () => {

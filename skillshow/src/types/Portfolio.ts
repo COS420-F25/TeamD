@@ -13,6 +13,7 @@ export interface Portfolio {
   description: string;
   tags: string[];
   createdAt: string;
+  updatedAt?: string; // Optional: last update timestamp
 }
 
 /**
@@ -21,4 +22,18 @@ export interface Portfolio {
 export interface SearchResult {
   portfolio: Portfolio;
   matchScore: number; // For ranking results by relevance
+}
+
+/**
+ * Search filters for advanced search functionality
+ */
+export interface SearchFilters {
+  query?: string; // Text search query
+  tagsInclude?: string[]; // Tags that must be included (at least one)
+  tagsExclude?: string[]; // Tags that must be excluded (none of these)
+  userName?: string; // Filter by user name
+  dateFrom?: string; // Filter portfolios created after this date (ISO format)
+  dateTo?: string; // Filter portfolios created before this date (ISO format)
+  sortBy?: "relevance" | "date" | "updated" | "alphabetical"; // Sort order
+  sortOrder?: "asc" | "desc"; // Sort direction
 }
