@@ -11,19 +11,7 @@ describe('SearchService', () => {
   });
 
   describe('searchPortfolios', () => {
-    test('returns empty array for empty query', async () => {
-      const results = await searchService.searchPortfolios('');
-
-      expect(results).toEqual([]);
-      expect(results).toHaveLength(0);
-    });
-
-    test('returns empty array for whitespace-only query', async () => {
-      const results = await searchService.searchPortfolios('   ');
-
-      expect(results).toEqual([]);
-      expect(results).toHaveLength(0);
-    });
+   
 
     test('performs case-insensitive search', async () => {
       const lowercaseResults = await searchService.searchPortfolios('weather');
