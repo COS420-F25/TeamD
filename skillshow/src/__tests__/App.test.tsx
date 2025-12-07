@@ -18,11 +18,10 @@ jest.mock("../firebase-config", () => ({
 }));
 
 // Mock Firestore functions used by ProfilePage
-jest.mock("firebase/firestore", () => ({
-  doc: jest.fn(),
-  getDoc: jest.fn(() => Promise.resolve({
-    exists: () => true,
-    data: () => ({
+jest.mock("firebase/firestore", () => {
+  const mockDocSnap = {
+    exists: jest.fn(() => true),
+    data: jest.fn(() => ({
       name: "Test User",
       title: "Tester",
       location: "Nowhere",
@@ -30,16 +29,21 @@ jest.mock("firebase/firestore", () => ({
       contact: "test@test.com",
       pfpUrl: "",
       tags: []
-    })
-  })),
-  setDoc: jest.fn(() => Promise.resolve()),
-  collection: jest.fn(),
-  query: jest.fn(),
-  where: jest.fn(),
-  getDocs: jest.fn(() => Promise.resolve({
-    docs: []
-  }))
-}));
+    }))
+  };
+
+  return {
+    doc: jest.fn(),
+    getDoc: jest.fn(() => Promise.resolve(mockDocSnap)),
+    setDoc: jest.fn(() => Promise.resolve()),
+    collection: jest.fn(),
+    query: jest.fn(),
+    where: jest.fn(),
+    getDocs: jest.fn(() => Promise.resolve({
+      docs: []
+    }))
+  };
+});
 
 // Mock Firebase Storage
 jest.mock("firebase/storage", () => ({
@@ -53,12 +57,15 @@ jest.mock("firebase/storage", () => ({
     render(<App />);
     fireEvent.click(screen.getByText("Profile"));
 
-    // ProfilePage should render with the user
-    expect(screen.getByText("Edit Profile")).toBeInTheDocument();
-    expect(screen.getByLabelText("Name:")).toBeInTheDocument(); 
-    expect(screen.getByLabelText("Title:")).toBeInTheDocument(); 
-    expect(screen.getByLabelText("Location:")).toBeInTheDocument(); 
-    expect(screen.getByLabelText("Bio:")).toBeInTheDocument(); 
+    // ProfilePage should render with the user - use waitFor since it loads async
+    await waitFor(() => {
+      expect(screen.getByText("Edit Profile")).toBeInTheDocument();
+    });
+
+    expect(screen.getByLabelText("Name:")).toBeInTheDocument();
+    expect(screen.getByLabelText("Title:")).toBeInTheDocument();
+    expect(screen.getByLabelText("Location:")).toBeInTheDocument();
+    expect(screen.getByLabelText("Bio:")).toBeInTheDocument();
   });
 
   test("clicking Projects shows ProjectEditPage", async () => {
@@ -73,6 +80,6 @@ jest.mock("firebase/storage", () => ({
     render(<App />);
     fireEvent.click(screen.getByText("Search"));
 
-    expect(screen.getByText("Search Portfolios")).toBeInTheDocument();
+    expect(screen.getByText("Search Projects")).toBeInTheDocument();
   });
 

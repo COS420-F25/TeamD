@@ -103,8 +103,25 @@ describe("ProjectEditPage Firestore sanity", () => {
     const mockNewProjectRef = { id: "new-project-id" };
     const mockCollectionRef = { path: "users/user123/projects" };
 
+    const mockNewProject = {
+      id: "new-project-id",
+      data: () => ({
+        title: "New Project",
+        desc: "",
+        tags: [],
+        fields: [],
+        userId: "user123",
+        createdAt: { toDate: () => new Date() },
+      }),
+    };
+
     (collection as jest.Mock).mockReturnValue(mockCollectionRef);
-    (getDocs as jest.Mock).mockResolvedValue({ docs: [] });
+
+    // First call returns empty, second call (after addDoc) returns the new project
+    (getDocs as jest.Mock)
+      .mockResolvedValueOnce({ docs: [] })
+      .mockResolvedValueOnce({ docs: [mockNewProject] });
+
     (addDoc as jest.Mock).mockResolvedValue(mockNewProjectRef);
 
     render(<ProjectEditPage user={mockUser} />);
