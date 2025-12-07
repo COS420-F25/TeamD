@@ -22,8 +22,12 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 const db = getFirestore(app);
 
-if (window.location.hostname === "localhost") {
-  connectFirestoreEmulator(db, "localhost", 8080);
+if (typeof window !== "undefined" && window.location.hostname === "localhost") {
+  try {
+    connectFirestoreEmulator(db, "localhost", 8080);
+  } catch (error) {
+    // Emulator might already be connected, ignore error
+  }
 }
 
 export {app, db}
