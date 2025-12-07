@@ -253,7 +253,7 @@ export function UploadResume(): React.JSX.Element {
                     cursor: "pointer"
                 }}
             >
-                 Back
+                Back
             </button>
         </div>
     );
