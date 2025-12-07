@@ -8,6 +8,15 @@ import { SearchService } from "../services/SearchService";
 
 jest.mock("../services/SearchService");
 
+// Mock firebase-config to prevent Firestore initialization issues
+jest.mock("../firebase-config", () => ({
+  db: {},
+  auth: {
+    currentUser: null,
+  },
+  app: {},
+}));
+
 describe("SearchPage Component", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -49,8 +58,9 @@ describe("SearchPage Component", () => {
       matchScore: 10
     }];
 
-    (SearchService as jest.Mock).mockImplementation(() => ({
-      searchPortfolios: jest.fn().mockResolvedValue(mockResults)
+    (SearchService as unknown as jest.Mock).mockImplementation(() => ({
+      searchPortfolios: jest.fn().mockResolvedValue(mockResults),
+      searchPortfoliosWithFilters: jest.fn().mockResolvedValue(mockResults)
     }));
 
     render(<SearchPage user={null} />);
@@ -65,8 +75,11 @@ describe("SearchPage Component", () => {
   });
 
   test("shows loading state during search", async () => {
-    (SearchService as jest.Mock).mockImplementation(() => ({
+    (SearchService as unknown as jest.Mock).mockImplementation(() => ({
       searchPortfolios: jest.fn().mockImplementation(
+        () => new Promise(resolve => setTimeout(() => resolve([]), 100))
+      ),
+      searchPortfoliosWithFilters: jest.fn().mockImplementation(
         () => new Promise(resolve => setTimeout(() => resolve([]), 100))
       )
     }));
@@ -77,12 +90,15 @@ describe("SearchPage Component", () => {
       { target: { value: "test" } });
     fireEvent.click(screen.getByText("Search"));
     
-    expect(screen.getByText("Searching...")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("Searching...")).toBeInTheDocument();
+    });
   });
 
   test("shows no results message when search returns empty", async () => {
-    (SearchService as jest.Mock).mockImplementation(() => ({
-      searchPortfolios: jest.fn().mockResolvedValue([])
+    (SearchService as unknown as jest.Mock).mockImplementation(() => ({
+      searchPortfolios: jest.fn().mockResolvedValue([]),
+      searchPortfoliosWithFilters: jest.fn().mockResolvedValue([])
     }));
 
     render(<SearchPage user={null} />);
@@ -94,5 +110,59 @@ describe("SearchPage Component", () => {
     await waitFor(() => {
       expect(screen.getByText("No portfolios found")).toBeInTheDocument();
     });
+  });
+
+  // Advanced Search Feature Tests
+  test("toggles advanced search panel when button is clicked", async () => {
+    (SearchService as unknown as jest.Mock).mockImplementation(() => ({
+      searchPortfolios: jest.fn().mockResolvedValue([]),
+      searchPortfoliosWithFilters: jest.fn().mockResolvedValue([]),
+      getAvailableTags: jest.fn().mockResolvedValue(["React", "TypeScript"])
+    }));
+
+    render(<SearchPage user={null} />);
+    
+    const advancedButton = screen.getByText("Advanced Search");
+    expect(advancedButton).toBeInTheDocument();
+    
+    // Panel should not be visible initially
+    expect(screen.queryByText("Include Tags")).not.toBeInTheDocument();
+    
+    // Click to open - this triggers async tag loading
+    fireEvent.click(advancedButton);
+    
+    // Wait for tags to load and panel to render
+    await waitFor(() => {
+      expect(screen.getByText("Include Tags")).toBeInTheDocument();
+    });
+    
+    // Click to close
+    fireEvent.click(advancedButton);
+    
+    await waitFor(() => {
+      expect(screen.queryByText("Include Tags")).not.toBeInTheDocument();
+    });
+  });
+
+ 
+  test("advanced search panel has sort options", async () => {
+    (SearchService as unknown as jest.Mock).mockImplementation(() => ({
+      searchPortfolios: jest.fn().mockResolvedValue([]),
+      searchPortfoliosWithFilters: jest.fn().mockResolvedValue([]),
+      getAvailableTags: jest.fn().mockResolvedValue([])
+    }));
+
+    render(<SearchPage user={null} />);
+    
+    // Open advanced search
+    fireEvent.click(screen.getByText("Advanced Search"));
+    
+    // Wait for panel to render
+    await waitFor(() => {
+      expect(screen.getByText("Sort By")).toBeInTheDocument();
+    });
+    
+    // Verify sort dropdown exists
+    expect(screen.getByDisplayValue("Relevance")).toBeInTheDocument();
   });
 });
