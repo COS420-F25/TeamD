@@ -101,7 +101,8 @@ export function ProfilePage({user}:ProfilePageProps): React.JSX.Element {
                 fontFamily: "sans-serif"
             }}
         >
-         <h2>Edit Profile</h2>   
+         <h2>Edit Profile</h2>
+         <div style={{ display: "flex", gap: "2rem" }}>
             <div
                 style={{
                     width: "500px",
@@ -301,8 +302,17 @@ export function ProfilePage({user}:ProfilePageProps): React.JSX.Element {
             </div>
              <DisplayRepos />
             </div>
-        <div>
+        
+        <div style={{   
+            flex: 1,
+            border: "4px solid #ffa876ff",
+            padding: "0 1.5rem 1.5rem 1.5rem",
+            borderRadius: "5px",
+            background: "white",
+            marginTop: "6rem"
+        }}>
             <UploadResume />
+        </div>
         </div>
         </div>
     );
