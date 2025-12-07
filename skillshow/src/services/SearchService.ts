@@ -205,7 +205,7 @@ export class SearchService {
 
     const normalizedQuery = (filters.query || "").toLowerCase().trim();
     const results: SearchResult[] = [];
-    const normalizedQuery = filters.query?.toLowerCase().trim() || "";
+   
 
     for (const portfolio of SearchService.MOCK_PORTFOLIOS) {
       for (const project of portfolio.projects ?? []) {
