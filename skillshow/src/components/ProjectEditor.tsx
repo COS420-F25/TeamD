@@ -1,7 +1,7 @@
 import React, {useEffect, useState, useRef} from "react";
 import {db} from "../firebase-config";
 import {User} from "firebase/auth";
-import { doc, setDoc} from "firebase/firestore";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { Project } from "../types/Project";
 import { TagSelector } from "./Tags";
 
@@ -51,7 +51,8 @@ export function ProjectEditor({user, project, onClose, refresh}: ProjectEditorPr
         tags: p.tags ?? [],
         fields: p.fields ?? [],
         userId: p.userId,
-        createdAt: p.createdAt
+        createdAt: p.createdAt,
+        updatedAt: (p as any).updatedAt ?? p.createdAt
     });
 
     const addToHistory = (newData: Project) => {
@@ -90,7 +91,7 @@ export function ProjectEditor({user, project, onClose, refresh}: ProjectEditorPr
         setSaving(true);
         const ref = doc(db, "users", user.uid, "projects", project.id);
         try {
-            setDoc(ref, data);
+            await setDoc(ref, { ...data, updatedAt: serverTimestamp() });
             await refresh();
             alert("Project saved successfully");
         } catch (err) {

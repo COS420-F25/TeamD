@@ -10,4 +10,5 @@ export interface Project {
     }[];
     userId: string;
     createdAt: any;
+    updatedAt: any;
 }

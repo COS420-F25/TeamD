@@ -36,16 +36,15 @@ describe("SearchPage Component", () => {
 
   test("performs search when button is clicked", async () => {
     const mockResults = [{
-      portfolio: {
-        portfolioId: "1",
-        userId: "user-1",
-        userName: "Test User",
-        userEmail: "test@test.com",
+      project: {
+        id: "p-1",
         title: "Weather App",
-        description: "A test app",
+        desc: "A test app",
         tags: [],
+        userId: "user-1",
         createdAt: "2024-01-01"
       },
+      portfolioId: "1",
       matchScore: 10
     }];
 
@@ -60,7 +59,7 @@ describe("SearchPage Component", () => {
     fireEvent.click(screen.getByText("Search"));
     
     await waitFor(() => {
-      expect(screen.getByText("Test User")).toBeInTheDocument();
+      expect(screen.getByText("Weather App")).toBeInTheDocument();
     });
   });
 

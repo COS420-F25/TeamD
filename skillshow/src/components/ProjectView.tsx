@@ -20,7 +20,7 @@ export function ProjectView({ projectId, userId, onClose }: ProjectViewProps) {
                 const docRef = doc(db, "users", userId, "projects", projectId);
                 const docSnap = await getDoc(docRef);
                 
-                if (docSnap.exists()) {
+                    if (docSnap.exists()) {
                     const data = docSnap.data();
                     setProject({
                         id: docSnap.id,
@@ -33,7 +33,8 @@ export function ProjectView({ projectId, userId, onClose }: ProjectViewProps) {
                             value: f.value ?? ""
                         })),
                         userId: data.userId ?? userId,
-                        createdAt: data.createdAt?.toDate?.() ?? new Date()
+                            createdAt: data.createdAt?.toDate?.() ?? new Date(),
+                            updatedAt: data.updatedAt?.toDate?.() ?? data.createdAt?.toDate?.() ?? new Date()
                     } as Project);
                 } else {
                     setError("Project not found");

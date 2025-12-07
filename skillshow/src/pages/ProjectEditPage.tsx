@@ -37,7 +37,8 @@ export function ProjectEditPage({ user }:ProjectEditPageProps) {
                         value: f.value ?? ""
                         })),
                         userId: data.userId ?? user.uid,
-                        createdAt: data.createdAt?.toDate?.() ?? new Date()
+                        createdAt: data.createdAt?.toDate?.() ?? new Date(),
+                        updatedAt: data.updatedAt?.toDate?.() ?? data.createdAt?.toDate?.() ?? new Date()
                     } as Project;
                 });
 
@@ -69,7 +70,8 @@ export function ProjectEditPage({ user }:ProjectEditPageProps) {
             tags:[],
             fields:[],
             userId: user.uid,
-            createdAt: serverTimestamp()
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
         });
 
         setLoading(true);

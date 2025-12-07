@@ -46,7 +46,8 @@ export function ProfilePage({user}:ProfilePageProps): React.JSX.Element {
                         value: f.value ?? ""
                     })),
                     userId: data.userId ?? user.uid,
-                    createdAt: data.createdAt?.toDate?.() ?? new Date()
+                    createdAt: data.createdAt?.toDate?.() ?? new Date(),
+                    updatedAt: data.updatedAt?.toDate?.() ?? data.createdAt?.toDate?.() ?? new Date()
                 } as Project;
             });
             setProjects(colList);

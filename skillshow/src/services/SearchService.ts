@@ -3,6 +3,18 @@
 import { Portfolio, SearchResult } from "../types/Portfolio";
 import { Project } from "../types/Project";
 
+// Local search filters interface (kept local to avoid changing shared types)
+export interface SearchFilters {
+  query?: string;
+  tagsInclude?: string[]; // at least one of these tags must be present on the project
+  tagsExclude?: string[]; // none of these tags may be present on the project
+  userId?: string; // project owner id
+  dateFrom?: string; // ISO date string
+  dateTo?: string; // ISO date string
+  sortBy?: "relevance" | "date" | "alphabetical";
+  sortOrder?: "asc" | "desc";
+}
+
 /**
  * SearchService handles project search functionality
  * 
@@ -37,7 +49,8 @@ export class SearchService {
           tags: ["React", "API", "TypeScript", "Weather"],
           fields: [],
           userId: "user-001",
-          createdAt: "2024-01-15T10:30:00Z"
+          createdAt: "2024-01-15T10:30:00Z",
+          updatedAt: "2024-02-01T12:00:00Z"
         },
         {
           id: "proj-002",
@@ -46,7 +59,8 @@ export class SearchService {
           tags: ["D3.js", "Visualization", "Climate"],
           fields: [],
           userId: "user-001",
-          createdAt: "2024-01-20T09:00:00Z"
+          createdAt: "2024-01-20T09:00:00Z",
+          updatedAt: "2024-02-05T10:00:00Z"
         }
       ]
     },
@@ -62,7 +76,8 @@ export class SearchService {
           tags: ["Node.js", "React", "MongoDB", "Stripe"],
           fields: [],
           userId: "user-002",
-          createdAt: "2024-02-20T14:45:00Z"
+          createdAt: "2024-02-20T14:45:00Z",
+          updatedAt: "2024-03-01T09:30:00Z"
         }
       ]
     },
@@ -78,7 +93,8 @@ export class SearchService {
           tags: ["React", "Firebase", "Material-UI"],
           fields: [],
           userId: "user-003",
-          createdAt: "2024-03-10T09:15:00Z"
+          createdAt: "2024-03-10T09:15:00Z",
+          updatedAt: "2024-03-12T11:00:00Z"
         }
       ]
     },
@@ -94,7 +110,8 @@ export class SearchService {
           tags: ["Python", "Data Visualization", "D3.js"],
           fields: [],
           userId: "user-004",
-          createdAt: "2024-01-25T16:20:00Z"
+          createdAt: "2024-01-25T16:20:00Z",
+          updatedAt: "2024-02-02T08:15:00Z"
         }
       ]
     },
@@ -110,7 +127,8 @@ export class SearchService {
           tags: ["React", "Chart.js", "REST API"],
           fields: [],
           userId: "user-005",
-          createdAt: "2024-02-05T11:00:00Z"
+          createdAt: "2024-02-05T11:00:00Z",
+          updatedAt: "2024-02-20T13:00:00Z"
         }
       ]
     },
@@ -126,7 +144,8 @@ export class SearchService {
           tags: ["React", "Firebase", "CSS"],
           fields: [],
           userId: "user-006",
-          createdAt: "2024-03-15T13:30:00Z"
+          createdAt: "2024-03-15T13:30:00Z",
+          updatedAt: "2024-03-20T14:45:00Z"
         }
       ]
     },
@@ -142,7 +161,8 @@ export class SearchService {
           tags: ["React Native", "Mobile", "Health"],
           fields: [],
           userId: "user-007",
-          createdAt: "2024-01-30T08:45:00Z"
+          createdAt: "2024-01-30T08:45:00Z",
+          updatedAt: "2024-02-10T07:00:00Z"
         }
       ]
     },
@@ -158,7 +178,8 @@ export class SearchService {
           tags: ["HTML", "CSS", "JavaScript", "Environment"],
           fields: [],
           userId: "user-008",
-          createdAt: "2024-02-12T15:10:00Z"
+          createdAt: "2024-02-12T15:10:00Z",
+          updatedAt: "2024-02-18T16:20:00Z"
         }
       ]
     }
@@ -172,32 +193,37 @@ export class SearchService {
    * @returns Promise<SearchResult[]> - Array of matching projects with relevance scores
    */
   async searchPortfolios(query: string): Promise<SearchResult[]> {
-    // Simulate network delay (like a real API call)
+    // Simple compatibility wrapper: call advanced search with just a query
+    return this.searchPortfoliosWithFilters({ query });
+  }
+
+  /**
+   * Advanced search across projects nested in portfolios using provided filters
+   */
+  async searchPortfoliosWithFilters(filters: SearchFilters): Promise<SearchResult[]> {
     await this.delay(300);
 
-    if (!query || query.trim().length === 0) {
-      return [];
-    }
-
-    const normalizedQuery = query.toLowerCase().trim();
+    const normalizedQuery = (filters.query || "").toLowerCase().trim();
     const results: SearchResult[] = [];
 
-    // Search through portfolios and their nested projects
     for (const portfolio of SearchService.MOCK_PORTFOLIOS) {
       for (const project of portfolio.projects ?? []) {
-        const matchScore = this.calculateProjectMatchScore(project, normalizedQuery);
-        if (matchScore > 0) {
-          results.push({
-            project,
-            portfolioId: portfolio.portfolioId,
-            matchScore
-          });
+        // Apply filters (tags, userId, date range)
+        if (!this.projectMatchesFilters(project, filters)) continue;
+
+        // If a text query exists, calculate score and skip zero-score matches
+        let score = 1; // default score when no query provided
+        if (normalizedQuery) {
+          score = this.calculateProjectMatchScore(project, normalizedQuery);
+          if (score === 0) continue;
         }
+
+        results.push({ project, portfolioId: portfolio.portfolioId, matchScore: score });
       }
     }
 
-    // Sort by relevance (highest match score first)
-    results.sort((a, b) => b.matchScore - a.matchScore);
+    // Sort results
+    this.sortResults(results, filters);
 
     return results;
   }
@@ -216,35 +242,88 @@ export class SearchService {
    */
   private calculateProjectMatchScore(project: Project, query: string): number {
     let score = 0;
-    const queryWords = query.split(/\s+/);
+    const queryWords = query.split(/\s+/).filter(Boolean);
 
-    const title = project.title.toLowerCase();
-    const desc = project.desc.toLowerCase();
+    const title = (project.title || "").toLowerCase();
+    const desc = (project.desc || "").toLowerCase();
+    const tags = (project.tags || []).map(t => t.toLowerCase()).join(" ");
 
-    // Word-by-word matching
     for (const word of queryWords) {
-      // Title matches weighted highest
-      if (title.includes(word)) {
-        score += 3;
-      }
-
-      // Description matches
-      if (desc.includes(word)) {
-        score += 1;
-      }
+      if (title.includes(word)) score += 3;
+      if (desc.includes(word)) score += 1;
+      if (tags.includes(word)) score += 2; // tag weight
     }
 
-    // Bonus for exact phrase match in title
-    if (title.includes(query)) {
-      score += 10;
-    }
-
-    // Bonus for exact phrase match in description
-    if (desc.includes(query)) {
-      score += 5;
-    }
+    // phrase bonuses
+    if (title.includes(query)) score += 10;
+    if (desc.includes(query)) score += 5;
 
     return score;
+  }
+
+  /**
+   * Return true if a project matches the provided filters (tags, user, date range)
+   */
+  private projectMatchesFilters(project: Project, filters: SearchFilters): boolean {
+    // tagsInclude: project must include at least one
+    if (filters.tagsInclude && filters.tagsInclude.length > 0) {
+      const projTags = (project.tags || []).map(t => t.toLowerCase());
+      const req = filters.tagsInclude.map(t => t.toLowerCase());
+      const has = req.some(t => projTags.includes(t));
+      if (!has) return false;
+    }
+
+    // tagsExclude: project must include none
+    if (filters.tagsExclude && filters.tagsExclude.length > 0) {
+      const projTags = (project.tags || []).map(t => t.toLowerCase());
+      const forbid = filters.tagsExclude.map(t => t.toLowerCase());
+      if (forbid.some(t => projTags.includes(t))) return false;
+    }
+
+    // userId
+    if (filters.userId && filters.userId.trim()) {
+      if (project.userId !== filters.userId) return false;
+    }
+
+    // date range (project.createdAt may be string or Date)
+    if (filters.dateFrom || filters.dateTo) {
+      const projTime = new Date(project.createdAt).getTime();
+      if (filters.dateFrom) {
+        const from = new Date(filters.dateFrom).getTime();
+        if (projTime < from) return false;
+      }
+      if (filters.dateTo) {
+        const to = new Date(filters.dateTo).getTime();
+        const toEnd = to + 24 * 60 * 60 * 1000;
+        if (projTime >= toEnd) return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Sort results according to filters (defaults to relevance desc)
+   */
+  private sortResults(results: SearchResult[], filters: SearchFilters): void {
+    const sortBy = filters.sortBy || "relevance";
+    const sortOrder = filters.sortOrder || (sortBy === "relevance" ? "desc" : "asc");
+
+    results.sort((a, b) => {
+      let cmp = 0;
+      switch (sortBy) {
+        case "relevance":
+          cmp = a.matchScore - b.matchScore;
+          break;
+        case "date":
+          cmp = new Date(a.project.createdAt).getTime() - new Date(b.project.createdAt).getTime();
+          break;
+        case "alphabetical":
+          cmp = a.project.title.localeCompare(b.project.title);
+          break;
+      }
+      return sortOrder === "desc" ? -cmp : cmp;
+    });
   }
 
   /**
