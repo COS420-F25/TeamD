@@ -2,61 +2,71 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { ConnectGitHub, DisconnectGitHub } from '../components/ConnectGitHub';
+import { auth } from '../firebase-config';
 
-// Simple mock - just mock the module
-jest.mock('../firebase-config', () => ({
+// Create mock for firebase auth
+jest.mock('../../src/firebase-config', () => ({
   auth: {
     currentUser: null,
   },
 }));
 
-<<<<<<< HEAD
 // Create a mock window.location.href
 delete (window as any).location;
 (window as any).location = { href: '' };
 global.fetch = jest.fn();
 (window as any).open = jest.fn();
 
-=======
->>>>>>> 67a3b911440c531159c00cce442c34aba124b373
 describe('ConnectGitHub Component', () => {
   beforeEach(() => {
     window.alert = jest.fn();
-    // Simple location mock
-    delete (window as any).location;
-    (window as any).location = { href: '' };
+    window.location.href = '';
   });
 
-  test('renders connect button', () => {
+  test('has a connect button', () => {
     render(<ConnectGitHub />);
-    expect(screen.getByText('Connect GitHub')).toBeInTheDocument();
+    const button = screen.getByText('Connect GitHub');
+    expect(button).toBeInTheDocument();
   });
 
-  test('shows alert when not authenticated', () => {
+  test('has redirect logic', () => {
+    // Mock authenticated user for this test
+    (auth as any).currentUser = { uid: 'test-user-123' };
+    
     render(<ConnectGitHub />);
-    fireEvent.click(screen.getByText('Connect GitHub'));
-    expect(window.alert).toHaveBeenCalledWith('Please log in first');
+    const button = screen.getByText('Connect GitHub');
+    fireEvent.click(button);
+    
+    expect(window.location.href).toContain('githubInstall');
+  });
+
+  test('has authentication check logic', () => {
+    // Set user to null for this test
+    (auth as any).currentUser = null;
+    
+    render(<ConnectGitHub />);
+    const button = screen.getByText('Connect GitHub');
+    fireEvent.click(button);
+    
+    expect(window.alert).toHaveBeenCalled();
   });
 });
 
 describe('DisconnectGitHub Component', () => {
   beforeEach(() => {
+    jest.clearAllMocks();
     window.alert = jest.fn();
-<<<<<<< HEAD
     (window as any).open = jest.fn();
     console.error = jest.fn();
     console.warn = jest.fn();
-=======
-    global.fetch = jest.fn();
->>>>>>> 67a3b911440c531159c00cce442c34aba124b373
   });
 
-  test('renders disconnect button', () => {
+  test('has a disconnect button', () => {
     render(<DisconnectGitHub />);
-    expect(screen.getByText('Disconnect GitHub')).toBeInTheDocument();
+    const button = screen.getByText('Disconnect GitHub');
+    expect(button).toBeInTheDocument();
   });
 
-<<<<<<< HEAD
   test('has authentication check logic', () => {
     (auth as any).currentUser = null;
 
@@ -169,11 +179,3 @@ describe('DisconnectGitHub Component', () => {
     });
   });
 });
-=======
-  test('shows alert when not authenticated', () => {
-    render(<DisconnectGitHub />);
-    fireEvent.click(screen.getByText('Disconnect GitHub'));
-    expect(window.alert).toHaveBeenCalledWith('Please log in first');
-  });
-});
->>>>>>> 67a3b911440c531159c00cce442c34aba124b373
