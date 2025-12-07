@@ -1,6 +1,8 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import { ProjectEditPage } from "../pages/ProjectEditPage";
+import { collection, getDocs, addDoc } from "firebase/firestore";
 
 jest.mock("firebase/app", () => ({
   initializeApp: jest.fn(() => ({})),
@@ -23,8 +25,7 @@ jest.mock("../firebase-config", () => ({
   db: {},
 }));
 
-import { ProjectEditPage } from "../pages/ProjectEditPage";
-import { collection, getDocs, addDoc } from "firebase/firestore";
+
 
 jest.mock("../components/ProjectEditor", () => ({
   ProjectEditor: ({ project, onClose }: any) => (

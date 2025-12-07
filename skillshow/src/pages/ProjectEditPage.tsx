@@ -72,17 +72,12 @@ export function ProjectEditPage({ user }:ProjectEditPageProps) {
             createdAt: serverTimestamp()
         });
 
-        await loadProjects();
-        setProject({
-            id: newProj.id,
-            title: "New Project",
-            desc: "",
-            tags: [],
-            fields: [],
-            userId: user.uid,
-            createdAt: new Date()
-        });
-
+        setLoading(true);
+  
+        const updated = await loadProjects();
+        const created = updated?.find(p => p.id === newProj.id) ?? null;
+        setProject(created);
+        setLoading(false);
     };
 
     if (!user) {
@@ -91,12 +86,110 @@ export function ProjectEditPage({ user }:ProjectEditPageProps) {
     if (loading) return <p>Loading projects</p>;
 
     return (
-        <div>
-            <h2>Your Projects</h2>
-            <button onClick={createProject}>New Project</button>
-            {projects.map((x)=>(
-                <div key={x.id} onClick={()=>setProject(x)}>{x.title}</div>
-            ))}
+        <div style={{ padding: "2rem" }}>
+            <h2 style={{ marginTop: 0 }}>Your Projects</h2>
+            <button 
+                onClick={createProject}
+                style={{
+                    marginBottom: "1.5rem",
+                    padding: "0.75rem 1.5rem",
+                    backgroundColor: "#7b6be5",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                    fontWeight: "500",
+                    fontSize: "14px"
+                }}
+            >
+                New Project
+            </button>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", maxWidth: "800px" }}>
+                {projects.map((proj) => (
+                    <div
+                        key={proj.id}
+                        onClick={() => setProject(proj)}
+                        style={{
+                            backgroundColor: "#FFDAB3",
+                            padding: "1rem",
+                            borderRadius: "6px",
+                            cursor: "pointer",
+                            border: "2px solid transparent",
+                            transition: "all 0.2s ease",
+                            minHeight: "auto"
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = "#FFD5A3";
+                            e.currentTarget.style.borderColor = "#7b6be5";
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = "#FFDAB3";
+                            e.currentTarget.style.borderColor = "transparent";
+                        }}
+                    >
+                        <div
+                            style={{
+                                fontWeight: "bold",
+                                fontSize: "14px",
+                                color: "#333",
+                                marginBottom: "0.5rem"
+                            }}
+                        >
+                            {proj.title}
+                        </div>
+                        <div
+                            style={{
+                                fontSize: "12px",
+                                color: "#666",
+                                lineHeight: "1.4",
+                                marginBottom: "0.5rem"
+                            }}
+                        >
+                            {proj.desc.length > 60
+                                ? proj.desc.substring(0, 60) + "..."
+                                : proj.desc || "No description"}
+                        </div>
+                        {proj.tags && proj.tags.length > 0 && (
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexWrap: "wrap",
+                                    gap: "0.3rem",
+                                    marginTop: "0.5rem"
+                                }}
+                            >
+                                {proj.tags.slice(0, 3).map((tag: string, index: number) => (
+                                    <span
+                                        key={index}
+                                        style={{
+                                            backgroundColor: "#7b6be5",
+                                            color: "white",
+                                            padding: "0.2rem 0.5rem",
+                                            borderRadius: "12px",
+                                            fontSize: "10px",
+                                            whiteSpace: "nowrap"
+                                        }}
+                                    >
+                                        {tag}
+                                    </span>
+                                ))}
+                                {proj.tags.length > 3 && (
+                                    <span
+                                        style={{
+                                            fontSize: "10px",
+                                            color: "#666",
+                                            alignSelf: "center",
+                                            marginLeft: "0.2rem"
+                                        }}
+                                    >
+                                        +{proj.tags.length - 3}
+                                    </span>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                ))}
+            </div>
             {project && (<ProjectEditor user={user} project={project} onClose={()=> setProject(null)} refresh={loadProjects}/>)}
         </div>
     )
