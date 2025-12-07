@@ -3,6 +3,8 @@ import {db} from "../firebase-config";
 import {User} from "firebase/auth";
 import { doc, setDoc} from "firebase/firestore";
 import { Project } from "../types/Project";
+import { TagSelector } from "./Tags";
+
 
 interface ProjectEditorProps{
     user: User;
@@ -14,10 +16,10 @@ interface ProjectEditorProps{
 
 export function ProjectEditor({user, project,onClose,refresh}: ProjectEditorProps){
     const [data, setData] = useState(project);
-    const [newTag, setNewTag] = useState("");
     const [newField, setNewField] = useState("");
     const [saving, setSaving] = useState(false);
     
+
     useEffect(()=>{
         setData(normalize(project))
     }, [project]);
@@ -57,14 +59,8 @@ export function ProjectEditor({user, project,onClose,refresh}: ProjectEditorProp
         } 
 
     //tagging stuff, should probably be updated to integrate with tagging system once that is completed
-    const addTag = () => {
-        if (!newTag.trim()){
-            return;}
-        setData({...data, tags: [...data.tags, newTag.trim()]});
-        
-    };
-    const removeTag = (t:string) => {
-        setData({...data, tags: data.tags.filter((tag:  string) => tag !== t)}); 
+    const updateTags = (tags: string[]) => {
+        setData({ ...data, tags });
     };
 
     //field stuff, for adding and removing text fields from a project
@@ -107,16 +103,10 @@ export function ProjectEditor({user, project,onClose,refresh}: ProjectEditorProp
             </div>
         
             <div>
-                <label>Add Tag:</label>
-                    <input
-                        type="text"
-                        value={newTag}
-                        onChange={(x)=> setNewTag(x.target.value)}
-                    />
-                    <button onClick={addTag}>Add</button>
-                    <div>
-                        {data.tags.map((tag:string)=>(<span key={tag} onClick={()=>removeTag(tag)}>{tag} Remove</span>))}
-                    </div>
+               <div className="section">
+                    <h3>Insert Tags</h3>
+                    <TagSelector tags={data.tags} setTags={updateTags} />
+                </div>
             </div>
 
             <div>
