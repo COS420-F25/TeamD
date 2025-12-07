@@ -4,7 +4,12 @@ import { Portfolio, SearchResult } from "../types/Portfolio";
 import { Project } from "../types/Project";
 
 /**
- * SearchService handles portfolio search functionality
+ * SearchService handles project search functionality
+ * 
+ * Architecture:
+ * - Portfolio is a container that holds multiple Projects
+ * - Search operates on individual Projects within Portfolios
+ * - Results include both the Project and its parent Portfolio reference
  * 
  * NOTE: Currently using MOCK DATA for testing purposes
  * TODO: Replace with real Firestore queries when backend is ready
@@ -12,10 +17,10 @@ import { Project } from "../types/Project";
  * @author Chauncey (using mock data for cross-platform testing)
  */
 export class SearchService {
-  
+
   /**
    * MOCK DATA - For testing purposes only
-   * This simulates portfolios stored in Firestore
+   * Simulates portfolios (containers) with nested projects
    * 
    * NOTE: This will be replaced with actual Firestore queries
    * when the portfolio storage system is implemented
@@ -159,13 +164,12 @@ export class SearchService {
     }
   ];
 
-
   /**
-   * Search portfolios by query string
-   * Searches through portfolio titles and descriptions
+   * Search projects across all portfolios by query string
+   * Searches through project titles and descriptions within portfolio containers
    * 
    * @param query - The search query string
-   * @returns Promise<SearchResult[]> - Array of matching portfolios with relevance scores
+   * @returns Promise<SearchResult[]> - Array of matching projects with relevance scores
    */
   async searchPortfolios(query: string): Promise<SearchResult[]> {
     // Simulate network delay (like a real API call)
@@ -178,9 +182,9 @@ export class SearchService {
     const normalizedQuery = query.toLowerCase().trim();
     const results: SearchResult[] = [];
 
-    // Search through mock portfolios
+    // Search through portfolios and their nested projects
     for (const portfolio of SearchService.MOCK_PORTFOLIOS) {
-      for (const project of portfolio.projects ?? []){
+      for (const project of portfolio.projects ?? []) {
         const matchScore = this.calculateProjectMatchScore(project, normalizedQuery);
         if (matchScore > 0) {
           results.push({
@@ -189,7 +193,7 @@ export class SearchService {
             matchScore
           });
         }
-      } 
+      }
     }
 
     // Sort by relevance (highest match score first)
@@ -199,45 +203,17 @@ export class SearchService {
   }
 
   /**
-   * Calculate relevance score for a portfolio based on search query
-   * Searches in: title and description
+   * Calculate relevance score for a project based on search query
+   * Implements weighted scoring strategy:
+   * - Title matches: 3 points
+   * - Description matches: 1 point
+   * - Exact phrase in title: +10 bonus
+   * - Exact phrase in description: +5 bonus
    * 
-   * @param portfolio - The portfolio to evaluate
+   * @param project - The project to evaluate
    * @param query - The normalized search query
    * @returns number - Match score (higher = more relevant)
    */
-  // private calculateMatchScore(portfolio: Portfolio, query: string): number {
-  //   let score = 0;
-  //   const queryWords = query.split(/\s+/);
-
-  //   const title = portfolio.title.toLowerCase();
-  //   const description = portfolio.description.toLowerCase();
-
-  //   for (const word of queryWords) {
-  //     // Title matches are worth more (weight: 3)
-  //     if (title.includes(word)) {
-  //       score += 3;
-  //     }
-
-  //     // Description matches (weight: 1)
-  //     if (description.includes(word)) {
-  //       score += 1;
-  //     }
-  //   }
-
-  //   // Bonus for exact phrase match in title
-  //   if (title.includes(query)) {
-  //     score += 10;
-  //   }
-
-  //   // Bonus for exact phrase match in description
-  //   if (description.includes(query)) {
-  //     score += 5;
-  //   }
-
-  //   return score;
-  // }
-
   private calculateProjectMatchScore(project: Project, query: string): number {
     let score = 0;
     const queryWords = query.split(/\s+/);
@@ -245,13 +221,28 @@ export class SearchService {
     const title = project.title.toLowerCase();
     const desc = project.desc.toLowerCase();
 
+    // Word-by-word matching
     for (const word of queryWords) {
-      if (title.includes(word)) score += 3;
-      if (desc.includes(word)) score += 1;
+      // Title matches weighted highest
+      if (title.includes(word)) {
+        score += 3;
+      }
+
+      // Description matches
+      if (desc.includes(word)) {
+        score += 1;
+      }
     }
 
-    if (title.includes(query)) score += 10;
-    if (desc.includes(query)) score += 5;
+    // Bonus for exact phrase match in title
+    if (title.includes(query)) {
+      score += 10;
+    }
+
+    // Bonus for exact phrase match in description
+    if (desc.includes(query)) {
+      score += 5;
+    }
 
     return score;
   }
@@ -278,13 +269,21 @@ export class SearchService {
    * 
    * async searchPortfolios(query: string): Promise<SearchResult[]> {
    *   const portfoliosRef = collection(db, "portfolios");
-   *   const q = query(
-   *     portfoliosRef,
-   *     where("title", ">=", query),
-   *     where("title", "<=", query + '\uf8ff')
-   *   );
-   *   const snapshot = await getDocs(q);
-   *   // ... process results
+   *   const portfoliosSnapshot = await getDocs(portfoliosRef);
+   *   
+   *   const results: SearchResult[] = [];
+   *   
+   *   for (const portfolioDoc of portfoliosSnapshot.docs) {
+   *     const portfolio = portfolioDoc.data() as Portfolio;
+   *     for (const project of portfolio.projects) {
+   *       const score = this.calculateProjectMatchScore(project, query);
+   *       if (score > 0) {
+   *         results.push({ project, portfolioId: portfolio.portfolioId, matchScore: score });
+   *       }
+   *     }
+   *   }
+   *   
+   *   return results.sort((a, b) => b.matchScore - a.matchScore);
    * }
    */
 }

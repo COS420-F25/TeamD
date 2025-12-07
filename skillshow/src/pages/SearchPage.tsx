@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { SearchService } from "../services/SearchService";
 import { SearchResult } from "../types/Portfolio";
-import { PortfolioCard } from "../components/PortfolioCard";
+import { ProjectCard } from "../components/ProjectCard";
 
 interface SearchPageProps {
   user: any;
@@ -11,10 +11,10 @@ interface SearchPageProps {
 }
 
 /**
- * SearchPage - Main search interface for finding portfolios
+ * SearchPage - Main search interface for finding projects
  * 
  * Features:
- * - Text-based search through portfolio titles and descriptions
+ * - Text-based search through project titles and descriptions
  * - Real-time search results
  * - Click to view user profiles
  * 
@@ -61,15 +61,15 @@ export function SearchPage({ user, onNavigateToProfile }: SearchPageProps) {
   };
 
   /**
-   * Handle portfolio card click - navigate to user profile
+   * Handle project card click - navigate to user profile
    */
   const handleCardClick = (userId: string) => {
     console.log("Navigating to profile for user:", userId);
-    
+
     // TODO: Implement actual navigation to profile page
     // For now, just alert the user
     alert(`Navigation to profile for user ${userId} will be implemented`);
-    
+
     // If navigation callback is provided, use it
     if (onNavigateToProfile) {
       onNavigateToProfile(userId);
@@ -79,7 +79,7 @@ export function SearchPage({ user, onNavigateToProfile }: SearchPageProps) {
   return (
     <div style={{ padding: "40px", maxWidth: "800px", margin: "0 auto" }}>
       <h1 style={{ fontSize: "32px", marginBottom: "24px", color: "#333" }}>
-        Search Portfolios
+        Search Projects
       </h1>
 
       {/* Search Bar */}
@@ -87,7 +87,7 @@ export function SearchPage({ user, onNavigateToProfile }: SearchPageProps) {
         <div style={{ display: "flex", gap: "12px" }}>
           <input
             type="text"
-            placeholder="Search for portfolios (e.g., 'weather app', 'e-commerce')"
+            placeholder="Search for projects (e.g., 'weather app', 'e-commerce')"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyPress={handleKeyPress}
@@ -156,7 +156,7 @@ export function SearchPage({ user, onNavigateToProfile }: SearchPageProps) {
         {!isLoading && hasSearched && searchResults.length === 0 && (
           <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
             <div style={{ fontSize: "18px", marginBottom: "8px" }}>
-              No portfolios found
+              No projects found
             </div>
             <div style={{ fontSize: "14px" }}>
               Try different keywords or check your spelling
@@ -170,14 +170,12 @@ export function SearchPage({ user, onNavigateToProfile }: SearchPageProps) {
               Found {searchResults.length} result{searchResults.length !== 1 ? "s" : ""}
             </div>
             {searchResults.map((result) => (
-              
-              <PortfolioCard
+              <ProjectCard
                 key={result.project.id}
                 project={result.project}
                 portfolioId={result.portfolioId}
                 onClick={() => handleCardClick(result.project.userId)}
               />
-
             ))}
           </div>
         )}
@@ -186,7 +184,7 @@ export function SearchPage({ user, onNavigateToProfile }: SearchPageProps) {
           <div style={{ textAlign: "center", padding: "60px 20px", color: "#999" }}>
             <div style={{ fontSize: "48px", marginBottom: "16px" }}>🔍</div>
             <div style={{ fontSize: "18px", marginBottom: "8px" }}>
-              Search for portfolios and projects
+              Search for projects
             </div>
             <div style={{ fontSize: "14px" }}>
               Enter keywords like "weather app", "e-commerce", or "dashboard"
