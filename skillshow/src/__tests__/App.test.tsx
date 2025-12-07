@@ -53,22 +53,20 @@ jest.mock("firebase/storage", () => ({
     render(<App />);
     fireEvent.click(screen.getByText("Profile"));
 
-    // ProfilePage should render with the user - wait for async Firestore load
-    await waitFor(() => {
-      expect(screen.getByText(/Edit Profile/)).toBeInTheDocument();
-    });
+    // ProfilePage should render with the user
+    expect(screen.getByText("Edit Profile")).toBeInTheDocument();
     expect(screen.getByLabelText("Name:")).toBeInTheDocument(); 
     expect(screen.getByLabelText("Title:")).toBeInTheDocument(); 
     expect(screen.getByLabelText("Location:")).toBeInTheDocument(); 
     expect(screen.getByLabelText("Bio:")).toBeInTheDocument(); 
   });
 
-  test("clicking Projects shows ProjectEditPage", () => {
+  test("clicking Projects shows ProjectEditPage", async () => {
     render(<App />);
     fireEvent.click(screen.getByText("Projects"));
 
-    expect(screen.getByText("Edit Project")).toBeInTheDocument();
-    expect(screen.getByText("Insert Tags")).toBeInTheDocument();
+    expect(await screen.findByText("Your Projects")).toBeInTheDocument();
+    
   });
 
   test("clicking Search shows SearchPage", () => {

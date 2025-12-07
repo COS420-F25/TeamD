@@ -1,12 +1,14 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useCallback} from "react";
 import {db} from "../firebase-config";
-import {doc, getDoc, setDoc} from "firebase/firestore";
+import {doc, getDoc, setDoc, collection, getDocs} from "firebase/firestore";
 import {User} from "firebase/auth";
 import { DisplayRepos } from "../components/DisplayRepos";
 import { ConnectGitHub, DisconnectGitHub } from "../components/ConnectGitHub"
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"
 import { UploadResume } from "../components/ResumeHandling"
 import { TagSelector } from "../components/Tags"
+import { Project } from "../types/Project";
+import { ProjectView } from "../components/ProjectView";
 
 interface ProfilePageProps{
     user: User | null;
@@ -18,7 +20,43 @@ export function ProfilePage({user}:ProfilePageProps): React.JSX.Element {
     const [pfpFile, setPfpFile] = useState<File | null> (null); 
     const [loading, setLoading] = useState(true);
     const [isGitHubConnected, setIsGitHubConnected] = useState(false);
-   
+    const [projects, setProjects] = useState<Project[]>([]);
+    const [projectsLoading, setProjectsLoading] = useState(true);
+    const [selectedProject, setSelectedProject] = useState<{ id: string; userId: string } | null>(null);
+
+    // Load projects from Firestore
+    const loadProjects = useCallback(async () => {
+        if (!user) {
+            setProjectsLoading(false);
+            return;
+        }
+        try {
+            const colRef = collection(db, "users", user.uid, "projects");
+            const colSnap = await getDocs(colRef);
+            const colList = colSnap.docs.map((x) => {
+                const data = x.data();
+                return {
+                    id: x.id,
+                    title: data.title ?? "",
+                    desc: data.desc ?? "",
+                    tags: data.tags ?? [],
+                    fields: (data.fields ?? []).map((f: any) => ({
+                        id: f.id,
+                        label: f.label ?? "",
+                        value: f.value ?? ""
+                    })),
+                    userId: data.userId ?? user.uid,
+                    createdAt: data.createdAt?.toDate?.() ?? new Date(),
+                    updatedAt: data.updatedAt?.toDate?.() ?? data.createdAt?.toDate?.() ?? new Date()
+                } as Project;
+            });
+            setProjects(colList);
+        } catch (err) {
+            console.error("Error fetching projects:", err);
+        } finally {
+            setProjectsLoading(false);
+        }
+    }, [user]);
 
     // Load profile data from Firestore
     useEffect(() => {
@@ -54,7 +92,8 @@ export function ProfilePage({user}:ProfilePageProps): React.JSX.Element {
             }
         };
         getProfile();
-    },[user]);
+        loadProjects();
+    },[user, loadProjects]);
 
     // Save date to firestore
     const save = async () => { 
@@ -100,6 +139,11 @@ export function ProfilePage({user}:ProfilePageProps): React.JSX.Element {
         }
     } 
 
+    // Handle project click - open in projectview
+    const handleProjectClick = (project: Project) => {
+        setSelectedProject({ id: project.id, userId: project.userId });
+    };
+
     if (!user) return <p>Please log in to view profile</p>;
     if (loading) return <p>Loading profile</p>;
     /*  Simple profile text field editing, should be updated with
@@ -108,12 +152,20 @@ export function ProfilePage({user}:ProfilePageProps): React.JSX.Element {
     return ( 
         <div
             style={{
-                padding: "2rem",
+                display: "flex",
+                minHeight: "100%",
                 fontFamily: "sans-serif"
             }}
         >
-         <h2>Edit Profile</h2>
-         <div style={{ display: "flex", gap: "2rem" }}>
+            {/* Left Section - Existing Profile Edit Form */}
+            <div
+                style={{
+                    flex: 1,
+                    padding: "2rem",
+                    overflowY: "auto"
+                }}
+            >
+         <h2>Edit Profile</h2>   
             <div
                 style={{
                     width: "500px",
@@ -322,17 +374,169 @@ export function ProfilePage({user}:ProfilePageProps): React.JSX.Element {
             </div>
              <DisplayRepos />
             </div>
-        
-        <div style={{   
-            flex: 1,
-            border: "4px solid #ffa876ff",
-            padding: "0 1.5rem 1.5rem 1.5rem",
-            borderRadius: "5px",
-            background: "white",
-            marginTop: "6rem"
-        }}>
-            <UploadResume />
-        </div>
+            <div>
+                <UploadResume />
+            </div>
+            </div>
+
+            {/* Right Section with Name and Projects */}
+            <div
+                style={{
+                    flex: 1,
+                    padding: "4rem",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "left",
+                    minHeight: "100%",
+                   
+                }}
+            >
+                {/* User Name */}
+                <h1
+                    style={{
+                        color: "#333",
+                        fontSize: "24px",
+                        fontWeight: "bold",
+
+                        marginTop: "3rem",
+                        textAlign: "left"
+                    }}
+                >
+                    
+                </h1>
+                <h2
+                        style={{
+                            color: "#333",
+                            fontSize: "24px",
+                            fontWeight: "bold",
+                            marginBottom: "0rem",
+                            textAlign: "left"
+                        }}
+                    >
+                        {profile.name || user?.displayName || user?.email || "User"}'s Portfolio:
+                    </h2>
+                {/* Orange Box with Projects */}
+                <div
+                    style={{
+                        border: "4px solid #fa7d35",
+                        backgroundColor: "transparent",
+                        width: "100%",
+                        padding: "1.5rem",
+                        borderRadius: "6px",
+                        minHeight: "400px",
+                        maxHeight: "685px",
+                        overflowY: "auto",
+                        marginTop: "0rem"
+                    }}
+                >
+                    
+                    {projectsLoading ? (
+                        <p style={{ color: "#666", textAlign: "center" }}>Loading projects...</p>
+                    ) : projects.length === 0 ? (
+                        <p style={{ color: "#666", textAlign: "center" }}>No projects yet</p>
+                    ) : (
+                        <div style={{ 
+                            display: "grid", 
+                            gridTemplateColumns: "repeat(2, 1fr)",
+                            gap: "0.75rem"
+                        }}>
+                            {projects.map((project) => (
+                                <div
+                                    key={project.id}
+                                    onClick={() => handleProjectClick(project)}
+                                    style={{
+                                        backgroundColor: "#FFDAB3",
+                                        padding: "1rem",
+                                        borderRadius: "6px",
+                                        cursor: "pointer",
+                                        border: "2px solid transparent",
+                                        transition: "all 0.2s ease",
+                                        minHeight: "100px"
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.backgroundColor = "#FFD5A3";
+                                        e.currentTarget.style.borderColor = "#7b6be5";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.backgroundColor = "#FFDAB3";
+                                        e.currentTarget.style.borderColor = "transparent";
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            fontWeight: "bold",
+                                            fontSize: "14px",
+                                            color: "#333",
+                                            marginBottom: "0.5rem"
+                                        }}
+                                    >
+                                        {project.title}
+                                    </div>
+                                    <div
+                                        style={{
+                                            fontSize: "12px",
+                                            color: "#666",
+                                            lineHeight: "1.4",
+                                            marginBottom: "0.5rem"
+                                        }}
+                                    >
+                                        {project.desc.length > 60
+                                            ? project.desc.substring(0, 60) + "..."
+                                            : project.desc || "No description"}
+                                    </div>
+                                    {project.tags && project.tags.length > 0 && (
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                flexWrap: "wrap",
+                                                gap: "0.3rem",
+                                                marginTop: "0.5rem"
+                                            }}
+                                        >
+                                            {project.tags.slice(0, 3).map((tag: string, index: number) => (
+                                                <span
+                                                    key={index}
+                                                    style={{
+                                                        backgroundColor: "#7b6be5",
+                                                        color: "white",
+                                                        padding: "0.2rem 0.5rem",
+                                                        borderRadius: "12px",
+                                                        fontSize: "10px",
+                                                        whiteSpace: "nowrap"
+                                                    }}
+                                                >
+                                                    {tag}
+                                                </span>
+                                            ))}
+                                            {project.tags.length > 3 && (
+                                                <span
+                                                    style={{
+                                                        fontSize: "10px",
+                                                        color: "#666",
+                                                        alignSelf: "center",
+                                                        marginLeft: "0.2rem"
+                                                    }}
+                                                >
+                                                    +{project.tags.length - 3}
+                                                </span>
+                                            )}
+                                        </div>
+                                    )}
+                                    
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {selectedProject && (
+                <ProjectView
+                    projectId={selectedProject.id}
+                    userId={selectedProject.userId}
+                    onClose={() => setSelectedProject(null)}
+                />
+            )}
         </div>
         </div>
     );
