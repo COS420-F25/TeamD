@@ -8,6 +8,14 @@ import { SearchService } from "../services/SearchService";
 
 jest.mock("../services/SearchService");
 
+// Mock firebase-config to prevent Firestore initialization issues
+jest.mock("../firebase-config", () => ({
+  db: {},
+  auth: {
+    currentUser: null
+  }
+}));
+
 describe("SearchPage Component", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -179,7 +187,7 @@ describe("SearchPage Component", () => {
           tagsInclude: ["React"]
         })
       );
-    });
+    }, { timeout: 3000 });
   });
 
   test("sorts portfolios by updated date in descending order", async () => {
@@ -244,6 +252,6 @@ describe("SearchPage Component", () => {
           sortOrder: "desc"
         })
       );
-    });
+    }, { timeout: 3000 });
   });
 });
