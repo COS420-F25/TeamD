@@ -11,7 +11,7 @@ export interface SearchFilters {
   userId?: string; // project owner id
   dateFrom?: string; // ISO date string
   dateTo?: string; // ISO date string
-  sortBy?: "relevance" | "date" | "alphabetical";
+  sortBy?: "relevance" | "date" | "updated" | "alphabetical";
   sortOrder?: "asc" | "desc";
 }
 
@@ -221,11 +221,6 @@ export class SearchService {
 
         results.push({ project, portfolioId: portfolio.portfolioId, matchScore: score });
       }
-
-      results.push({
-        portfolio,
-        matchScore
-      });
     }
 
     // Sort results
@@ -324,6 +319,9 @@ export class SearchService {
         case "date":
           cmp = new Date(a.project.createdAt).getTime() - new Date(b.project.createdAt).getTime();
           break;
+        case "updated":
+          cmp = new Date(a.project.updatedAt).getTime() - new Date(b.project.updatedAt).getTime();
+          break;
         case "alphabetical":
           cmp = a.project.title.localeCompare(b.project.title);
           break;
@@ -340,11 +338,13 @@ export class SearchService {
   async getAvailableTags(): Promise<string[]> {
     await this.delay(100);
     const allTags = new Set<string>();
-    
+
     for (const portfolio of SearchService.MOCK_PORTFOLIOS) {
-      portfolio.tags.forEach(tag => allTags.add(tag));
+      for (const project of portfolio.projects ?? []) {
+        project.tags.forEach(tag => allTags.add(tag));
+      }
     }
-    
+
     return Array.from(allTags).sort();
   }
 

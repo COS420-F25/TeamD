@@ -1,6 +1,7 @@
 /* File created with Claude Code */
 
 import { SearchService } from '../services/SearchService';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { SearchResult, Portfolio } from '../types/Portfolio';
 
 describe('SearchService', () => {
@@ -18,8 +19,8 @@ describe('SearchService', () => {
       const uppercaseResults = await searchService.searchPortfolios('WEATHER');
 
       expect(uppercaseResults).toHaveLength(lowercaseResults.length);
-      expect(uppercaseResults[0].portfolio.portfolioId)
-        .toBe(lowercaseResults[0].portfolio.portfolioId);
+      expect(uppercaseResults[0].portfolioId)
+        .toBe(lowercaseResults[0].portfolioId);
       expect(uppercaseResults[0].matchScore).toBe(lowercaseResults[0].matchScore);
     });
 
@@ -50,7 +51,7 @@ describe('SearchService', () => {
 
       // Find a portfolio with "app" in the title
       const titleMatch = results.find(r =>
-        r.portfolio.title.toLowerCase().includes('app')
+        r.project.title.toLowerCase().includes('app')
       );
 
       // We should always find at least one title match for "app"
@@ -66,8 +67,8 @@ describe('SearchService', () => {
       const partialResults = await searchService.searchPortfolios('Weather');
 
       // Find the specific portfolio in both result sets
-      const exactMatch = exactResults.find(r => r.portfolio.portfolioId === 'port-001');
-      const partialMatch = partialResults.find(r => r.portfolio.portfolioId === 'port-001');
+      const exactMatch = exactResults.find(r => r.portfolioId === 'port-001');
+      const partialMatch = partialResults.find(r => r.portfolioId === 'port-001');
 
       // Both should exist
       expect(exactMatch).toBeDefined();
@@ -84,13 +85,13 @@ describe('SearchService', () => {
 
       expect(portfolios).toHaveLength(8); // MOCK_PORTFOLIOS has 8 items
       expect(portfolios[0]).toHaveProperty('portfolioId');
-      expect(portfolios[0]).toHaveProperty('title');
-      expect(portfolios[0]).toHaveProperty('description');
-      expect(portfolios[0]).toHaveProperty('userName');
-      expect(portfolios[0]).toHaveProperty('userEmail');
       expect(portfolios[0]).toHaveProperty('userId');
-      expect(portfolios[0]).toHaveProperty('tags');
-      expect(portfolios[0]).toHaveProperty('createdAt');
+      expect(portfolios[0]).toHaveProperty('projects');
+      expect(Array.isArray(portfolios[0].projects)).toBe(true);
+      expect(portfolios[0].projects.length).toBeGreaterThan(0);
+      expect(portfolios[0].projects[0]).toHaveProperty('id');
+      expect(portfolios[0].projects[0]).toHaveProperty('title');
+      expect(portfolios[0].projects[0]).toHaveProperty('desc');
     });
   });
 });

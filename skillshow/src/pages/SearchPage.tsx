@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { SearchService } from "../services/SearchService";
 import { SearchResult, SearchFilters } from "../types/Portfolio";
 import { ProjectCard } from "../components/ProjectCard";
+import { AdvancedSearchPanel } from "../components/AdvancedSearchPanel";
 
 interface SearchPageProps {
   user: any;

@@ -538,6 +538,5 @@ export function ProfilePage({user}:ProfilePageProps): React.JSX.Element {
                 />
             )}
         </div>
-        </div>
     );
 }
