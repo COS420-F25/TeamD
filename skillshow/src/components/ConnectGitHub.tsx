@@ -32,6 +32,7 @@ export function ConnectGitHub() {
     window.location.href = `${functionsUrl}/githubInstall?userId=${auth.currentUser.uid}`;
   };
 
+  
   return (
     <div>
       <h2>Connect Your GitHub Account</h2>
