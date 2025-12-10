@@ -22,11 +22,19 @@ export class GitHubService {
   private app: App;
 
   constructor(appId: string, privateKeyPath: string) {
-    
-    const keyPath = path.resolve(__dirname, "../..", privateKeyPath);
-    const privateKey = fs.readFileSync(keyPath, "utf8");
+    // Support both file-based (local dev) and env var (production) private keys
+    let privateKey: string;
 
-    // Create new instance with credentials from environment vars
+    if (process.env.GITHUB_PRIVATE_KEY) {
+      // Production: use environment variable
+      privateKey = process.env.GITHUB_PRIVATE_KEY;
+    } else {
+      // Development: read from file
+      const keyPath = path.resolve(__dirname, "../..", privateKeyPath);
+      privateKey = fs.readFileSync(keyPath, "utf8");
+    }
+
+    // Create new instance with credentials
     this.app = new App({
       appId,
       privateKey,
