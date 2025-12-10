@@ -15,18 +15,18 @@ export function ConnectGitHub() {
       return;
     }
 
-    /*  URL for local development
-        We will need to change this if we ever get to production
-    */
     const projectId = process.env.REACT_APP_FIREBASE_PROJECT_ID;
     const region = process.env.REACT_APP_FUNCTIONS_REGION;
     const port = process.env.REACT_APP_FUNCTIONS_PORT;
-    
-    if (!projectId || !region || !port) {
+
+    if (!projectId || !region) {
       console.warn("Missing env variables");
     }
 
-    const functionsUrl = `http://127.0.0.1:${port}/${projectId}/${region}`;
+    // Use localhost for development, production URL for deployment
+    const functionsUrl = window.location.hostname === "localhost"
+      ? `http://127.0.0.1:${port}/${projectId}/${region}`
+      : `https://${region}-${projectId}.cloudfunctions.net`;
 
     // Redirect the user to the git auth flow with userId
     window.location.href = `${functionsUrl}/githubInstall?userId=${auth.currentUser.uid}`;
@@ -56,11 +56,14 @@ export function DisconnectGitHub() {
     const region = process.env.REACT_APP_FUNCTIONS_REGION;
     const port = process.env.REACT_APP_FUNCTIONS_PORT;
 
-    if (!projectId || !region || !port) {
+    if (!projectId || !region) {
       console.warn("Missing env variables");
     }
-    // URL for local development
-    const functionsUrl = `http://127.0.0.1:${port}/${projectId}/${region}`;
+
+    // Use localhost for development, production URL for deployment
+    const functionsUrl = window.location.hostname === "localhost"
+      ? `http://127.0.0.1:${port}/${projectId}/${region}`
+      : `https://${region}-${projectId}.cloudfunctions.net`;
 
     try {
       // Send a disconnect request

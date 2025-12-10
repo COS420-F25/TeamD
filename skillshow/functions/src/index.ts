@@ -21,8 +21,9 @@ admin.initializeApp();
 // Initialize GitHub Service
 const getGitHubService = () => {
   const appId = process.env.GITHUB_APP_ID;
-  const privateKeyPath = process.env.GITHUB_PRIVATE_KEY_PATH;
-  if (!appId || !privateKeyPath) {
+  const privateKeyPath = process.env.GITHUB_PRIVATE_KEY_PATH || "";
+
+  if (!appId) {
     throw new Error("GitHub App ID not configured");
   }
 
@@ -38,8 +39,8 @@ export const githubInstall = functions.https.onRequest((req, res) => {
   const userId = req.query.userId as string;
 
   // Pass userId as state parameter so GitHub will return it in the callback
-  const redirectUrl = userId?
-    `https://github.com/apps/${appName}/installations/new?state=${userId}`:
+  const redirectUrl = userId ?
+    `https://github.com/apps/${appName}/installations/new?state=${userId}` :
     `https://github.com/apps/${appName}/installations/new`;
 
   res.redirect(redirectUrl);
@@ -82,13 +83,15 @@ export const githubCallback = functions.https.onRequest(async (req, res) => {
       }
     }
 
-    const appUrl = "http://localhost:3000";
+    // Determine app URL based on environment
+    const appUrl = process.env.APP_URL || "https://cos420-f25.github.io/TeamD";
 
     res.redirect(
       `${appUrl}/dashboard?github=connected&installation_id=${installation_id}`
     );
   } else {
-    res.redirect("http://localhost:3000/dashboard?github=failed");
+    const appUrl = process.env.APP_URL || "https://cos420-f25.github.io/TeamD";
+    res.redirect(`${appUrl}/dashboard?github=failed`);
   }
 });
 

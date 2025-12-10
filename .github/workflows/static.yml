@@ -1,5 +1,5 @@
-# Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+# Workflow for deploying React app to GitHub Pages and Firebase Functions
+name: Deploy to GitHub Pages and Firebase
 
 on:
   # Runs on pushes targeting the default branch
@@ -22,7 +22,6 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Single deploy job since we're just deploying
   deploy:
     environment:
       name: github-pages
@@ -48,6 +47,25 @@ jobs:
         run: |
           cd skillshow
           npm run build
+        env:
+          REACT_APP_FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          REACT_APP_FUNCTIONS_REGION: ${{ secrets.FIREBASE_FUNCTIONS_REGION }}
+          REACT_APP_FUNCTIONS_PORT: ${{ secrets.FIREBASE_FUNCTIONS_PORT }}
+
+      - name: Deploy Firebase Functions
+        run: |
+          cd skillshow
+          npm install -g firebase-tools
+          cd functions
+          npm install
+          cd ..
+          firebase deploy --only functions --non-interactive --token ${{ secrets.FIREBASE_TOKEN }}
+        env:
+          GCLOUD_PROJECT: skillshow-9e279
+          GITHUB_APP_ID: ${{ secrets.GH_APP_ID }}
+          GITHUB_APP_NAME: ${{ secrets.GH_APP_NAME }}
+          GITHUB_PRIVATE_KEY: ${{ secrets.GH_PRIVATE_KEY }}
+          APP_URL: https://cos420-f25.github.io/TeamD
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
