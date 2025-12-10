@@ -59,7 +59,7 @@ jobs:
           cd functions
           npm install
           cd ..
-          firebase deploy --only functions --non-interactive --token ${{ secrets.FIREBASE_TOKEN }}
+          firebase deploy --only functions --force --non-interactive --token ${{ secrets.FIREBASE_TOKEN }}
         env:
           GCLOUD_PROJECT: skillshow-9e279
           GITHUB_APP_ID: ${{ secrets.GH_APP_ID }}
