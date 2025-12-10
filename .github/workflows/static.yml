@@ -69,6 +69,12 @@ jobs:
             echo "${{ secrets.GH_PRIVATE_KEY }}" | gcloud secrets create GITHUB_PRIVATE_KEY --data-file=- --replication-policy=automatic --project=skillshow-9e279
           fi
 
+          # Grant the Compute Engine default service account access to the secret
+          gcloud secrets add-iam-policy-binding GITHUB_PRIVATE_KEY \
+            --member="serviceAccount:65206097309-compute@developer.gserviceaccount.com" \
+            --role="roles/secretmanager.secretAccessor" \
+            --project=skillshow-9e279
+
       - name: Deploy Firebase Functions
         run: |
           cd skillshow
