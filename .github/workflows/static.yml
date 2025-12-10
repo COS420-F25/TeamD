@@ -56,16 +56,24 @@ jobs:
         run: |
           cd skillshow
           npm install -g firebase-tools
+
+          # Create .env.prod file with runtime parameters
+          cat > .env.prod << EOF
+          GITHUB_APP_ID=${{ secrets.GH_APP_ID }}
+          GITHUB_APP_NAME=${{ secrets.GH_APP_NAME }}
+          APP_URL=https://cos420-f25.github.io/TeamD
+          EOF
+
           cd functions
           npm install
           cd ..
-          firebase deploy --only functions --force --non-interactive --token ${{ secrets.FIREBASE_TOKEN }}
+
+          # Deploy with environment parameters
+          firebase deploy --only functions --force --non-interactive --token ${{ secrets.FIREBASE_TOKEN }} \
+            --params "GITHUB_APP_ID=${{ secrets.GH_APP_ID }},GITHUB_APP_NAME=${{ secrets.GH_APP_NAME }},APP_URL=https://cos420-f25.github.io/TeamD"
         env:
           GCLOUD_PROJECT: skillshow-9e279
-          GITHUB_APP_ID: ${{ secrets.GH_APP_ID }}
-          GITHUB_APP_NAME: ${{ secrets.GH_APP_NAME }}
           GITHUB_PRIVATE_KEY: ${{ secrets.GH_PRIVATE_KEY }}
-          APP_URL: https://cos420-f25.github.io/TeamD
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
