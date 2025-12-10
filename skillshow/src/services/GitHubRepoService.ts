@@ -19,8 +19,11 @@ export class GitHubRepoService {
     const projectId = process.env.REACT_APP_FIREBASE_PROJECT_ID;
     const region = process.env.REACT_APP_FUNCTIONS_REGION ;
     const port = process.env.REACT_APP_FUNCTIONS_PORT;
-    
-    this.functionsUrl = `http://127.0.0.1:${port}/${projectId}/${region}`;
+
+    // Use localhost for development, production URL for deployment
+    this.functionsUrl = window.location.hostname === "localhost"
+      ? `http://127.0.0.1:${port}/${projectId}/${region}`
+      : `https://${region}-${projectId}.cloudfunctions.net`;
   }
 
   async getRepositories(installationId: string): Promise<Repository[]> {
