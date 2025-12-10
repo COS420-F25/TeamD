@@ -88,13 +88,13 @@ jobs:
       - name: Update Function Environment Variables
         run: |
           # Update each function with environment variables and secret
-          for func in githubInstall githubCallback getRepositories disconnectGitHub; do
-            gcloud functions deploy $func \
-              --gen2 \
+          # Gen 2 functions are Cloud Run services, so we use 'gcloud run services update'
+          for func in githubinstall githubcallback getrepositories disconnectgithub; do
+            gcloud run services update $func \
               --region=us-central1 \
               --update-env-vars GITHUB_APP_ID=${{ secrets.GH_APP_ID }},GITHUB_APP_NAME=${{ secrets.GH_APP_NAME }},APP_URL=https://cos420-f25.github.io/TeamD \
               --update-secrets GITHUB_PRIVATE_KEY=GITHUB_PRIVATE_KEY:latest \
-              --project=skillshow-9e279 || true
+              --project=skillshow-9e279 || echo "Warning: Failed to update $func"
           done
 
       - name: Setup Pages
