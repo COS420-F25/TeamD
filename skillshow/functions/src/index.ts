@@ -87,11 +87,11 @@ export const githubCallback = functions.https.onRequest(async (req, res) => {
     const url = process.env.APP_URL || "https://cos420-f25.github.io/TeamD";
 
     res.redirect(
-      `${url}/dashboard?github=connected&installation_id=${installation_id}`
+      `${url}/?github=connected&installation_id=${installation_id}`
     );
   } else {
     const url = process.env.APP_URL || "https://cos420-f25.github.io/TeamD";
-    res.redirect(`${url}/dashboard?github=failed`);
+    res.redirect(`${url}/?github=failed`);
   }
 });
 
