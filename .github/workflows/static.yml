@@ -35,14 +35,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
           cache-dependency-path: skillshow/package-lock.json
 
       - name: Install dependencies
         run: |
           cd skillshow
-          npm ci
+          npm install
 
       - name: Build React app
         run: |
