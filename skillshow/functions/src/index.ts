@@ -2,7 +2,6 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import { GitHubService } from "./services/githubService";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
-import { defineString, defineSecret } from "firebase-functions/params";
 
 /*
   Helpful status codes
@@ -20,15 +19,9 @@ const debug = 0;
 // Initializes firebase Admin SDK for firestore and auth services
 admin.initializeApp();
 
-// Define environment parameters
-const githubAppId = defineString("GITHUB_APP_ID");
-const githubAppName = defineString("GITHUB_APP_NAME");
-const githubPrivateKey = defineSecret("GITHUB_PRIVATE_KEY");
-const appUrl = defineString("APP_URL", {default: "https://cos420-f25.github.io/TeamD"});
-
 // Initialize GitHub Service
 const getGitHubService = () => {
-  const appId = githubAppId.value();
+  const appId = process.env.GITHUB_APP_ID;
 
   if (!appId) {
     throw new Error("GitHub App ID not configured");
@@ -39,7 +32,7 @@ const getGitHubService = () => {
 
 // Redirect to GitHub App installation
 export const githubInstall = functions.https.onRequest((req, res) => {
-  const appName = githubAppName.value();
+  const appName = process.env.GITHUB_APP_NAME;
   if (!appName) {
     throw new Error("GitHub App name not configured");
   }
@@ -91,13 +84,13 @@ export const githubCallback = functions.https.onRequest(async (req, res) => {
     }
 
     // Determine app URL based on environment
-    const url = appUrl.value();
+    const url = process.env.APP_URL || "https://cos420-f25.github.io/TeamD";
 
     res.redirect(
       `${url}/dashboard?github=connected&installation_id=${installation_id}`
     );
   } else {
-    const url = appUrl.value();
+    const url = process.env.APP_URL || "https://cos420-f25.github.io/TeamD";
     res.redirect(`${url}/dashboard?github=failed`);
   }
 });
@@ -163,7 +156,7 @@ export const disconnectGitHub = functions.https.onRequest(async (req, res) => {
     });
 
     // Build uninstall redirect link
-    const appName = githubAppName.value();
+    const appName = process.env.GITHUB_APP_NAME;
     const redirectUrl = `https://github.com/apps/${appName}`;
 
     // If the request came directly from a browser, redirect
